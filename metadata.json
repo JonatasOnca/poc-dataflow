@@ -1,6 +1,6 @@
 {
     "name": "mysql-to-bq-multiple-ingestion",
-    "description": "Template flexível para ingestão MySQL -> BQ",
+    "description": "Template flexível para ingestão MySQL -> BQ (múltiplas tabelas)",
     "parameters": [
         {
             "name": "config_file",

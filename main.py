@@ -1,8 +1,10 @@
 import argparse
-import logging
 import yaml
 
-from apache_beam.options.pipeline_options import PipelineOptions
+import apache_beam as beam
+import logging
+from apache_beam.options.pipeline_options import PipelineOptions 
+from apache_beam.io.filesystems import FileSystems
 from beam_core import pipeline
 
 def run_main():
@@ -14,7 +16,7 @@ def run_main():
     )
     known_args, pipeline_args = parser.parse_known_args()
 
-    with open(known_args.config_file, 'r') as f:
+    with FileSystems.open(known_args.config_file) as f:
         app_config = yaml.safe_load(f)
 
     pipeline_options = PipelineOptions(
