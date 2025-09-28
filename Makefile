@@ -21,7 +21,7 @@ TEMPLATE_PATH := $(BUCKET_NAME)/templates/$(TEMPLATE_FILE)
 CONFIG_GCS_PATH := $(BUCKET_NAME)/config/config.yaml
 
 # Comandos do Makefile
-.PHONY: all setup-gcp build-image build-template upload-config run-job clean-env clean cria-venv ativa-venv test-local
+.PHONY: all setup-gcp build-image build-template upload-config run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
 
 SA:
 	@echo "---------------------------------------"
@@ -92,6 +92,20 @@ run-job: upload-config
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
 		--parameters=config_file=$(CONFIG_GCS_PATH)
+
+# Executa o job do Dataflow a partir do template Localmente
+docker-test-local:
+	@echo "--- Construindo imagem Docker localmente (usando base multiplataforma) ---"
+	# Não precisamos mais do --platform, pois a imagem base python:3.9-slim já é compatível
+	@docker build --platform linux/amd64 -t mysql-to-bq-local-test .
+	@echo "\n--- Executando contêiner de teste localmente ---"
+	@docker run --rm -it --platform linux/amd64 \
+	  --network="host" \
+	  -v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
+	  -v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
+	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
+	  mysql-to-bq-local-test \
+	  python main.py --config_file /app/config.local.yaml
 
 # Executa o job do Dataflow localmente
 test-local:

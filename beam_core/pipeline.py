@@ -88,6 +88,7 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
                 | f'ReadFromMySQL_{table_name}' >> ReadFromJdbc(
                     table_name=table_name,
                     driver_class_name='com.mysql.cj.jdbc.Driver',
+                    driver_jars=['/app/drivers/mysql-connector-j-9.4.0.jar'],
                     jdbc_url=jdbc_url,
                     username=db_creds['user'],
                     password=db_creds['password'],
