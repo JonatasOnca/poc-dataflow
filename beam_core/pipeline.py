@@ -35,8 +35,8 @@ def map_raca_to_dict(row):
 # Um dicionário para registrar as funções de mapeamento disponíveis.
 # Isso permite que o config.yaml especifique qual função usar.
 MAP_FUNCTIONS = {
-    "map_users_to_dict": map_users_to_dict,
-    "map_orders_to_dict": map_orders_to_dict,
+    "map_genero_to_dict": map_genero_to_dict,
+    "map_raca_to_dict": map_raca_to_dict,
 }
 
 def run(app_config: dict, pipeline_options: PipelineOptions):
@@ -56,8 +56,8 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
         # 2. Iterar sobre cada tabela na configuração para criar um ramo no pipeline
         for table_config in tables_to_ingest:
             table_name = table_config['name']
-            query = load_query(table_config['query_file'])
-            schema = load_schema(table_config['schema_file'])
+            _query = load_query(table_config['query_file'])
+            _schema = load_schema(table_config['schema_file'])
             table_spec = f"{gcp_config['project_id']}:{destination_dataset}.{table_name}"
             write_disposition = table_config.get('write_disposition', 'WRITE_TRUNCATE')
 
@@ -74,18 +74,19 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
                 p
                 # Usar um label único para cada etapa de leitura
                 | f'ReadFromMySQL_{table_name}' >> ReadFromJdbc(
+                    table_name=table_name,
                     driver_class_name='com.mysql.cj.jdbc.Driver',
                     jdbc_url=jdbc_url,
                     username=db_creds['user'],
                     password=db_creds['password'],
-                    query=query
+                    query=_query
                 )
                 # Usar um label único para cada etapa de mapeamento
                 | f'MapToDict_{table_name}' >> beam.Map(map_fn)
                 # Usar um label único para cada etapa de escrita
                 | f'WriteToBigQuery_{table_name}' >> WriteToBigQuery(
                     table=table_spec,
-                    schema={'fields': schema['fields']},
+                    schema={'fields': _schema['fields']},
                     create_disposition='CREATE_IF_NEEDED',
                     write_disposition=write_disposition
                 )

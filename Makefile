@@ -21,8 +21,7 @@ TEMPLATE_PATH := $(BUCKET_NAME)/templates/$(TEMPLATE_FILE)
 CONFIG_GCS_PATH := $(BUCKET_NAME)/config/config.yaml
 
 # Comandos do Makefile
-# Adicionado 'upload-config' e dependência em 'run-job'
-.PHONY: all setup-gcp build-image build-template upload-config run-job clean venv
+.PHONY: all setup-gcp build-image build-template upload-config run-job clean venv test-local
 
 SA:
 	@echo "---------------------------------------"
@@ -39,8 +38,7 @@ SA:
 	@echo "A conta de serviço que precisa de permissões é:"
 	@echo "${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 	@echo "---------------------------------------"
-
-# O alvo 'all' agora inclui a etapa de upload
+# O alvo 'all' é para o deploy completo na nuvem
 all: setup-gcp build-image build-template upload-config run-job
 
 # Cria o ambiente virtual e instala as dependências
@@ -71,14 +69,12 @@ build-template: metadata.json
 		--metadata-file "metadata.json" \
 		--project=$(PROJECT_ID)
 
-# --- NOVO ALVO ---
 # Envia o arquivo de configuração para o GCS
 upload-config:
 	@echo "Enviando config.yaml para $(CONFIG_GCS_PATH)..."
 	gsutil cp config.yaml $(CONFIG_GCS_PATH)
 
-# --- ALVO ATUALIZADO ---
-# Executa o job do Dataflow a partir do template, agora dependendo de 'upload-config'
+# Executa o job do Dataflow a partir do template
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
 	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-`date +%Y%m%d-%H%M%S`" \
@@ -87,10 +83,30 @@ run-job: upload-config
 		--region=$(REGION) \
 		--parameters=config_file=$(CONFIG_GCS_PATH)
 
+# Executa o job do Dataflow localmente
+test-local:
+	@echo "--- Iniciando Teste Local com DirectRunner ---"
+	@echo "Lembrete: Certifique-se de que:"
+	@echo "1. O ambiente virtual está ativado ('source .venv/bin/activate')."
+	@echo "2. Você está autenticado localmente ('gcloud auth application-default login')."
+	@echo "3. Sua rede local tem acesso ao banco de dados MySQL."
+	@echo "----------------------------------------------------"
+	
+	# Cria uma cópia do config para o teste local e substitui o runner por DirectRunner
+	@sed 's/runner: DataflowRunner/runner: DirectRunner/' config.yaml > config.local.yaml
+	
+	# Executa o pipeline localmente
+	python main.py --config_file config.local.yaml
+	
+	# Limpa o arquivo de configuração local após a execução
+	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
+	@rm config.local.yaml
+
 # Limpa os arquivos gerados (opcional)
 clean:
 	rm -rf .venv
 	rm -f metadata.json
+	rm -f config.local.yaml
 
 # Cria o arquivo metadata.json dinamicamente se não existir
 metadata.json:
