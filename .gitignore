@@ -1,0 +1,14 @@
+# Copyright 2025 TecOnca Data Solutions.
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
