@@ -1,9 +1,8 @@
 import argparse
 import yaml
 
-import apache_beam as beam
 import logging
-from apache_beam.options.pipeline_options import PipelineOptions 
+from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.filesystems import FileSystems
 from beam_core import pipeline
 

@@ -1,0 +1,11 @@
+{
+    "name": "Debug com Argumentos (Opção Program)",
+    "type": "python",
+    "request": "launch",
+    "program": "/main.py",
+    "justMyCode": true,
+    "args": [
+        "--config_file", 
+        "config.local.yaml"
+    ]
+}

@@ -20,7 +20,7 @@ dataflow:
 
 # Credenciais do banco de dados de origem
 source_db:
-  secret_id: "dataflow-mysql-credentials"
+  secret_id: "dataflow-mysql-credentials-temp"
   secret_version: "latest"
 
 # Dataset de destino no BigQuery
