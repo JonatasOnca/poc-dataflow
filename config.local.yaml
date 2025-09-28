@@ -16,7 +16,7 @@ dataflow:
     temp_location: "gs://abemcomum-saev-prod/temp"
     staging_location: "gs://abemcomum-saev-prod/staging"
     machine_type: "n1-standard-1"
-    runner: "DataflowRunner"
+    runner: "DirectRunner"
 
 # Credenciais do banco de dados de origem
 source_db:

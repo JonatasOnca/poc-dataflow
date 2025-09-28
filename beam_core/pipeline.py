@@ -50,7 +50,9 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
 
     # 1. Obter credenciais do banco de dados do Secret Manager (feito uma vez)
     db_creds = get_secret(gcp_config['project_id'], db_config['secret_id'])
+    # logging.info(f"Secret: {db_config}")
     jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+    # logging.info(f"jdbc_url: {jdbc_url}")
 
     with beam.Pipeline(options=pipeline_options) as p:
         # 2. Iterar sobre cada tabela na configuração para criar um ramo no pipeline
@@ -79,7 +81,7 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
                     jdbc_url=jdbc_url,
                     username=db_creds['user'],
                     password=db_creds['password'],
-                    query=_query
+                    # query=_query
                 )
                 # Usar um label único para cada etapa de mapeamento
                 | f'MapToDict_{table_name}' >> beam.Map(map_fn)
