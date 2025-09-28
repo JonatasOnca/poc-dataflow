@@ -1,1 +1,0 @@
-SELECT order_id, user_id, product_name, amount, order_date FROM orders;
