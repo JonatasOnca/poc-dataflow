@@ -11,23 +11,25 @@ from utils.file_handler import load_query, load_schema
 # Ter funções de mapeamento separadas torna o código mais limpo e extensível.
 # Cada função lida com a estrutura específica de uma tabela.
 
-def map_users_to_dict(row):
-    """Mapeia uma linha da tabela 'users' para um dicionário."""
+def map_genero_to_dict(row):
+    """Mapeia uma linha da tabela 'genero' para um dicionário."""
     return {
-        "user_id": row.user_id,
-        "name": row.name,
-        "email": row.email,
-        "created_at": row.created_at.isoformat() if row.created_at else None
+        "GEN_ATIVO": row.GEN_ATIVO,
+        "GEN_DT_ATUALIZACAO": row.GEN_DT_ATUALIZACAO,
+        "GEN_DT_CRIACAO": row.GEN_DT_CRIACAO,
+        "GEN_ID": row.GEN_ID,
+        "GEN_NOME": row.GEN_NOME
     }
 
-def map_orders_to_dict(row):
-    """Mapeia uma linha da tabela 'orders' para um dicionário."""
+def map_raca_to_dict(row):
+    """Mapeia uma linha da tabela 'raca' para um dicionário."""
     return {
-        "order_id": row.order_id,
-        "user_id": row.user_id,
-        "product_name": row.product_name,
-        "amount": row.amount,
-        "order_date": row.order_date.isoformat() if row.order_date else None
+        "PEL_ATIVO": row.PEL_ATIVO,
+        "PEL_DT_ATUALIZACAO": row.PEL_DT_ATUALIZACAO,
+        "PEL_DT_CRIACAO": row.PEL_DT_CRIACAO,
+        "PEL_ID": row.PEL_ID,
+        "PEL_NOME": row.PEL_NOME,
+        "PEL_OLD_ID": row.PEL_OLD_ID
     }
 
 # Um dicionário para registrar as funções de mapeamento disponíveis.

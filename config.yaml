@@ -32,10 +32,10 @@ tables:
     query_file: "genero.sql"
     schema_file: "genero.json"
     write_disposition: "WRITE_TRUNCATE"
-    map_function: "map_users_to_dict"
+    map_function: "map_genero_to_dict"
 
   - name: "raca"
     query_file: "genero.sql"
     schema_file: "genero.json"
     write_disposition: "WRITE_TRUNCATE"
-    map_function: "map_orders_to_dict"
+    map_function: "map_raca_to_dict"
