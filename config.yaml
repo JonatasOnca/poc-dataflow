@@ -1,0 +1,41 @@
+gcp:
+  project_id: "<SEU_PROJETO_GCP>"
+  region: "us-central1"
+  bucket_name: "gs://<SEU_BUCKET_PARA_TEMPLATES>"
+
+artefact_registry:
+  repository: "dataflow-templates"
+  location: "us-central1"
+  image_name: "mysql-to-bq-multiple-tables" # Nome da imagem atualizado (opcional)
+
+dataflow:
+  job_name: "mysql-to-bq-multiple-ingestion" # Nome do job atualizado
+  template_file_name: "mysql_to_bq_multiple_template.json"
+  parameters:
+    sdk_container_image: ""
+    temp_location: "gs://<SEU_BUCKET_PARA_TEMPLATES>/temp"
+    staging_location: "gs://<SEU_BUCKET_PARA_TEMPLATES>/staging"
+    machine_type: "n1-standard-1"
+    runner: "DataflowRunner"
+
+# Credenciais do banco de dados de origem
+source_db:
+  secret_id: "mysql-credentials"
+  secret_version: "latest"
+
+# Dataset de destino no BigQuery
+destination_dataset: "mydataset"
+
+# Lista de tabelas para ingestão
+tables:
+  - name: "users"
+    query_file: "extract_users.sql"
+    schema_file: "users_schema.json"
+    write_disposition: "WRITE_TRUNCATE" # Pode ser WRITE_TRUNCATE ou WRITE_APPEND
+    map_function: "map_users_to_dict" # Identificador para a função de mapeamento
+
+  - name: "orders"
+    query_file: "extract_orders.sql"
+    schema_file: "orders_schema.json"
+    write_disposition: "WRITE_TRUNCATE"
+    map_function: "map_orders_to_dict"

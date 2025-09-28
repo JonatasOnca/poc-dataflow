@@ -1,0 +1,8 @@
+{
+  "fields": [
+    { "name": "user_id", "type": "INTEGER", "mode": "REQUIRED" },
+    { "name": "name", "type": "STRING", "mode": "NULLABLE" },
+    { "name": "email", "type": "STRING", "mode": "NULLABLE" },
+    { "name": "created_at", "type": "TIMESTAMP", "mode": "NULLABLE" }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "fields": [
+    { "name": "order_id", "type": "INTEGER", "mode": "REQUIRED" },
+    { "name": "user_id", "type": "INTEGER", "mode": "NULLABLE" },
+    { "name": "product_name", "type": "STRING", "mode": "NULLABLE" },
+    { "name": "amount", "type": "FLOAT", "mode": "NULLABLE" },
+    { "name": "order_date", "type": "TIMESTAMP", "mode": "NULLABLE" }
+  ]
+}

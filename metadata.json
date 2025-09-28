@@ -1,0 +1,11 @@
+{
+    "name": "",
+    "description": "Template flexível para ingestão MySQL -> BQ",
+    "parameters": [
+        {
+            "name": "config_file",
+            "label": "Arquivo de Configuração",
+            "helpText": "Caminho GCS para o arquivo config.yaml"
+        }
+    ]
+}
