@@ -100,11 +100,19 @@ test-local:
 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
 	@rm config.local.yaml
 
-# Limpa os arquivos gerados (opcional)
-clean:
+# Limpa os anbiente (opcional)
+clean-env:
 	rm -rf .venv
 	rm -f metadata.json
 	rm -f config.local.yaml
+
+# Limpa os arquivos gerados (opcional)
+clean:
+	@echo "Limpando arquivos temporários..."
+	# Remove diretórios __pycache__ recursivamente
+	find . -depth -name "__pycache__" -exec rm -rf {} \;
+	# Remove arquivos de bytecode Python .pyc
+	find . -name "*.pyc" -exec rm -f {} \;
 
 # Cria o arquivo metadata.json dinamicamente se não existir
 metadata.json:
