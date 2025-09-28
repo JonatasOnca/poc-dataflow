@@ -1,11 +1,17 @@
 {
-    "name": "Debug com Argumentos (Opção Program)",
-    "type": "python",
-    "request": "launch",
-    "program": "/main.py",
-    "justMyCode": true,
-    "args": [
-        "--config_file", 
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Depurar Pipeline Principal",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "args": [
+        "--config_file",
         "config.local.yaml"
-    ]
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
 }

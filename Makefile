@@ -21,7 +21,7 @@ TEMPLATE_PATH := $(BUCKET_NAME)/templates/$(TEMPLATE_FILE)
 CONFIG_GCS_PATH := $(BUCKET_NAME)/config/config.yaml
 
 # Comandos do Makefile
-.PHONY: all setup-gcp build-image build-template upload-config run-job clean venv test-local
+.PHONY: all setup-gcp build-image build-template upload-config run-job clean-env clean cria-venv ativa-venv test-local
 
 SA:
 	@echo "---------------------------------------"
@@ -41,12 +41,22 @@ SA:
 # O alvo 'all' é para o deploy completo na nuvem
 all: setup-gcp build-image build-template upload-config run-job
 
-# Cria o ambiente virtual e instala as dependências
-venv:
+# Cria o ambiente virtual
+cria-venv:
+	@echo "Cria o ambiente virtual criado"
 	python3.9 -m venv .venv
-	@echo "Ambiente virtual criado. Ative com: source .venv/bin/activate"
-	@echo "Depois, instale as dependências com: pip install -r requirements.txt"
 
+# Ativa o ambiente virtual e instala as dependências #WIP - Nao esta funcionando
+ativa-venv:	
+	@echo "Ative o .venv: source .venv/bin/activate"
+	source .venv/bin/activate
+	@echo "instala o pip e setuptools com: python -m ensurepip --upgrade"
+	python -m ensurepip --upgrade
+	@echo "Atualiza o pip: python -m pip install --upgrade pip"
+	python -m pip install --upgrade pip
+	@echo "Instale as dependências com: pip install -r requirements.txt"
+	pip install -r requirements.txt
+	
 # Configura a infraestrutura necessária no GCP
 setup-gcp:
 	@echo "Verificando/Criando bucket GCS..."
