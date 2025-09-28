@@ -92,10 +92,10 @@ test-local:
 	@echo "3. Sua rede local tem acesso ao banco de dados MySQL."
 	@echo "----------------------------------------------------"
 	
-	python utils/config_modifier.py config.yaml config.local.yaml
+	python3 utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-	python main.py --config_file config.local.yaml
+	python3 main.py --config_file config.local.yaml
 	
 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
 	@rm config.local.yaml
