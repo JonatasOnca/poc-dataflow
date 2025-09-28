@@ -3,6 +3,7 @@ get_config = python3 -c "import yaml; f=open('config.yaml'); d=yaml.safe_load(f)
 
 # Configurações do GCP
 PROJECT_ID := $(shell $(call get_config,gcp,project_id))
+PROJECT_NUMBER := $(shell gcloud projects describe $(PROJECT_ID) --format='value(projectNumber)')
 REGION := $(shell $(call get_config,gcp,region))
 BUCKET_NAME := $(shell $(call get_config,gcp,bucket_name))
 
@@ -22,6 +23,22 @@ CONFIG_GCS_PATH := $(BUCKET_NAME)/config/config.yaml
 # Comandos do Makefile
 # Adicionado 'upload-config' e dependência em 'run-job'
 .PHONY: all setup-gcp build-image build-template upload-config run-job clean venv
+
+SA:
+	@echo "---------------------------------------"
+	@echo "------------ACESSSOS--------------------"
+	@echo "---------------------------------------"
+	@echo "--   Dataflow Worker.                --"
+	@echo "--   Storage Object Admin.           --"
+	@echo "--   Secret Manager Secret Accessor. --"
+	@echo "--   BigQuery Data Editor.           --"
+	@echo "--   Artifact Registry Reader.       --"
+	@echo "---------------------------------------"
+	@echo "ID do Projeto: $(PROJECT_ID)"
+	@echo "Número do Projeto: $(PROJECT_NUMBER)"
+	@echo "A conta de serviço que precisa de permissões é:"
+	@echo "${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+	@echo "---------------------------------------"
 
 # O alvo 'all' agora inclui a etapa de upload
 all: setup-gcp build-image build-template upload-config run-job
