@@ -107,8 +107,8 @@ test-local:
 	# Executa o pipeline localmente
 	python3 main.py --config_file config.local.yaml
 	
-	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
-	@rm config.local.yaml
+# 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
+# 	@rm config.local.yaml
 
 # Limpa os anbiente (opcional)
 clean-env:

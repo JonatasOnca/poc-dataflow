@@ -61,7 +61,7 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
     # 1. Obter credenciais do banco de dados do Secret Manager (feito uma vez)
     db_creds = get_secret(gcp_config['project_id'], db_config['secret_id'])
     # logging.info(f"Secret: {db_config}")
-    jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+    jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}?serverTimezone=UTC"
     # logging.info(f"jdbc_url: {jdbc_url}")
 
     with beam.Pipeline(options=pipeline_options) as p:
@@ -98,7 +98,7 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
                 # Usar um label único para cada etapa de escrita
                 | f'WriteToBigQuery_{table_name}' >> WriteToBigQuery(
                     table=table_spec,
-                    schema={'fields': _schema['fields']},
+                    schema={'fields': _schema},
                     create_disposition='CREATE_IF_NEEDED',
                     write_disposition=write_disposition
                 )
