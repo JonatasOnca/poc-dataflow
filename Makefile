@@ -14,7 +14,7 @@ TEMPLATE_NAME := $(shell $(call get_config,dataflow,job_name))
 TEMPLATE_FILE := $(shell $(call get_config,dataflow,template_file_name))
 TEMPLATE_PATH := $(BUCKET_NAME)/templates/$(TEMPLATE_FILE)
 
-.PHONY: all setup-gcp build-image build-template run-job clean
+.PHONY: all setup-gcp build-image build-template run-job clean metadata.json
 
 all: setup-gcp build-image build-template run-job
 

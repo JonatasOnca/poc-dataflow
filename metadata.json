@@ -1,5 +1,5 @@
 {
-    "name": "",
+    "name": "mysql-to-bq-multiple-ingestion",
     "description": "Template flexível para ingestão MySQL -> BQ",
     "parameters": [
         {
