@@ -1,22 +1,22 @@
-get_config = python -c "import yaml; f=open('config.yaml'); d=yaml.safe_load(f); print(d['$(1)']['$(2)'])"
+get_config = python3 -c "import yaml; f=open('config.yaml'); d=yaml.safe_load(f); print(d['$(1)']['$(2)'])"
 
-PROJECT_ID := $(shell $(get_config) gcp project_id)
-REGION := $(shell $(get_config) gcp region)
-BUCKET_NAME := $(shell $(get_config) gcp bucket_name)
+PROJECT_ID := $(shell $(call get_config,gcp,project_id))
+REGION := $(shell $(call get_config,gcp,region))
+BUCKET_NAME := $(shell $(call get_config,gcp,bucket_name))
 
-AR_REPO := $(shell $(get_config) artefact_registry repository)
-AR_LOCATION := $(shell $(get_config) artefact_registry location)
-IMAGE_NAME := $(shell $(get_config) artefact_registry image_name)
+AR_REPO := $(shell $(call get_config,artefact_registry,repository))
+AR_LOCATION := $(shell $(call get_config,artefact_registry,location))
+IMAGE_NAME := $(shell $(call get_config,artefact_registry,image_name))
 IMAGE_TAG := latest
 IMAGE_URI := $(AR_LOCATION)-docker.pkg.dev/$(PROJECT_ID)/$(AR_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)
 
-TEMPLATE_NAME := $(shell $(get_config) dataflow job_name)
-TEMPLATE_FILE := $(shell $(get_config) dataflow template_file_name)
+TEMPLATE_NAME := $(shell $(call get_config,dataflow,job_name))
+TEMPLATE_FILE := $(shell $(call get_config,dataflow,template_file_name))
 TEMPLATE_PATH := $(BUCKET_NAME)/templates/$(TEMPLATE_FILE)
 
-.PHONY: all setup build-image build-template run-job clean
+.PHONY: all setup-gcp build-image build-template run-job clean
 
-all: setup build-image build-template run-job
+all: setup-gcp build-image build-template run-job
 
 venv:
 	python3.9 -m venv .venv
