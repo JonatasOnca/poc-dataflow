@@ -1,0 +1,11 @@
+{
+    "name": "mysql-to-bq-multiple-ingestion",
+    "description": "Template flexível para ingestão MySQL -> BQ (múltiplas tabelas)",
+    "parameters": [
+        {
+            "name": "config_file",
+            "label": "Arquivo de Configuração",
+            "helpText": "Caminho GCS para o arquivo config.yaml"
+        }
+    ]
+}

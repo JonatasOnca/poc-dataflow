@@ -1,5 +1,7 @@
 apache-beam[gcp]
 PyYAML
 google-cloud-secret-manager
+google-cloud-storage
+google-cloud-bigquery
 SQLAlchemy
 PyMySQL

@@ -113,8 +113,8 @@ test-local:
 # Limpa os anbiente (opcional)
 clean-env:
 	rm -rf .venv
-	rm -f metadata.json
-	rm -f config.local.yaml
+# 	rm -f metadata.json
+# 	rm -f config.local.yaml
 
 # Limpa os arquivos gerados (opcional)
 clean:
