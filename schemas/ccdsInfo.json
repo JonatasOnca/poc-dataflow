@@ -1,34 +1,27 @@
 [
     {
-        "name": "GEN_ATIVO",
+        "name": "ccds",
         "mode": "",
-        "type": "INTEGER",
+        "type": "STRING",
         "description": "",
         "fields": []
     },
     {
-        "name": "GEN_DT_ATUALIZACAO",
+        "name": "mrnaAcc",
         "mode": "",
-        "type": "TIMESTAMP",
+        "type": "STRING",
         "description": "",
         "fields": []
     },
     {
-        "name": "GEN_DT_CRIACAO",
+        "name": "protAcc",
         "mode": "",
-        "type": "TIMESTAMP",
+        "type": "STRING",
         "description": "",
         "fields": []
     },
     {
-        "name": "GEN_ID",
-        "mode": "",
-        "type": "INTEGER",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "GEN_NOME",
+        "name": "srcDb",
         "mode": "",
         "type": "STRING",
         "description": "",

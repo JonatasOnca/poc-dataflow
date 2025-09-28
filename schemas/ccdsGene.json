@@ -1,0 +1,114 @@
+[
+    {
+        "name": "bin",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "cdsEnd",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "cdsEndStat",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "cdsStart",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "cdsStartStat",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "chrom",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "exonCount",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "exonEnds",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "exonFrames",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "exonStarts",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "name",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "name2",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "score",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "strand",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "txEnd",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "txStart",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    }
+]

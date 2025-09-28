@@ -11,32 +11,42 @@ from utils.file_handler import load_query, load_schema
 # Ter funções de mapeamento separadas torna o código mais limpo e extensível.
 # Cada função lida com a estrutura específica de uma tabela.
 
-def map_genero_to_dict(row):
-    """Mapeia uma linha da tabela 'genero' para um dicionário."""
+def map_ccdsGene_to_dict(row):
+    """Mapeia uma linha da tabela 'ccdsGene' para um dicionário."""
     return {
-        "GEN_ATIVO": row.GEN_ATIVO,
-        "GEN_DT_ATUALIZACAO": row.GEN_DT_ATUALIZACAO,
-        "GEN_DT_CRIACAO": row.GEN_DT_CRIACAO,
-        "GEN_ID": row.GEN_ID,
-        "GEN_NOME": row.GEN_NOME
+        "bin": row.bin,
+        "cdsEnd": row.cdsEnd,
+        "cdsEndStat": row.cdsEndStat,
+        "cdsStart": row.cdsStart,
+        "cdsStartStat": row.cdsStartStat,
+        "chrom": row.chrom,
+        "exonCount": row.exonCount,
+        "exonEnds": row.exonEnds,
+        "exonFrames": row.exonFrames,
+        "exonStarts": row.exonStarts,
+        "name": row.name,
+        "name2": row.name2,
+        "score": row.score,
+        "strand": row.strand,
+        "txEnd": row.txEnd,
+        "txStart": row.txStart,
+        
     }
 
-def map_raca_to_dict(row):
-    """Mapeia uma linha da tabela 'raca' para um dicionário."""
+def map_ccdsInfo_to_dict(row):
+    """Mapeia uma linha da tabela 'ccdsInfo' para um dicionário."""
     return {
-        "PEL_ATIVO": row.PEL_ATIVO,
-        "PEL_DT_ATUALIZACAO": row.PEL_DT_ATUALIZACAO,
-        "PEL_DT_CRIACAO": row.PEL_DT_CRIACAO,
-        "PEL_ID": row.PEL_ID,
-        "PEL_NOME": row.PEL_NOME,
-        "PEL_OLD_ID": row.PEL_OLD_ID
+        "ccds": row.ccds,
+        "mrnaAcc": row.mrnaAcc,
+        "protAcc": row.protAcc,
+        "srcDb": row.srcDb,
     }
 
 # Um dicionário para registrar as funções de mapeamento disponíveis.
 # Isso permite que o config.yaml especifique qual função usar.
 MAP_FUNCTIONS = {
-    "map_genero_to_dict": map_genero_to_dict,
-    "map_raca_to_dict": map_raca_to_dict,
+    "map_ccdsGene_to_dict": map_ccdsGene_to_dict,
+    "map_ccdsInfo_to_dict": map_ccdsInfo_to_dict,
 }
 
 def run(app_config: dict, pipeline_options: PipelineOptions):
