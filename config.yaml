@@ -28,14 +28,14 @@ destination_dataset: "bronze"
 
 # Lista de tabelas para ingestão
 tables:
-  - name: "genero"
-    query_file: "genero.sql"
-    schema_file: "genero.json"
+  - name: "ccdsGene"
+    query_file: "ccdsGene.sql"
+    schema_file: "ccdsGene.json"
     write_disposition: "WRITE_TRUNCATE"
-    map_function: "map_genero_to_dict"
+    map_function: "map_ccdsGene_to_dict"
 
-  - name: "raca"
-    query_file: "genero.sql"
-    schema_file: "genero.json"
+  - name: "ccdsInfo"
+    query_file: "ccdsInfo.sql"
+    schema_file: "ccdsInfo.json"
     write_disposition: "WRITE_TRUNCATE"
-    map_function: "map_raca_to_dict"
+    map_function: "map_ccdsInfo_to_dict"

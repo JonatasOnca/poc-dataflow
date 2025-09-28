@@ -1,0 +1,32 @@
+gcp:
+  project_id: abemcomum-saev-prod
+  region: us-central1
+  bucket_name: gs://abemcomum-saev-prod
+artefact_registry:
+  repository: dataflow-templates
+  location: us-central1
+  image_name: mysql-to-bq-multiple-tables
+dataflow:
+  job_name: test-mysql-to-bq-multiple-ingestion-local-job
+  template_file_name: mysql_to_bq_multiple_template.json
+  parameters:
+    sdk_container_image: ''
+    temp_location: gs://abemcomum-saev-prod/temp
+    staging_location: gs://abemcomum-saev-prod/staging
+    machine_type: n1-standard-1
+    runner: DirectRunner
+source_db:
+  secret_id: dataflow-mysql-credentials-temp
+  secret_version: latest
+destination_dataset: bronze
+tables:
+- name: ccdsGene
+  query_file: ccdsGene.sql
+  schema_file: ccdsGene.json
+  write_disposition: WRITE_TRUNCATE
+  map_function: map_ccdsGene_to_dict
+- name: ccdsInfo
+  query_file: ccdsInfo.sql
+  schema_file: ccdsInfo.json
+  write_disposition: WRITE_TRUNCATE
+  map_function: map_ccdsInfo_to_dict
