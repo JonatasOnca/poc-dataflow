@@ -92,15 +92,13 @@ test-local:
 	@echo "3. Sua rede local tem acesso ao banco de dados MySQL."
 	@echo "----------------------------------------------------"
 	
-	# Cria uma cópia do config para o teste local e substitui o runner por DirectRunner
-	@sed -E 's/^([[:space:]]*runner:)[[:space:]]*DataflowRunner/\1 DirectRunner/' config.yaml > config.local.yaml
+	python utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-# 	python main.py --config_file config.local.yaml
+	python main.py --config_file config.local.yaml
 	
-	# Limpa o arquivo de configuração local após a execução
-# 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
-# 	@rm config.local.yaml
+	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
+	@rm config.local.yaml
 
 # Limpa os arquivos gerados (opcional)
 clean:
