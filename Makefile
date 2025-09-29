@@ -21,11 +21,18 @@ IMAGE_URI := $(AR_LOCATION)-docker.pkg.dev/$(PROJECT_ID)/$(AR_REPO)/$(IMAGE_NAME
 # Configurações do Dataflow
 TEMPLATE_NAME := $(shell $(call get_config,dataflow,job_name))
 TEMPLATE_FILE := $(shell $(call get_config,dataflow,template_file_name))
-TEMPLATE_PATH := $(BUCKET_NAME)/templates/$(TEMPLATE_FILE)
-CONFIG_GCS_PATH := $(BUCKET_NAME)/config/config.yaml
+
+QUERIES_LOCAL_PATH := queries/
+SCHEMAS_LOCAL_PATH := schemas/
+
+GCS_BASE_PATH := $(BUCKET_NAME)/$(IMAGE_NAME)
+TEMPLATE_PATH := $(GCS_BASE_PATH)/dataflow/templates/$(TEMPLATE_FILE)
+CONFIG_GCS_PATH := $(GCS_BASE_PATH)/config/config.yaml
+QUERIES_GCS_PATH := $(GCS_BASE_PATH)/queries/
+SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 
 # Comandos do Makefile
-.PHONY: all setup-gcp build-image build-template upload-config run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
+.PHONY: all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
 
 SA:
 	@echo "---------------------------------------"
@@ -43,7 +50,7 @@ SA:
 	@echo "${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 	@echo "---------------------------------------"
 # O alvo 'all' é para o deploy completo na nuvem
-all: setup-gcp build-image build-template upload-config run-job
+all: setup-gcp build-image build-template upload-config upload-assets run-job
 
 # Cria o ambiente virtual
 cria-venv:
@@ -77,7 +84,7 @@ build-image:
 # Cria o arquivo de especificação do Flex Template no GCS
 build-template: metadata.json
 	@echo "Criando o Flex Template em $(TEMPLATE_PATH)..."
-	gcloud dataflow flex-template build $(TEMPLATE_PATH) \
+	@gcloud dataflow flex-template build $(TEMPLATE_PATH) \
 		--image "$(IMAGE_URI)" \
 		--sdk-language "PYTHON" \
 		--metadata-file "metadata.json" \
@@ -86,7 +93,17 @@ build-template: metadata.json
 # Envia o arquivo de configuração para o GCS
 upload-config:
 	@echo "Enviando config.yaml para $(CONFIG_GCS_PATH)..."
-	gsutil cp config.yaml $(CONFIG_GCS_PATH)
+	@gcloud config set project $(PROJECT_ID)
+	@gsutil cp config.yaml $(CONFIG_GCS_PATH)
+	@echo ">>> Sincronizando! '$(CONFIG_GCS_PATH)'..."
+
+# Envia os arquivos de assets (SQL, JSON) para o GCS.
+upload-assets:
+	@echo ">>> Sincronizando pastas de assets para o bucket '$(BUCKET_NAME)'..."
+	gcloud config set project $(PROJECT_ID)
+	gsutil -m rsync -r $(QUERIES_LOCAL_PATH) $(QUERIES_GCS_PATH)
+	gsutil -m rsync -r $(SCHEMAS_LOCAL_PATH) $(SCHEMAS_GCS_PATH)
+	@echo ">>> Sincronizando! '$(BUCKET_NAME)'..."
 
 # Executa o job do Dataflow a partir do template
 # run-job: upload-config
