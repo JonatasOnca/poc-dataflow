@@ -10,7 +10,7 @@ from connectors.secret_manager import get_secret
 from utils.file_handler import load_schema, load_query
 
 # 1. Importe o dicionário do novo arquivo
-from mapping_functions import MAP_FUNCTIONS
+from beam_core.mapping_functions import MAP_FUNCTIONS
 
 # 2. As definições das funções e do dicionário foram removidas daqui
 
