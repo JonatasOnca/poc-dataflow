@@ -1,0 +1,25 @@
+# Usar uma imagem base oficial do Python que é multiplataforma (suporta ARM64 e AMD64)
+FROM python:3.9-slim
+
+# Mudar para usuário root para poder instalar pacotes
+USER root
+
+# Instalar o Java (JRE), que é necessário para o ReadFromJdbc
+RUN apt-get update && \
+    apt-get install -y default-jre-headless && \
+    apt-get clean
+
+# Definir o diretório de trabalho
+WORKDIR /app
+
+# Copiar os arquivos de dependência
+COPY requirements.txt setup.py ./
+
+# Instalar as dependências do Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar todo o código do projeto para a imagem
+COPY . .
+
+# Comando padrão (opcional, mas bom para clareza)
+CMD ["python", "main.py"]

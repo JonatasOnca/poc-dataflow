@@ -95,11 +95,11 @@ run-job: upload-config
 
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local:
-	@echo "--- Construindo imagem Docker localmente (usando base multiplataforma) ---"
-	# Não precisamos mais do --platform, pois a imagem base python:3.9-slim já é compatível
-	@docker build --platform linux/amd64 -t mysql-to-bq-local-test .
+	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local) ---"
+	# Usamos -f para especificar qual Dockerfile usar
+	@docker build -f Dockerfile.local -t mysql-to-bq-local-test .
 	@echo "\n--- Executando contêiner de teste localmente ---"
-	@docker run --rm -it --platform linux/amd64 \
+	@docker run --rm -it \
 	  --network="host" \
 	  -v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
 	  -v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
