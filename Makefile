@@ -104,6 +104,7 @@ docker-test-local:
 	  -v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
 	  -v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
 	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
+	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
 	  mysql-to-bq-local-test \
 	  python main.py --config_file /app/config.local.yaml
 
