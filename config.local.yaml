@@ -7,14 +7,14 @@ gcp:
 artefact_registry:
   repository: dataflow-templates
   location: us-central1
-  image_name: mysql-to-bq-multiple-tables
+  image_name: mysql-to-bq-dataflow-multiple-tables
 dataflow:
   job_name: test-mysql-to-bq-multiple-ingestion-local-job
-  template_file_name: mysql_to_bq_multiple_template.json
+  template_file_name: mysql-to-bq-dataflow-multiple-tables-template.json
   parameters:
     sdk_container_image: ''
-    temp_location: gs://abemcomum-saev-prod/temp
-    staging_location: gs://abemcomum-saev-prod/staging
+    temp_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/temp
+    staging_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/staging
     machine_type: n1-standard-1
     runner: DirectRunner
 source_db:

@@ -7,7 +7,7 @@ from apache_beam.io.jdbc import ReadFromJdbc
 
 from transforms.data_validation import MapAndValidate, OutputTags
 from connectors.secret_manager import get_secret
-from utils.file_handler import load_schema
+from utils.file_handler import load_schema, load_query
 
 def map_ccdsGene_to_dict(row):
     """Mapeia uma linha da tabela 'ccdsGene' para um dicionário."""
@@ -40,6 +40,7 @@ def build_table_pipeline(p, table_config, common_configs):
     table_name = table_config['name']
     map_fn = common_configs['map_functions'][table_config['map_function']]
     _schema = load_schema(table_config['schema_file'])
+    # _query = load_query(table_config['schema_file'])
     
     table_spec = f"{common_configs['gcp_project']}:{common_configs['dataset']}.{table_name}"
     error_table_spec = f"{common_configs['gcp_project']}:{common_configs['dataset']}.{table_name}_errors"
@@ -56,6 +57,7 @@ def build_table_pipeline(p, table_config, common_configs):
             jdbc_url=common_configs['jdbc_url'],
             username=common_configs['db_creds']['user'],
             password=common_configs['db_creds']['password'],
+            # query=_query,
             # driver_jars='/app/drivers/mysql-connector-j.jar'
         )
     )
