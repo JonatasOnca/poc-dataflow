@@ -12,7 +12,7 @@ RUN apt-get update && \
 
 # --- Etapa 2: Construir a imagem final ---
 # Usamos a imagem base obrigatória do Dataflow para Python 3.11
-FROM gcr.io/dataflow-templates-base/python311-template-launcher-base:laster
+FROM gcr.io/dataflow-templates-base/python311-template-launcher-base
 
 # Manter como root para simplificar e garantir permissões durante o build e execução.
 USER root
@@ -29,6 +29,10 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 # O uso de ADD com URL é uma forma concisa de baixar e copiar o arquivo em um único passo.
 RUN mkdir -p /app/libs
 ADD https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/9.4.0/mysql-connector-j-9.4.0.jar /app/libs/
+# COPY drivers/mysql-connector-j-9.4.0.jar /app/libs/mysql-connector-j-9.4.0.jar
+
+RUN ls -l /app/libs/
+
 
 # Definir as variáveis de ambiente para o Flex Template
 ENV FLEX_TEMPLATE_PYTHON_PY_FILE=/app/main.py

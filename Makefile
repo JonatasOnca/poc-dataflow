@@ -89,15 +89,24 @@ upload-config:
 	gsutil cp config.yaml $(CONFIG_GCS_PATH)
 
 # Executa o job do Dataflow a partir do template
+# run-job: upload-config
+# 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
+# 	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-`date +%Y%m%d-%H%M%S`" \
+# 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
+# 		--project=$(PROJECT_ID) \
+# 		--region=$(REGION) \
+# 		--network=$(NETWORK) \
+# 		--subnetwork="regions/${REGION}/subnetworks/default" \
+# 		--service-account-email=${SERVICE_ACCOUNT_EMAIL} \
+# 		--parameters=config_file=$(CONFIG_GCS_PATH) \
+# 		--additional-experiments=jar_packages=/app/libs/mysql-connector-j-9.4.0.jar
+
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
 	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-`date +%Y%m%d-%H%M%S`" \
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
-		--network=$(NETWORK) \
-		--subnetwork="regions/${REGION}/subnetworks/default" \
-		--service-account-email=${SERVICE_ACCOUNT_EMAIL} \
 		--parameters=config_file=$(CONFIG_GCS_PATH) \
 		--additional-experiments=jar_packages=/app/libs/mysql-connector-j-9.4.0.jar
 
