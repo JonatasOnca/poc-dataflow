@@ -25,6 +25,7 @@ def build_table_pipeline(p, table_config, common_configs):
     # O código aqui continua funcionando perfeitamente, pois common_configs['map_functions']
     # receberá o dicionário MAP_FUNCTIONS importado.
     map_fn = common_configs['map_functions'][table_config['map_function']]
+    _query = load_query(table_config['query_file'])
     _schema = load_schema(table_config['schema_file'])
     
     table_spec = f"{common_configs['gcp_project']}:{common_configs['dataset']}.{table_name}"
@@ -43,6 +44,7 @@ def build_table_pipeline(p, table_config, common_configs):
             jdbc_url=common_configs['jdbc_url'],
             username=common_configs['db_creds']['user'],
             password=common_configs['db_creds']['password'],
+            query=_query,
             driver_jars='/app/drivers/mysql-connector-j-8.0.33.jar'
         )
     )
