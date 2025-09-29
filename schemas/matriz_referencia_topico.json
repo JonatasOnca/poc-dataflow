@@ -1,0 +1,51 @@
+[
+    {
+        "name": "MTO_ATIVO",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MTO_DT_ATUALIZACAO",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MTO_DT_CRIACAO",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MTO_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MTO_MAR_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MTO_NOME",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MTO_OLD_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    }
+]

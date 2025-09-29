@@ -1,0 +1,26 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+SELECT 
+    PRO_ATIVO,
+    PRO_AVATAR,
+    PRO_BAIRRO,
+    PRO_CEP,
+    PRO_CIDADE,
+    PRO_COMPLEMENTO,
+    PRO_DOCUMENTO,
+    PRO_DT_ATUALIZACAO,
+    PRO_DT_CRIACAO,
+    PRO_DT_NASC,
+    PRO_EMAIL,
+    PRO_ENDERECO,
+    PRO_FONE,
+    PRO_FOR_ID,
+    PRO_GEN_ID,
+    PRO_ID,
+    PRO_MUN_ID,
+    PRO_NOME,
+    PRO_NUMERO,
+    PRO_OLD_ID,
+    PRO_PEL_ID,
+    PRO_UF
+FROM Saev.professor

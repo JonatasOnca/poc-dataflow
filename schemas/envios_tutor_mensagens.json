@@ -1,0 +1,44 @@
+[
+    {
+        "name": "createdAt",
+        "mode": "",
+        "type": "DATETIME",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "id",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "statusEmail",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "statusWhatsapp",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "studentId",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "tutorMessageId",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    }
+]

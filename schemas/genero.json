@@ -1,0 +1,37 @@
+[
+    {
+        "name": "GEN_ATIVO",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "GEN_DT_ATUALIZACAO",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "GEN_DT_CRIACAO",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "GEN_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "GEN_NOME",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    }
+]

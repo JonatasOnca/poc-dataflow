@@ -1,0 +1,44 @@
+[
+    {
+        "name": "MEN_DT_ATUALIZACAO",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MEN_DT_CRIACAO",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MEN_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MEN_IS_DELETE",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "MEN_TEXT",
+        "mode": "",
+        "type": "STRING",
+        "description": "Campo destinado a informar o corpo da mensagem",
+        "fields": []
+    },
+    {
+        "name": "MEN_TITLE",
+        "mode": "",
+        "type": "STRING",
+        "description": "Campo destinado a informar o título da mensagem",
+        "fields": []
+    }
+]

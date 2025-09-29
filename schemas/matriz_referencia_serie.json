@@ -1,0 +1,16 @@
+[
+    {
+        "name": "MAR_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "SER_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    }
+]

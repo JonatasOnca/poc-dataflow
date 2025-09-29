@@ -1,0 +1,51 @@
+[
+    {
+        "name": "assessmentOnlineId",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "createdAt",
+        "mode": "",
+        "type": "DATETIME",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "id",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "image",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "order",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "title",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "updatedAt",
+        "mode": "",
+        "type": "DATETIME",
+        "description": "",
+        "fields": []
+    }
+]

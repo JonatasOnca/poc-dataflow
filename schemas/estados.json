@@ -1,0 +1,44 @@
+[
+    {
+        "name": "abbreviation",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "active",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "createdAt",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "id",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "name",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "updatedAt",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    }
+]

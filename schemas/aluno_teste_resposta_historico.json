@@ -1,0 +1,58 @@
+[
+    {
+        "name": "ATH_ALT_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "ATH_ATR_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "ATH_ATR_RESPOSTA_ANTIGA",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "ATH_ATR_RESPOSTA_NOVA",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "ATH_DT_CRIACAO",
+        "mode": "",
+        "type": "DATETIME",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "ATH_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "ATH_OPERACAO",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "ATH_TEG_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    }
+]

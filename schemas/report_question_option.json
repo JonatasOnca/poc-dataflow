@@ -1,111 +1,90 @@
 [
     {
-        "name": "bin",
+        "name": "createdAt",
+        "mode": "",
+        "type": "DATETIME",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "fluente",
         "mode": "",
         "type": "INTEGER",
         "description": "",
         "fields": []
     },
     {
-        "name": "cdsEnd",
+        "name": "frases",
         "mode": "",
         "type": "INTEGER",
         "description": "",
         "fields": []
     },
     {
-        "name": "cdsEndStat",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "cdsStart",
+        "name": "id",
         "mode": "",
         "type": "INTEGER",
         "description": "",
         "fields": []
     },
     {
-        "name": "cdsStartStat",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "chrom",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "exonCount",
+        "name": "nao_avaliado",
         "mode": "",
         "type": "INTEGER",
         "description": "",
         "fields": []
     },
     {
-        "name": "exonEnds",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "exonFrames",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "exonStarts",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "name",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "name2",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "score",
+        "name": "nao_fluente",
         "mode": "",
         "type": "INTEGER",
         "description": "",
         "fields": []
     },
     {
-        "name": "strand",
-        "mode": "",
-        "type": "STRING",
-        "description": "",
-        "fields": []
-    },
-    {
-        "name": "txEnd",
+        "name": "nao_informado",
         "mode": "",
         "type": "INTEGER",
         "description": "",
         "fields": []
     },
     {
-        "name": "txStart",
+        "name": "nao_leitor",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "option",
+        "mode": "",
+        "type": "STRING",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "palavras",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "reportQuestionId",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "silabas",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "totalCorrect",
         "mode": "",
         "type": "INTEGER",
         "description": "",

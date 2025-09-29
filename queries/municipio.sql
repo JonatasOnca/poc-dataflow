@@ -1,0 +1,29 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+SELECT 
+    MUN_ARQ_CONVENIO,
+    MUN_ATIVO,
+    MUN_BAIRRO,
+    MUN_CEP,
+    MUN_CIDADE,
+    MUN_COD_IBGE,
+    MUN_COMPARTILHAR_DADOS,
+    MUN_COMPLEMENTO,
+    MUN_DT_ATUALIZACAO,
+    MUN_DT_CRIACAO,
+    MUN_DT_FIM,
+    MUN_DT_INICIO,
+    MUN_ENDERECO,
+    MUN_ID,
+    MUN_LOGO,
+    MUN_MENSAGEM_EMAIL_ATIVO,
+    MUN_MENSAGEM_WHATSAPP_ATIVO,
+    MUN_NOME,
+    MUN_NUMERO,
+    MUN_OLD_ID,
+    MUN_PARCEIRO_EPV,
+    MUN_STATUS,
+    MUN_UF,
+    stateId,
+    stateRegionalId
+FROM Saev.municipio

@@ -1,0 +1,51 @@
+[
+    {
+        "name": "createdAt",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "endDate",
+        "mode": "",
+        "type": "DATE",
+        "description": "Campo destinado a quando o aluno saiu da turma",
+        "fields": []
+    },
+    {
+        "name": "id",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "schoolClassTURID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "startDate",
+        "mode": "",
+        "type": "DATE",
+        "description": "Campo destinado a quando o aluno entrou na turma",
+        "fields": []
+    },
+    {
+        "name": "studentALUID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "updatedAt",
+        "mode": "",
+        "type": "TIMESTAMP",
+        "description": "",
+        "fields": []
+    }
+]

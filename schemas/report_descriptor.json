@@ -1,0 +1,58 @@
+[
+    {
+        "name": "createdAt",
+        "mode": "",
+        "type": "DATETIME",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "descriptorMTIID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "id",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "reportEditionId",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "testTESID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "total",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "Campo destinado a informar quantidade de alunos",
+        "fields": []
+    },
+    {
+        "name": "totalCorrect",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "Campo destinado a informar a quantidade de alunos que acertaram",
+        "fields": []
+    },
+    {
+        "name": "updatedAt",
+        "mode": "",
+        "type": "DATETIME",
+        "description": "",
+        "fields": []
+    }
+]

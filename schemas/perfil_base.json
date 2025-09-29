@@ -1,27 +1,34 @@
 [
     {
-        "name": "ccds",
+        "name": "PER_ATIVO",
         "mode": "",
-        "type": "STRING",
+        "type": "INTEGER",
         "description": "",
         "fields": []
     },
     {
-        "name": "mrnaAcc",
+        "name": "PER_DT_ATUALIZACAO",
         "mode": "",
-        "type": "STRING",
+        "type": "TIMESTAMP",
         "description": "",
         "fields": []
     },
     {
-        "name": "protAcc",
+        "name": "PER_DT_CRIACAO",
         "mode": "",
-        "type": "STRING",
+        "type": "TIMESTAMP",
         "description": "",
         "fields": []
     },
     {
-        "name": "srcDb",
+        "name": "PER_ID",
+        "mode": "",
+        "type": "INTEGER",
+        "description": "",
+        "fields": []
+    },
+    {
+        "name": "PER_NOME",
         "mode": "",
         "type": "STRING",
         "description": "",
