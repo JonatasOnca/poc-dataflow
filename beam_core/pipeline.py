@@ -9,28 +9,11 @@ from transforms.data_validation import MapAndValidate, OutputTags
 from connectors.secret_manager import get_secret
 from utils.file_handler import load_schema, load_query
 
-def map_ccdsGene_to_dict(row):
-    """Mapeia uma linha da tabela 'ccdsGene' para um dicionário."""
-    return {
-        "bin": row.bin, "cdsEnd": row.cdsEnd, "cdsEndStat": row.cdsEndStat,
-        "cdsStart": row.cdsStart, "cdsStartStat": row.cdsStartStat,
-        "chrom": row.chrom, "exonCount": row.exonCount, "exonEnds": row.exonEnds,
-        "exonFrames": row.exonFrames, "exonStarts": row.exonStarts,
-        "name": row.name, "name2": row.name2, "score": row.score,
-        "strand": row.strand, "txEnd": row.txEnd, "txStart": row.txStart,
-    }
+# 1. Importe o dicionário do novo arquivo
+from mapping_functions import MAP_FUNCTIONS
 
-def map_ccdsInfo_to_dict(row):
-    """Mapeia uma linha da tabela 'ccdsInfo' para um dicionário."""
-    return {
-        "ccds": row.ccds, "mrnaAcc": row.mrnaAcc,
-        "protAcc": row.protAcc, "srcDb": row.srcDb,
-    }
+# 2. As definições das funções e do dicionário foram removidas daqui
 
-MAP_FUNCTIONS = {
-    "map_ccdsGene_to_dict": map_ccdsGene_to_dict,
-    "map_ccdsInfo_to_dict": map_ccdsInfo_to_dict,
-}
 
 def build_table_pipeline(p, table_config, common_configs):
     """
@@ -38,9 +21,11 @@ def build_table_pipeline(p, table_config, common_configs):
     Isso inclui leitura, validação (DLQ) e escrita no BigQuery.
     """
     table_name = table_config['name']
+    
+    # O código aqui continua funcionando perfeitamente, pois common_configs['map_functions']
+    # receberá o dicionário MAP_FUNCTIONS importado.
     map_fn = common_configs['map_functions'][table_config['map_function']]
     _schema = load_schema(table_config['schema_file'])
-    # _query = load_query(table_config['schema_file'])
     
     table_spec = f"{common_configs['gcp_project']}:{common_configs['dataset']}.{table_name}"
     error_table_spec = f"{common_configs['gcp_project']}:{common_configs['dataset']}.{table_name}_errors"
@@ -50,7 +35,6 @@ def build_table_pipeline(p, table_config, common_configs):
 
     logging.info(f"Passo 1: Ler do MySQL. A PCollection de entrada é a própria pipeline 'p': {table_name}")
 
-    # Passo 1: Ler do MySQL. A PCollection de entrada é a própria pipeline 'p'.
     source_data = (
         p
         | f'ReadFromMySQL_{table_name}' >> ReadFromJdbc(
@@ -59,14 +43,12 @@ def build_table_pipeline(p, table_config, common_configs):
             jdbc_url=common_configs['jdbc_url'],
             username=common_configs['db_creds']['user'],
             password=common_configs['db_creds']['password'],
-            # query=_query,
             driver_jars='/app/drivers/mysql-connector-j-8.0.33.jar'
         )
     )
     
     logging.info(f"Passo 2: Mapear e validar cada linha, separando sucesso de falha (DLQ): {table_name}")
 
-    # Passo 2: Mapear e validar cada linha, separando sucesso de falha (DLQ).
     processed_results = (
         source_data
         | f'MapAndValidate_{table_name}' >> beam.ParDo(MapAndValidate(map_fn)).with_outputs(
@@ -79,7 +61,6 @@ def build_table_pipeline(p, table_config, common_configs):
 
     logging.info(f"Passo 3: Escrever registros bem-sucedidos na tabela principal do BigQuery: {table_name}")
 
-    # Passo 3: Escrever registros bem-sucedidos na tabela principal do BigQuery.
     (
         successful_records
         | f'WriteToBigQuery_{table_name}' >> WriteToBigQuery(
@@ -92,7 +73,6 @@ def build_table_pipeline(p, table_config, common_configs):
 
     logging.info(f"Passo 4: Escrever registros com falha na tabela de erros do BigQuery: {table_name}")
 
-    # Passo 4: Escrever registros com falha na tabela de erros do BigQuery.
     (
         failed_records
         | f'WriteErrorsToBigQuery_{table_name}' >> WriteToBigQuery(
@@ -117,7 +97,6 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
     db_config = app_config['source_db']
     
     logging.info(f"1. Configurações e credenciais (feito uma vez)")
-    # 1. Configurações e credenciais (feito uma vez)
     db_creds = get_secret(gcp_config['project_id'], db_config['secret_id'])
     jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}?serverTimezone=UTC"
     
@@ -132,10 +111,8 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
     with beam.Pipeline(options=pipeline_options) as p:
         logging.info(f"2. Iterar sobre cada tabela e construir seu ramo no pipeline")
         
-        # 2. Iterar sobre cada tabela e construir seu ramo no pipeline
         for table_config in app_config['tables']:
             try:
-                # Valida se a função de mapeamento existe antes de construir o pipeline
                 map_function_name = table_config.get('map_function')
                 if not map_function_name or map_function_name not in MAP_FUNCTIONS:
                     raise ValueError(f"Função de mapeamento '{map_function_name}' não encontrada.")
@@ -143,7 +120,5 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
                 build_table_pipeline(p, table_config, common_configs)
 
             except Exception as e:
-                # Captura erros de CONFIGURAÇÃO (ex: arquivo de schema não encontrado, map_function inválida)
-                # para que uma tabela mal configurada não impeça as outras de serem processadas.
                 table_name = table_config.get('name', 'N/A')
                 logging.error(f"Falha ao construir o pipeline para a tabela '{table_name}': {e}")
