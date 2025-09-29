@@ -22,7 +22,7 @@ dataflow:
 
 # Credenciais do banco de dados de origem
 source_db:
-  secret_id: "dataflow-mysql-credentials-temp"
+  secret_id: "dataflow-mysql-credentials"
   secret_version: "latest"
 
 # Dataset de destino no BigQuery
@@ -30,14 +30,14 @@ destination_dataset: "bronze"
 
 # Lista de tabelas para ingestão
 tables:
-  - name: "ccdsGene"
-    query_file: "ccdsGene.sql"
-    schema_file: "ccdsGene.json"
+  - name: "genero"
+    query_file: "genero.sql"
+    schema_file: "genero.json"
     write_disposition: "WRITE_TRUNCATE"
-    map_function: "map_ccdsGene_to_dict"
+    map_function: "map_genero_to_dict"
 
-  - name: "ccdsInfo"
-    query_file: "ccdsInfo.sql"
-    schema_file: "ccdsInfo.json"
+  - name: "raca"
+    query_file: "raca.sql"
+    schema_file: "raca.json"
     write_disposition: "WRITE_TRUNCATE"
-    map_function: "map_ccdsInfo_to_dict"
+    map_function: "map_raca_to_dict"
