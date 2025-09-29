@@ -48,7 +48,7 @@ all: setup-gcp build-image build-template upload-config run-job
 # Cria o ambiente virtual
 cria-venv:
 	@echo "Cria o ambiente virtual criado"
-	python3.9 -m venv .venv
+	python3.11 -m venv .venv
 
 # Ativa o ambiente virtual e instala as dependências #WIP - Nao esta funcionando
 ativa-venv:	
@@ -124,10 +124,10 @@ test-local:
 	@echo "3. Sua rede local tem acesso ao banco de dados MySQL."
 	@echo "----------------------------------------------------"
 	
-	python3 utils/config_modifier.py config.yaml config.local.yaml
+	python utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-	python3 main.py --config_file config.local.yaml
+	python main.py --config_file config.local.yaml
 	
 # 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
 # 	@rm config.local.yaml

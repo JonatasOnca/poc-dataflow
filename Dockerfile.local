@@ -1,5 +1,5 @@
-# Usar uma imagem base oficial do Python que é multiplataforma (suporta ARM64 e AMD64)
-FROM python:3.9-slim
+# MUDOU: Atualizado para a imagem base Python 3.11, que também é multiplataforma
+FROM python:3.11-slim
 
 # Mudar para usuário root para poder instalar pacotes
 USER root

@@ -56,6 +56,7 @@ def build_table_pipeline(p, table_config, common_configs):
             jdbc_url=common_configs['jdbc_url'],
             username=common_configs['db_creds']['user'],
             password=common_configs['db_creds']['password'],
+            driver_jars='/app/drivers/mysql-connector-j.jar'
         )
     )
 
