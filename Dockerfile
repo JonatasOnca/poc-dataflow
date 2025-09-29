@@ -24,9 +24,11 @@ COPY --from=java-builder /usr/lib/jvm/ /usr/lib/jvm/
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-# --- REMOVIDO ---
-# A seção inteira de download do driver JDBC com wget e a configuração
-# do BEAM_JAVA_CLASSPATH foram removidas. O Beam cuidará disso automaticamente.
+# --- NOVO: Adicionar Driver JDBC do MySQL ---
+# Criamos um diretório para as bibliotecas e usamos ADD para baixar o JAR do MySQL diretamente do repositório Maven.
+# O uso de ADD com URL é uma forma concisa de baixar e copiar o arquivo em um único passo.
+RUN mkdir -p /app/libs
+ADD https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/9.4.0/mysql-connector-j-9.4.0.jar /app/libs/
 
 # Definir as variáveis de ambiente para o Flex Template
 ENV FLEX_TEMPLATE_PYTHON_PY_FILE=/app/main.py

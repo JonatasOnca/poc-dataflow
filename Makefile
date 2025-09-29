@@ -98,7 +98,8 @@ run-job: upload-config
 		--network=$(NETWORK) \
 		--subnetwork="regions/${REGION}/subnetworks/default" \
 		--service-account-email=${SERVICE_ACCOUNT_EMAIL} \
-		--parameters=config_file=$(CONFIG_GCS_PATH)
+		--parameters=config_file=$(CONFIG_GCS_PATH) \
+		--additional-experiments=jar_packages=/app/libs/mysql-connector-j-9.4.0.jar
 
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local:

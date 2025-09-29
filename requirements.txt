@@ -3,5 +3,6 @@ PyYAML
 google-cloud-secret-manager
 google-cloud-storage
 google-cloud-bigquery
+mysql-connector-python
 SQLAlchemy
 PyMySQL
