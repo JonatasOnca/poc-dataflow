@@ -5,6 +5,8 @@ get_config = python3 -c "import yaml; f=open('config.yaml'); d=yaml.safe_load(f)
 PROJECT_ID := $(shell $(call get_config,gcp,project_id))
 PROJECT_NUMBER := $(shell gcloud projects describe $(PROJECT_ID) --format='value(projectNumber)')
 REGION := $(shell $(call get_config,gcp,region))
+NETWORK := $(shell $(call get_config,gcp,network))
+SUBNETWORK := $(shell $(call get_config,gcp,subnetwork))
 BUCKET_NAME := $(shell $(call get_config,gcp,bucket_name))
 
 # Configurações do Artefact Registry
@@ -91,6 +93,8 @@ run-job: upload-config
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
+		--network=$(NETWORK) \
+		--subnetwork=$(SUBNETWORK) \
 		--parameters=config_file=$(CONFIG_GCS_PATH)
 
 # Executa o job do Dataflow a partir do template Localmente

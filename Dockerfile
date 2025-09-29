@@ -1,36 +1,25 @@
-# --- Etapa 1: Preparar o ambiente Java ---
-FROM python:3.9-slim AS java-builder
+# Usar uma imagem base oficial do Python que é multiplataforma (suporta ARM64 e AMD64)
+FROM python:3.9-slim
 
+# Mudar para usuário root para poder instalar pacotes
+USER root
+
+# Instalar o Java (JRE), que é necessário para o ReadFromJdbc
 RUN apt-get update && \
     apt-get install -y default-jre-headless && \
     apt-get clean
 
-
-# --- Etapa 2: Construir a imagem final ---
-FROM gcr.io/dataflow-templates-base/python39-template-launcher-base
-
-USER root
-
-# Copiar a instalação completa do Java da etapa 'java-builder'
-COPY --from=java-builder /usr/lib/jvm/ /usr/lib/jvm/
-
-# Definir as variáveis de ambiente para o Java
-ENV JAVA_HOME=/usr/lib/jvm/default-java
-ENV PATH=$JAVA_HOME/bin:$PATH
-
-# Definir as variáveis de ambiente obrigatórias para o Flex Template.
-ENV FLEX_TEMPLATE_PYTHON_PY_FILE=/app/main.py
-ENV FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE=/app/requirements.txt
-ENV FLEX_TEMPLATE_PYTHON_SETUP_FILE=/app/setup.py
-
-# Definir o diretório de trabalho.
+# Definir o diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos de dependência do Python.
+# Copiar os arquivos de dependência
 COPY requirements.txt setup.py ./
 
-# Instalar as dependências
+# Instalar as dependências do Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar o resto do código do projeto.
+# Copiar todo o código do projeto para a imagem
 COPY . .
+
+# Comando padrão (opcional, mas bom para clareza)
+CMD ["python", "main.py"]
