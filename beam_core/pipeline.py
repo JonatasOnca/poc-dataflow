@@ -48,6 +48,8 @@ def build_table_pipeline(p, table_config, common_configs):
 
     logging.info(f"Construindo ramo do pipeline para a tabela: {table_name}")
 
+    logging.info(f"Passo 1: Ler do MySQL. A PCollection de entrada é a própria pipeline 'p': {table_name}")
+
     # Passo 1: Ler do MySQL. A PCollection de entrada é a própria pipeline 'p'.
     source_data = (
         p
@@ -61,6 +63,8 @@ def build_table_pipeline(p, table_config, common_configs):
             driver_jars='/app/drivers/mysql-connector-j-8.0.33.jar'
         )
     )
+    
+    logging.info(f"Passo 2: Mapear e validar cada linha, separando sucesso de falha (DLQ): {table_name}")
 
     # Passo 2: Mapear e validar cada linha, separando sucesso de falha (DLQ).
     processed_results = (
@@ -73,6 +77,8 @@ def build_table_pipeline(p, table_config, common_configs):
     successful_records = processed_results[OutputTags.SUCCESS]
     failed_records = processed_results[OutputTags.FAILURE]
 
+    logging.info(f"Passo 3: Escrever registros bem-sucedidos na tabela principal do BigQuery: {table_name}")
+
     # Passo 3: Escrever registros bem-sucedidos na tabela principal do BigQuery.
     (
         successful_records
@@ -83,6 +89,8 @@ def build_table_pipeline(p, table_config, common_configs):
             write_disposition=write_disposition
         )
     )
+
+    logging.info(f"Passo 4: Escrever registros com falha na tabela de erros do BigQuery: {table_name}")
 
     # Passo 4: Escrever registros com falha na tabela de erros do BigQuery.
     (
@@ -108,6 +116,7 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
     gcp_config = app_config['gcp']
     db_config = app_config['source_db']
     
+    logging.info(f"1. Configurações e credenciais (feito uma vez)")
     # 1. Configurações e credenciais (feito uma vez)
     db_creds = get_secret(gcp_config['project_id'], db_config['secret_id'])
     jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}?serverTimezone=UTC"
@@ -121,6 +130,8 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
     }
     
     with beam.Pipeline(options=pipeline_options) as p:
+        logging.info(f"2. Iterar sobre cada tabela e construir seu ramo no pipeline")
+        
         # 2. Iterar sobre cada tabela e construir seu ramo no pipeline
         for table_config in app_config['tables']:
             try:
@@ -128,7 +139,7 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
                 map_function_name = table_config.get('map_function')
                 if not map_function_name or map_function_name not in MAP_FUNCTIONS:
                     raise ValueError(f"Função de mapeamento '{map_function_name}' não encontrada.")
-
+                
                 build_table_pipeline(p, table_config, common_configs)
 
             except Exception as e:

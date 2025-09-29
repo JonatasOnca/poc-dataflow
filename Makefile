@@ -116,7 +116,7 @@ upload-assets:
 # 		--subnetwork="regions/${REGION}/subnetworks/default" \
 # 		--service-account-email=${SERVICE_ACCOUNT_EMAIL} \
 # 		--parameters=config_file=$(CONFIG_GCS_PATH) \
-# 		--additional-experiments=jar_packages=/app/libs/mysql-connector.jar
+# 		--additional-experiments=jar_packages=/app/libs//mysql-connector-j-8.0.33.jar
 
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
@@ -125,7 +125,8 @@ run-job: upload-config
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
 		--parameters=config_file=$(CONFIG_GCS_PATH) \
-		--additional-experiments=jar_packages=/app/libs/mysql-connector.jar
+		--additional-experiments=jar_packages="/app/libs/mysql-connector-j-8.0.33.jar"
+# 		--parameters=driver_jars="/app/drivers/mysql-connector-j-8.0.33.jar"
 
 docker-test-amd-local:
 	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local.amd) ---"
