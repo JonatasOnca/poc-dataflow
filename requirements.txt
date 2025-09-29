@@ -1,8 +1,21 @@
-apache-beam[gcp]
-PyYAML
-google-cloud-secret-manager
-google-cloud-storage
-google-cloud-bigquery
-mysql-connector-python
-SQLAlchemy
-PyMySQL
+# ---- Core do Pipeline Dataflow ----
+# Versão base para garantir a compatibilidade com o runner do Google Cloud
+apache-beam[gcp]==2.58.0
+
+# ---- Bibliotecas Google Cloud ----
+# Versões compatíveis com o Beam 2.58.0 e entre si
+google-cloud-secret-manager==2.19.0
+google-cloud-storage==2.17.0
+google-cloud-bigquery==3.25.0
+
+# ---- Conexão com Banco de Dados MySQL ----
+# SQLAlchemy 2.x é o padrão moderno e altamente recomendado
+SQLAlchemy==2.0.30
+
+# Escolha UM dos drivers abaixo, dependendo da sua preferência
+mysql-connector-python==8.4.0
+PyMySQL==1.1.1
+
+# ---- Utilitários ----
+# Dependência comum e segura para manipulação de arquivos YAML
+PyYAML==6.0.1

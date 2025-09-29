@@ -12,7 +12,7 @@ RUN apt-get update && \
 
 # --- Etapa 2: Construir a imagem final ---
 # Usamos a imagem base obrigatória do Dataflow para Python 3.11
-FROM gcr.io/dataflow-templates-base/python311-template-launcher-base
+FROM gcr.io/dataflow-templates-base/python311-template-launcher-base:laster
 
 # Manter como root para simplificar e garantir permissões durante o build e execução.
 USER root
