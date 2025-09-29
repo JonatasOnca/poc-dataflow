@@ -116,7 +116,7 @@ upload-assets:
 # 		--subnetwork="regions/${REGION}/subnetworks/default" \
 # 		--service-account-email=${SERVICE_ACCOUNT_EMAIL} \
 # 		--parameters=config_file=$(CONFIG_GCS_PATH) \
-# 		--additional-experiments=jar_packages=/app/libs/mysql-connector-j-9.4.0.jar
+# 		--additional-experiments=jar_packages=/app/libs/mysql-connector.jar
 
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
@@ -125,14 +125,14 @@ run-job: upload-config
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
 		--parameters=config_file=$(CONFIG_GCS_PATH) \
-		--additional-experiments=jar_packages=/app/libs/mysql-connector-j-9.4.0.jar
+		--additional-experiments=jar_packages=/app/libs/mysql-connector.jar
 
 docker-test-amd-local:
 	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local.amd) ---"
 	# Usamos -f para especificar qual Dockerfile usar
 	@docker build --platform linux/amd64 -f Dockerfile.local.amd -t mysql-to-bq-local-amd-test .
 	@echo "\n--- Executando contêiner de teste localmente ---"
-	docker run --rm -it --platform linux/amd64 \
+	@docker run --rm -it --platform linux/amd64 \
       --network="host" \
 	  -v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
 	  -v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
