@@ -4,6 +4,8 @@ get_config = python3 -c "import yaml; f=open('config.yaml'); d=yaml.safe_load(f)
 # Configurações do GCP
 PROJECT_ID := $(shell $(call get_config,gcp,project_id))
 PROJECT_NUMBER := $(shell gcloud projects describe $(PROJECT_ID) --format='value(projectNumber)')
+SERVICE_ACCOUNT_EMAIL := "${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+
 REGION := $(shell $(call get_config,gcp,region))
 NETWORK := $(shell $(call get_config,gcp,network))
 SUBNETWORK := $(shell $(call get_config,gcp,subnetwork))
@@ -94,7 +96,8 @@ run-job: upload-config
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
 		--network=$(NETWORK) \
-		--subnetwork=$(SUBNETWORK) \
+		--subnetwork="regions/${REGION}/subnetworks/default" \
+		--service-account-email=${SERVICE_ACCOUNT_EMAIL} \
 		--parameters=config_file=$(CONFIG_GCS_PATH)
 
 # Executa o job do Dataflow a partir do template Localmente
