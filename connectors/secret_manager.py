@@ -1,6 +1,18 @@
 import json
 from google.cloud import secretmanager
 
+
+"""
+    Template do retorno esperado!
+{
+  "host": "host",
+  "port": 3306,
+  "user": "user",
+  "password": "password",
+  "database": "database"
+}
+
+"""
 def get_secret(project_id: str, secret_id: str, version_id: str = "latest") -> dict:
     """
     Acessa um segredo no Google Cloud Secret Manager e o retorna como um dicionário.
