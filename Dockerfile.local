@@ -1,33 +1,20 @@
-# MUDOU: Atualizado para a imagem base Python 3.11, que também é multiplataforma
+# Dockerfile
 FROM python:3.11-slim
 
-# Mudar para usuário root para poder instalar pacotes
-USER root
-
-# Instalar o Java (JRE), que é necessário para o ReadFromJdbc
-# Instalar o Java (JRE) e o wget
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      default-jre-headless \
-      wget \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir -p /app/drivers
-RUN wget -O /app/drivers/mysql-connector-j-8.0.33.jar \
-    https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar
-
-# Definir o diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos de dependência
-COPY requirements.txt setup.py ./
+# Instale o Java (necessário para o ReadFromJdbc do Beam)
+# CORREÇÃO: Usando openjdk-17, que está disponível na imagem base atual
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jre-headless && \
+    rm -rf /var/lib/apt/lists/*
 
-# Instalar as dependências do Python
+COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar todo o código do projeto para a imagem
 COPY . .
 
-# Comando padrão (opcional, mas bom para clareza)
+ENV GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json
+
 CMD ["python", "main.py"]

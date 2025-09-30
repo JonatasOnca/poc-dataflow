@@ -46,7 +46,7 @@ def build_table_pipeline(p, table_config, common_configs, app_config):
             jdbc_url=common_configs['jdbc_url'],
             username=common_configs['db_creds']['user'],
             password=common_configs['db_creds']['password'],
-            query=_query,
+            # query=_query,
             driver_jars=driver_jars
         )
     )

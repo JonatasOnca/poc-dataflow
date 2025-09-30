@@ -1,5 +1,2 @@
-# ---- Core do Pipeline Dataflow ----
-apache-beam[gcp]==2.68.0
-
-# ---- Bibliotecas Google Cloud ----
-google-cloud-secret-manager==2.24.0
+apache-beam[gcp]==2.57.0
+google-cloud-secret-manager==2.20.0
