@@ -8,6 +8,9 @@ artefact_registry:
   repository: dataflow-templates
   location: us-central1
   image_name: mysql-to-bq-dataflow-multiple-tables
+database:
+  driver_class_name: com.mysql.cj.jdbc.Driver
+  driver_jars: /app/drivers/mysql-connector-j-8.0.33.jar
 dataflow:
   job_name: test-mysql-to-bq-multiple-ingestion-local-job
   template_file_name: mysql-to-bq-dataflow-multiple-tables-template.json
