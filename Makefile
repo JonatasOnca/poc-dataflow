@@ -129,20 +129,6 @@ run-job: upload-config
 # 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar,/app/drivers/postgresql-42.2.16.jar"
 # 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar,/app/drivers/postgresql-42.2.16.jar,/app/beam_jars/beam-sdks-java-extensions-schemaio-expansion-service-2.68.0.jar"
 
-docker-test-amd-local:
-	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local.amd) ---"
-	# Usamos -f para especificar qual Dockerfile usar
-	@docker build --platform linux/amd64 -f Dockerfile.local.amd -t mysql-to-bq-local-amd-test .
-	@echo "\n--- Executando contêiner de teste localmente ---"
-	@docker run --rm -it --platform linux/amd64 \
-      --network="host" \
-	  -v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
-	  -v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
-	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
-	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
-	  mysql-to-bq-local-amd-test \
-	  python main.py --config_file /app/config.local.yaml
-
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local:
 	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local) ---"

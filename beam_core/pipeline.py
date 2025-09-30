@@ -15,13 +15,15 @@ from beam_core.mapping_functions import MAP_FUNCTIONS
 # 2. As definições das funções e do dicionário foram removidas daqui
 
 
-def build_table_pipeline(p, table_config, common_configs):
+def build_table_pipeline(p, table_config, common_configs, app_config):
     """
     Constrói e anexa um ramo do pipeline para processar uma única tabela.
     Isso inclui leitura, validação (DLQ) e escrita no BigQuery.
     """
     table_name = table_config['name']
-    
+    driver_class_name = app_config['database']['driver_class_name']
+    driver_jars = app_config['database']['driver_jars']
+
     # O código aqui continua funcionando perfeitamente, pois common_configs['map_functions']
     # receberá o dicionário MAP_FUNCTIONS importado.
     map_fn = common_configs['map_functions'][table_config['map_function']]
@@ -39,13 +41,13 @@ def build_table_pipeline(p, table_config, common_configs):
     source_data = (
         p
         | f'ReadFromMySQL_{table_name}' >> ReadFromJdbc(
+            driver_class_name=driver_class_name,
             table_name=table_name,
-            driver_class_name='com.mysql.cj.jdbc.Driver',
             jdbc_url=common_configs['jdbc_url'],
             username=common_configs['db_creds']['user'],
             password=common_configs['db_creds']['password'],
             query=_query,
-            driver_jars='/app/drivers/mysql-connector-j-8.0.33.jar'
+            driver_jars=driver_jars
         )
     )
     
@@ -119,7 +121,7 @@ def run(app_config: dict, pipeline_options: PipelineOptions):
                 if not map_function_name or map_function_name not in MAP_FUNCTIONS:
                     raise ValueError(f"Função de mapeamento '{map_function_name}' não encontrada.")
                 
-                build_table_pipeline(p, table_config, common_configs)
+                build_table_pipeline(p, table_config, common_configs, app_config)
 
             except Exception as e:
                 table_name = table_config.get('name', 'N/A')
