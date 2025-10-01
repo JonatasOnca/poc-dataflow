@@ -131,8 +131,8 @@ run-job: upload-config
 	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-`date +%Y%m%d-%H%M%S`" \
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
-		--region=$(REGION) \
-		--parameters=config_file=$(CONFIG_GCS_PATH) 
+		--region=$(REGION) 
+# 		--parameters=config_file=$(CONFIG_GCS_PATH) 
 # 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar"
 # 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar,/app/drivers/postgresql-42.2.16.jar"
 # 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar,/app/drivers/postgresql-42.2.16.jar,/app/beam_jars/beam-sdks-java-extensions-schemaio-expansion-service-2.68.0.jar"
