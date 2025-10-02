@@ -8,17 +8,9 @@ from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from google.cloud import secretmanager
+from utils.secret_manager import get_secret
 from utils.file_handler import load_schema, load_query
 
-def get_secret(project_id: str, secret_id: str, version_id: str = "latest") -> dict:
-    """
-    Acessa um segredo no Google Cloud Secret Manager e o retorna como um dicionário.
-    """
-    client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
-    response = client.access_secret_version(request={"name": name})
-    payload = response.payload.data.decode("UTF-8")
-    return json.loads(payload)
 
 def run():
     parser = argparse.ArgumentParser()
@@ -62,7 +54,6 @@ def run():
     )
     project_id = app_config['gcp']['project_id']
     bq_dataset = app_config['destination_dataset']
-    table_name = app_config['tables'][0]['name']
 
     for table in app_config['tables']:
         _query = load_query(table['query_file'])
