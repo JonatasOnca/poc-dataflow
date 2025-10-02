@@ -103,7 +103,10 @@ def run():
         job_name=app_config['dataflow']['job_name'],
         setup_file='./setup.py'
     )
-    # destination_dataset
+    project_id = app_config['gcp']['project_id']
+    bq_dataset = app_config['destination_dataset']
+    table_name = app_config['tables'][0]['name']
+
     logging.info("Executa a pipeline de ingestão.")
     with beam.Pipeline(options=pipeline_options) as pipeline:
         logging.info("1. Leitura do MySQL usando ReadFromJdbc")
@@ -119,10 +122,9 @@ def run():
 
         logging.info("2. Transformação para dicionários")
         dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
-
         logging.info("3. Escrita no BigQuery")
         dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
-            table=f'{app_config['gcp']['project_id']}:{app_config['destination_dataset']}.{app_config['tables'][0]['name']}',
+            table=f'{project_id}:{bq_dataset}.{table_name}',
             schema=BQ_SCHEMA,
             create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
             write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
