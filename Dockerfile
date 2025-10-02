@@ -27,4 +27,5 @@ ENV FLEX_TEMPLATE_PYTHON_PY_FILE=/app/main.py
 ENV FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE=/app/requirements.txt
 ENV FLEX_TEMPLATE_PYTHON_SETUP_FILE=/app/setup.py
 
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt

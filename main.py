@@ -11,8 +11,6 @@ from google.cloud import secretmanager
 
 
 # Configurações do BigQuery
-BQ_DATASET = 'bronze'
-BQ_TABLE = 'raca'
 BQ_QUERY = '''
     SELECT 
         CAST(PEL_ATIVO AS UNSIGNED) AS PEL_ATIVO, 
@@ -54,16 +52,6 @@ BQ_SCHEMA = {
             }
         ]
     }
-def map_raca_to_dict(row):
-    """Mapeia uma linha da tabela 'raca' para um dicionário."""
-    return {
-        "PEL_ATIVO": row.PEL_ATIVO,
-        "PEL_DT_ATUALIZACAO": row.PEL_DT_ATUALIZACAO,
-        "PEL_DT_CRIACAO": row.PEL_DT_CRIACAO,
-        "PEL_ID": row.PEL_ID,
-        "PEL_NOME": row.PEL_NOME,
-        "PEL_OLD_ID": row.PEL_OLD_ID,
-        }
 
 def get_secret(project_id: str, secret_id: str, version_id: str = "latest") -> dict:
     """
@@ -115,13 +103,13 @@ def run():
         job_name=app_config['dataflow']['job_name'],
         setup_file='./setup.py'
     )
-
+    # destination_dataset
     logging.info("Executa a pipeline de ingestão.")
     with beam.Pipeline(options=pipeline_options) as pipeline:
         logging.info("1. Leitura do MySQL usando ReadFromJdbc")
         dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
             driver_class_name=app_config['database']['driver_class_name'],
-            table_name=BQ_TABLE,
+            table_name=app_config['tables'][1]['name'],
             jdbc_url=JDBC_URL,
             username=DB_USER,
             password=DB_PASSWORD,
@@ -134,7 +122,7 @@ def run():
 
         logging.info("3. Escrita no BigQuery")
         dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
-            table=f'{app_config['gcp']['project_id']}:{BQ_DATASET}.{BQ_TABLE}',
+            table=f'{app_config['gcp']['project_id']}:{app_config['destination_dataset']}.{app_config['tables'][0]['name']}',
             schema=BQ_SCHEMA,
             create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
             write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
