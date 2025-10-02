@@ -8,50 +8,7 @@ from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from google.cloud import secretmanager
-
-
-# Configurações do BigQuery
-BQ_QUERY = '''
-    SELECT 
-        CAST(PEL_ATIVO AS UNSIGNED) AS PEL_ATIVO, 
-        CAST(PEL_ID AS SIGNED) AS PEL_ID, 
-        CAST(PEL_NOME AS CHAR) AS PEL_NOME, 
-        CAST(PEL_OLD_ID AS SIGNED) AS PEL_OLD_ID
-    FROM raca
-'''
-BQ_SCHEMA = {
-    'fields': 
-        [
-            {
-                "name": "PEL_ATIVO",
-                "mode": "",
-                "type": "INTEGER",
-                "description": "",
-                "fields": []
-            },
-            {
-                "name": "PEL_ID",
-                "mode": "",
-                "type": "INTEGER",
-                "description": "",
-                "fields": []
-            },
-            {
-                "name": "PEL_NOME",
-                "mode": "",
-                "type": "STRING",
-                "description": "",
-                "fields": []
-            },
-            {
-                "name": "PEL_OLD_ID",
-                "mode": "",
-                "type": "INTEGER",
-                "description": "",
-                "fields": []
-            }
-        ]
-    }
+from utils.file_handler import load_schema, load_query
 
 def get_secret(project_id: str, secret_id: str, version_id: str = "latest") -> dict:
     """
@@ -107,28 +64,31 @@ def run():
     bq_dataset = app_config['destination_dataset']
     table_name = app_config['tables'][0]['name']
 
-    logging.info("Executa a pipeline de ingestão.")
-    with beam.Pipeline(options=pipeline_options) as pipeline:
-        logging.info("1. Leitura do MySQL usando ReadFromJdbc")
-        dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
-            driver_class_name=app_config['database']['driver_class_name'],
-            table_name=app_config['tables'][1]['name'],
-            jdbc_url=JDBC_URL,
-            username=DB_USER,
-            password=DB_PASSWORD,
-            query=BQ_QUERY,
-            driver_jars=app_config['database']['driver_jars'],
-        )
+    for table in app_config['tables']:
+        _query = load_query(table['query_file'])
+        _schema = load_schema(table['schema_file'])
+        logging.info("Executa a pipeline de ingestão.")
+        with beam.Pipeline(options=pipeline_options) as pipeline:
+            logging.info("1. Leitura do MySQL usando ReadFromJdbc")
+            dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
+                driver_class_name=app_config['database']['driver_class_name'],
+                table_name=table['name'],
+                jdbc_url=JDBC_URL,
+                username=DB_USER,
+                password=DB_PASSWORD,
+                query=_query,
+                driver_jars=app_config['database']['driver_jars'],
+            )
 
-        logging.info("2. Transformação para dicionários")
-        dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
-        logging.info("3. Escrita no BigQuery")
-        dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
-            table=f'{project_id}:{bq_dataset}.{table_name}',
-            schema=BQ_SCHEMA,
-            create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-            write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
-        )
+            logging.info("2. Transformação para dicionários")
+            dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
+            logging.info("3. Escrita no BigQuery")
+            dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
+                table=f'{project_id}:{bq_dataset}.{table_name}',
+                schema=_schema,
+                create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
+            )
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
