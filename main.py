@@ -1,4 +1,3 @@
-import json
 import argparse
 import yaml
 
@@ -7,7 +6,6 @@ import apache_beam as beam
 from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
-from google.cloud import secretmanager
 from utils.secret_manager import get_secret
 from utils.file_handler import load_schema, load_query
 
@@ -54,32 +52,40 @@ def run():
     )
     project_id = app_config['gcp']['project_id']
     bq_dataset = app_config['destination_dataset']
-
+        
     for table in app_config['tables']:
-        _query = load_query(table['query_file'])
-        _schema = load_schema(table['schema_file'])
-        logging.info("Executa a pipeline de ingestão.")
-        with beam.Pipeline(options=pipeline_options) as pipeline:
-            logging.info("1. Leitura do MySQL usando ReadFromJdbc")
-            dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
-                driver_class_name=app_config['database']['driver_class_name'],
-                table_name=table['name'],
-                jdbc_url=JDBC_URL,
-                username=DB_USER,
-                password=DB_PASSWORD,
-                query=_query,
-                driver_jars=app_config['database']['driver_jars'],
-            )
+        try:
+            _query = load_query(table['query_file'])
+            _schema = load_schema(table['schema_file'])
+            _table_name = table.get('name', 'N/A')
+            logging.info("Executa a pipeline de ingestão.")
 
-            logging.info("2. Transformação para dicionários")
-            dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
-            logging.info("3. Escrita no BigQuery")
-            dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
-                table=f'{project_id}:{bq_dataset}.{table_name}',
-                schema=_schema,
-                create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
-            )
+            with beam.Pipeline(options=pipeline_options) as pipeline:
+                
+                logging.info("1. Leitura do MySQL usando ReadFromJdbc")
+                dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
+                    driver_class_name=app_config['database']['driver_class_name'],
+                    table_name=_table_name,
+                    jdbc_url=JDBC_URL,
+                    username=DB_USER,
+                    password=DB_PASSWORD,
+                    query=_query,
+                    driver_jars=app_config['database']['driver_jars'],
+                )
+
+                logging.info("2. Transformação para dicionários")
+                dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
+                
+                logging.info("3. Escrita no BigQuery")
+                dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
+                    table=f'{project_id}:{bq_dataset}.{_table_name}',
+                    schema=_schema,
+                    create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+                    write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
+                )
+
+        except Exception as e:
+            logging.error(f"Falha ao construir o pipeline para a tabela '{_table_name}': {e}")
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
