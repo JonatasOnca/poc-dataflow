@@ -14,15 +14,6 @@ RUN apt-get update && \
 RUN mkdir -p _drivers
 COPY _drivers/mysql-connector-j-8.0.33.jar _drivers/
 
-RUN mkdir -p queries
-COPY  queries/ queries/
-
-RUN mkdir -p schemas
-COPY schemas/ schemas/
-
-RUN mkdir -p utils
-COPY  utils/ utils/
-
 # Definir o diretório de trabalho
 WORKDIR /app
 
@@ -30,6 +21,15 @@ WORKDIR /app
 COPY main.py .
 COPY requirements.txt .
 COPY setup.py .
+
+RUN mkdir -p utils
+COPY  utils/ utils/
+
+RUN mkdir -p queries
+COPY  queries/ queries/
+
+RUN mkdir -p schemas
+COPY schemas/ schemas/
 
 # Definir as variáveis de ambiente para o Flex Template
 ENV FLEX_TEMPLATE_PYTHON_PY_FILE=/app/main.py

@@ -1,7 +1,7 @@
 --  Copyright 2025 TecOnca Data Solutions.
 
 SELECT 
-    GEN_ATIVO,
-    GEN_ID,
-    GEN_NOME
-FROM Saev.genero
+    CAST(GEN_ATIVO AS UNSIGNED) AS GEN_ATIVO, 
+    CAST(GEN_ID AS SIGNED) AS GEN_ID, 
+    CAST(GEN_NOME AS CHAR) AS GEN_NOME
+FROM genero
