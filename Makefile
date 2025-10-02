@@ -111,7 +111,7 @@ run-job: upload-config
 	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-`date +%Y%m%d-%H%M%S`" \
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
-		--region=$(REGION) 
+		--region=$(REGION) \
 		--parameters=config_file=$(CONFIG_GCS_PATH) 
 
 # Executa o job do Dataflow a partir do template Localmente

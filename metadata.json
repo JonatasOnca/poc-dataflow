@@ -1,9 +1,11 @@
 {
-  "containerSpec": {
-    "image": "mysql-to-bq-dataflow-multiple-tables",
-    "metadata": {
-      "name": "Pipeline de Teste Fixo - MySQL para BigQuery",
-      "description": "Um template para um teste único com variáveis fixas."
-    }
-  }
+    "name": "mysql-to-bq-dataflow-multiple-tables-ingestion",
+    "description": "Template flexível para ingestão MySQL -> BQ (múltiplas tabelas)",
+    "parameters": [
+        {
+            "name": "config_file",
+            "label": "Arquivo de Configuração",
+            "helpText": "Caminho GCS para o arquivo config.yaml"
+        }
+    ]
 }
