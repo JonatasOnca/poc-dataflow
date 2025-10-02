@@ -112,7 +112,7 @@ def run():
     
     # Opções da pipeline
     pipeline_options = PipelineOptions(
-        runner='DirectRunner',  # Use 'DataflowRunner' para executar no Google Cloud
+        runner='DataflowRunner',  # Use 'DataflowRunner' para executar no Google Cloud
         project=PROJECT_ID,
         region=REGION,
         temp_location=TEMP_LOCATION,
