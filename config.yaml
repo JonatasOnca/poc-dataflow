@@ -12,7 +12,7 @@ artefact_registry:
 
 database:
   driver_class_name: com.mysql.cj.jdbc.Driver
-  driver_jars: /app/drivers/mysql-connector-j-8.0.33.jar
+  driver_jars: _drivers/mysql-connector-j-8.0.33.jar
 
 dataflow:
   job_name: mysql-to-bq-dataflow-multiple-tables-ingestion 

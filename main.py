@@ -10,17 +10,6 @@ from apache_beam.io.jdbc import ReadFromJdbc
 from google.cloud import secretmanager
 
 
-# Configurações do Google Cloud
-PROJECT_ID = 'abemcomum-saev-prod'
-REGION = 'us-central1'
-SECRET_ID = 'dataflow-mysql-credentials'
-TEMP_LOCATION = 'gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/temp'
-
-# Configurações do MySQL
-JDBC_DRIVER_CLASS = 'com.mysql.cj.jdbc.Driver'
-JDBC_DRIVER_JAR = '_drivers/mysql-connector-j-8.0.33.jar'
-
-
 # Configurações do BigQuery
 BQ_DATASET = 'bronze'
 BQ_TABLE = 'raca'
@@ -103,7 +92,11 @@ def run():
 
     
     logging.info("Busca os dados de acesso ao Banco na Secrets")
-    db_creds = get_secret(PROJECT_ID, SECRET_ID, version_id=2)
+    db_creds = get_secret(
+        project_id=app_config['gcp']['project_id'], 
+        secret_id=app_config['source_db']['secret_id'], 
+        version_id=app_config['source_db']['secret_version']
+    )
     DB_HOST = db_creds['host']
     DB_NAME = db_creds['database']
     DB_USER = db_creds['user']
@@ -127,13 +120,13 @@ def run():
     with beam.Pipeline(options=pipeline_options) as pipeline:
         logging.info("1. Leitura do MySQL usando ReadFromJdbc")
         dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
-            driver_class_name=JDBC_DRIVER_CLASS,
+            driver_class_name=app_config['database']['driver_class_name'],
             table_name=BQ_TABLE,
             jdbc_url=JDBC_URL,
             username=DB_USER,
             password=DB_PASSWORD,
             query=BQ_QUERY,
-            driver_jars=JDBC_DRIVER_JAR,
+            driver_jars=app_config['database']['driver_jars'],
         )
 
         logging.info("2. Transformação para dicionários")
@@ -141,7 +134,7 @@ def run():
 
         logging.info("3. Escrita no BigQuery")
         dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
-            table=f'{PROJECT_ID}:{BQ_DATASET}.{BQ_TABLE}',
+            table=f'{app_config['gcp']['project_id']}:{BQ_DATASET}.{BQ_TABLE}',
             schema=BQ_SCHEMA,
             create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
             write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
