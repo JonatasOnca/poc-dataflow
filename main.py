@@ -1,5 +1,10 @@
 import json
+import argparse
+import yaml
+
+import logging
 import apache_beam as beam
+from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from google.cloud import secretmanager
@@ -9,12 +14,11 @@ from google.cloud import secretmanager
 PROJECT_ID = 'abemcomum-saev-prod'
 REGION = 'us-central1'
 SECRET_ID = 'dataflow-mysql-credentials'
-# SECRET_ID = 'dataflow-mysql-credentials-temp'
 TEMP_LOCATION = 'gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/temp'
 
 # Configurações do MySQL
-JDBC_DRIVER_JAR = '_drivers/mysql-connector-j-8.0.33.jar'
 JDBC_DRIVER_CLASS = 'com.mysql.cj.jdbc.Driver'
+JDBC_DRIVER_JAR = '_drivers/mysql-connector-j-8.0.33.jar'
 
 
 # Configurações do BigQuery
@@ -23,8 +27,6 @@ BQ_TABLE = 'raca'
 BQ_QUERY = '''
     SELECT 
         CAST(PEL_ATIVO AS UNSIGNED) AS PEL_ATIVO, 
-        # CAST(PEL_DT_ATUALIZACAO AS DATETIME) AS PEL_DT_ATUALIZACAO, 
-        # CAST(PEL_DT_CRIACAO AS DATETIME) AS PEL_DT_CRIACAO, 
         CAST(PEL_ID AS SIGNED) AS PEL_ID, 
         CAST(PEL_NOME AS CHAR) AS PEL_NOME, 
         CAST(PEL_OLD_ID AS SIGNED) AS PEL_OLD_ID
@@ -40,20 +42,6 @@ BQ_SCHEMA = {
                 "description": "",
                 "fields": []
             },
-            # {
-            #     "name": "PEL_DT_ATUALIZACAO",
-            #     "mode": "",
-            #     "type": "TIMESTAMP",
-            #     "description": "",
-            #     "fields": []
-            # },
-            # {
-            #     "name": "PEL_DT_CRIACAO",
-            #     "mode": "",
-            #     "type": "TIMESTAMP",
-            #     "description": "",
-            #     "fields": []
-            # },
             {
                 "name": "PEL_ID",
                 "mode": "",
@@ -99,28 +87,39 @@ def get_secret(project_id: str, secret_id: str, version_id: str = "latest") -> d
     return json.loads(payload)
 
 def run():
-    """Executa a pipeline de ingestão."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--config_file',
+        required=True,
+        help='Caminho para o arquivo de configuração YAML.'
+    )
+    known_args, pipeline_args = parser.parse_known_args()
 
+    logging.info("Le o YAML de com as configuraçoes")
+    with FileSystems.open(known_args.config_file) as f:
+        app_config = yaml.safe_load(f)
+
+    """"""
+    logging.info("Busca os dados de acesso ao Banco na Secrets")
     db_creds = get_secret(PROJECT_ID, SECRET_ID, version_id=2)
     DB_HOST = db_creds['host']
     DB_NAME = db_creds['database']
     DB_USER = db_creds['user']
     DB_PASSWORD = db_creds['password']
     DB_PORT = db_creds['port']
-    # JDBC_URL = f"jdbc:mysql://{DB_HOST}:{DB_PORT}/{DB_NAME}?serverTimezone=UTC"
     JDBC_URL = f"jdbc:mysql://{DB_HOST}:{DB_PORT}/{DB_NAME}"
     
-    # Opções da pipeline
+    logging.info("Configura as opções da pipeline")
     pipeline_options = PipelineOptions(
-        runner='DataflowRunner',  # Use 'DataflowRunner' para executar no Google Cloud
+        runner='DataflowRunner', 
         project=PROJECT_ID,
         region=REGION,
         temp_location=TEMP_LOCATION,
         job_name='mysql-para-bq-ingestao'
     )
-
+    logging.info("Executa a pipeline de ingestão.")
     with beam.Pipeline(options=pipeline_options) as pipeline:
-        # 1. Leitura do MySQL usando ReadFromJdbc
+        logging.info("1. Leitura do MySQL usando ReadFromJdbc")
         dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
             driver_class_name=JDBC_DRIVER_CLASS,
             table_name=BQ_TABLE,
@@ -131,11 +130,10 @@ def run():
             driver_jars=JDBC_DRIVER_JAR,
         )
 
-        # 2. Transformação para dicionários
+        logging.info("2. Transformação para dicionários")
         dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
 
-
-        # 3. Escrita no BigQuery
+        logging.info("3. Escrita no BigQuery")
         dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
             table=f'{PROJECT_ID}:{BQ_DATASET}.{BQ_TABLE}',
             schema=BQ_SCHEMA,
@@ -144,4 +142,5 @@ def run():
         )
 
 if __name__ == '__main__':
+    logging.getLogger().setLevel(logging.INFO)
     run()

@@ -88,13 +88,8 @@ build-template: metadata.json
 	@gcloud dataflow flex-template build $(TEMPLATE_PATH) \
 		--image "$(IMAGE_URI)" \
 		--sdk-language "PYTHON" \
-		--project=$(PROJECT_ID)
-		
-# 		--metadata-file "metadata.json" \
-
-# 		--network="default" \
-# 		--subnetwork="regions/us-central1/subnetworks/default" \
-# 		--disable-public-ips \
+		--project=$(PROJECT_ID) \
+ 		--metadata-file "metadata.json"
 
 # Envia o arquivo de configuração para o GCS
 upload-config:
