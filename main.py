@@ -99,7 +99,9 @@ def run():
     with FileSystems.open(known_args.config_file) as f:
         app_config = yaml.safe_load(f)
 
-    """"""
+    logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
+
+    
     logging.info("Busca os dados de acesso ao Banco na Secrets")
     db_creds = get_secret(PROJECT_ID, SECRET_ID, version_id=2)
     DB_HOST = db_creds['host']
@@ -111,12 +113,16 @@ def run():
     
     logging.info("Configura as opções da pipeline")
     pipeline_options = PipelineOptions(
-        runner='DataflowRunner', 
-        project=PROJECT_ID,
-        region=REGION,
-        temp_location=TEMP_LOCATION,
-        job_name='mysql-para-bq-ingestao'
+        pipeline_args,
+        runner=app_config['dataflow']['parameters']['runner'],
+        project=app_config['gcp']['project_id'],
+        region=app_config['gcp']['region'],
+        staging_location=app_config['dataflow']['parameters']['staging_location'],
+        temp_location=app_config['dataflow']['parameters']['temp_location'],
+        job_name=app_config['dataflow']['job_name'],
+        setup_file='./setup.py'
     )
+
     logging.info("Executa a pipeline de ingestão.")
     with beam.Pipeline(options=pipeline_options) as pipeline:
         logging.info("1. Leitura do MySQL usando ReadFromJdbc")
