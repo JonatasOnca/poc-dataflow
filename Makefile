@@ -32,9 +32,9 @@ QUERIES_GCS_PATH := $(GCS_BASE_PATH)/queries/
 SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 
 # Comandos do Makefile
-.PHONY: all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
+.PHONY: sa all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
 
-SA:
+sa:
 	@echo "---------------------------------------"
 	@echo "------------ACESSSOS--------------------"
 	@echo "---------------------------------------"
@@ -49,6 +49,7 @@ SA:
 	@echo "A conta de serviço que precisa de permissões é:"
 	@echo "${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 	@echo "---------------------------------------"
+
 # O alvo 'all' é para o deploy completo na nuvem
 all: setup-gcp build-image build-template upload-config upload-assets run-job
 
@@ -87,13 +88,10 @@ build-template: metadata.json
 	@gcloud dataflow flex-template build $(TEMPLATE_PATH) \
 		--image "$(IMAGE_URI)" \
 		--sdk-language "PYTHON" \
-		--network="default" \
-		--subnetwork="regions/us-central1/subnetworks/default" \
-		--disable-public-ips \
 		--project=$(PROJECT_ID)
 		
 # 		--metadata-file "metadata.json" \
-# 		--project=$(PROJECT_ID)
+
 # 		--network="default" \
 # 		--subnetwork="regions/us-central1/subnetworks/default" \
 # 		--disable-public-ips \
@@ -109,22 +107,9 @@ upload-config:
 upload-assets:
 	@echo ">>> Sincronizando pastas de assets para o bucket '$(BUCKET_NAME)'..."
 	gcloud config set project $(PROJECT_ID)
-	gsutil -m rsync -r $(QUERIES_LOCAL_PATH) $(QUERIES_GCS_PATH)
-	gsutil -m rsync -r $(SCHEMAS_LOCAL_PATH) $(SCHEMAS_GCS_PATH)
+# 	gsutil -m rsync -r $(QUERIES_LOCAL_PATH) $(QUERIES_GCS_PATH)
+# 	gsutil -m rsync -r $(SCHEMAS_LOCAL_PATH) $(SCHEMAS_GCS_PATH)
 	@echo ">>> Sincronizando! '$(BUCKET_NAME)'..."
-
-# Executa o job do Dataflow a partir do template
-# run-job: upload-config
-# 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
-# 	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-`date +%Y%m%d-%H%M%S`" \
-# 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
-# 		--project=$(PROJECT_ID) \
-# 		--region=$(REGION) \
-# 		--network=$(NETWORK) \
-# 		--subnetwork="regions/${REGION}/subnetworks/default" \
-# 		--service-account-email=${SERVICE_ACCOUNT_EMAIL} \
-# 		--parameters=config_file=$(CONFIG_GCS_PATH) \
-# 		--additional-experiments=jar_packages=/app/libs//mysql-connector-j-8.0.33.jar
 
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
@@ -132,16 +117,13 @@ run-job: upload-config
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) 
-# 		--parameters=config_file=$(CONFIG_GCS_PATH) 
-# 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar"
-# 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar,/app/drivers/postgresql-42.2.16.jar"
-# 		--additional-experiments=extra_packages="/app/drivers/mysql-connector-j-8.0.33.jar,/app/drivers/postgresql-42.2.16.jar,/app/beam_jars/beam-sdks-java-extensions-schemaio-expansion-service-2.68.0.jar"
+		--parameters=config_file=$(CONFIG_GCS_PATH) 
 
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local:
 	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local) ---"
 	# Usamos -f para especificar qual Dockerfile usar
-	@docker build -f Dockerfile.local -t mysql-to-bq-local-test .
+	@docker buildx build --platform linux/amd64 -f Dockerfile.local -t mysql-to-bq-local-test . --load
 	@echo "\n--- Executando contêiner de teste localmente ---"
 	@docker run --rm -it \
 	  --network="host" \
@@ -150,22 +132,23 @@ docker-test-local:
 	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
 	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
 	  mysql-to-bq-local-test \
-	  python main.py --config_file /app/config.local.yaml
+	  python main.py
 
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local-m1:
 	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local) ---"
 	# Usamos -f para especificar qual Dockerfile usar
-	@docker build -f Dockerfile.local.m1 -t mysql-to-bq-local-test .
+	@docker buildx build --platform linux/amd64 -f Dockerfile.local.m1 -t mysql-to-bq-local-test . --load
 	@echo "\n--- Executando contêiner de teste localmente ---"
-	@docker run --rm -it \
-	  --network="host" \
-	  -v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
-	  -v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
-	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
-	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
-	  mysql-to-bq-local-test \
-	  python main.py --config_file /app/config.local.yaml
+	@docker run -it --rm \
+  		--platform linux/amd64 \
+		--network="host" \
+		-v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
+		-v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
+		-e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
+		-e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
+		mysql-to-bq-local-test \
+		python main.py 
 
 # Executa o job do Dataflow localmente
 test-local:
