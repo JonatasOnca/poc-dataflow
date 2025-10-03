@@ -42,21 +42,28 @@ def run():
         runner=app_config['dataflow']['parameters']['runner'],
         project=app_config['gcp']['project_id'],
         region=app_config['gcp']['region'],
+
         staging_location=app_config['dataflow']['parameters']['staging_location'],
         temp_location=app_config['dataflow']['parameters']['temp_location'],
+        queries_location=app_config['dataflow']['parameters']['queries'],
+        schemas_location=app_config['dataflow']['parameters']['schemas'],
+
         job_name=app_config['dataflow']['job_name'],
         setup_file='./setup.py'
     )
     project_id = app_config['gcp']['project_id']
     bq_dataset = app_config['destination_dataset']
-        
+
+    queries_location = app_config['dataflow']['parameters']['queries']
+    schemas_location = app_config['dataflow']['parameters']['schemas']
+
     for table in app_config['tables']:
         try:
-            _query = load_query(table['query_file'])
-            _schema = load_schema(table['schema_file'])
+            _query = load_query(f'{queries_location}/{table['query_file']}')
+            _schema = load_schema(f'{schemas_location}/{table['schema_file']}')
             _table_name = table.get('name', 'N/A')
             logging.info("Executa a pipeline de ingestão.")
-
+            
             with beam.Pipeline(options=pipeline_options) as pipeline:
                 
                 logging.info("1. Leitura do MySQL usando ReadFromJdbc")

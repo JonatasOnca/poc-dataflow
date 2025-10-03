@@ -15,12 +15,14 @@ database:
   driver_jars: _drivers/mysql-connector-j-8.0.33.jar
 
 dataflow:
-  job_name: mysql-to-bq-dataflow-multiple-tables-ingestion 
-  template_file_name: mysql-to-bq-dataflow-multiple-tables-template.json
+  job_name: '{{ artefact_registry.image_name }}-ingestion'
+  template_file_name: '{{ artefact_registry.image_name }}-template.json'
   parameters:
     sdk_container_image: ''
-    temp_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/temp
-    staging_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/staging
+    temp_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/temp'
+    staging_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/staging'
+    queries_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/queries'
+    schemas_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/schemas'
     machine_type: n1-standard-1
     runner: DataflowRunner
 

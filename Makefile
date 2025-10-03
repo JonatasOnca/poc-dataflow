@@ -102,8 +102,8 @@ upload-config:
 upload-assets:
 	@echo ">>> Sincronizando pastas de assets para o bucket '$(BUCKET_NAME)'..."
 	gcloud config set project $(PROJECT_ID)
-# 	gsutil -m rsync -r $(QUERIES_LOCAL_PATH) $(QUERIES_GCS_PATH)
-# 	gsutil -m rsync -r $(SCHEMAS_LOCAL_PATH) $(SCHEMAS_GCS_PATH)
+	gsutil -m rsync -r $(QUERIES_LOCAL_PATH) $(QUERIES_GCS_PATH)
+	gsutil -m rsync -r $(SCHEMAS_LOCAL_PATH) $(SCHEMAS_GCS_PATH)
 	@echo ">>> Sincronizando! '$(BUCKET_NAME)'..."
 
 run-job: upload-config
