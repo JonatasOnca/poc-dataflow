@@ -7,7 +7,7 @@ from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from utils.secret_manager import get_secret
-from utils.file_handler import load_schema, load_query
+from utils.file_handler import load_yaml, load_schema, load_query
 
 
 def run():
@@ -20,12 +20,9 @@ def run():
     known_args, pipeline_args = parser.parse_known_args()
 
     logging.info("Le o YAML de com as configuraçoes")
-    with FileSystems.open(known_args.config_file) as f:
-        app_config = yaml.safe_load(f)
+    app_config =  load_yaml(known_args.config_file)
 
     logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
-
-    
     logging.info("Busca os dados de acesso ao Banco na Secrets")
     db_creds = get_secret(
         project_id=app_config['gcp']['project_id'], 
