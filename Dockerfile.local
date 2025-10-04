@@ -8,7 +8,7 @@ FROM python:3.11-slim-bookworm
 # ------------------------------------------------------------------
 # Metadados da Imagem
 # ------------------------------------------------------------------
-LABEL maintainer="seu-nome <seu-email@exemplo.com>"
+LABEL maintainer="Jonatas Onca <jonatas.onca@teconca.com>"
 LABEL description="Imagem customizada para Dataflow Flex Template com base no Python 3.11."
 
 # ------------------------------------------------------------------
@@ -34,15 +34,6 @@ WORKDIR /app
 # Copia os arquivos de dependência primeiro para otimizar o cache do Docker
 COPY requirements.txt .
 
-# A imagem do Dataflow tem um script de lançamento. Ao usar uma imagem customizada,
-# o Apache Beam (instalado via pip) se encarregará de fornecer os pontos de entrada
-# necessários. Garantimos que o `apache-beam[gcp]` esteja no requirements.txt.
-#
-# Exemplo de requirements.txt:
-# apache-beam[gcp]==2.51.0
-# mysql-connector-python==8.x.x
-# ... outras dependências ...
-#
 RUN pip install --no-cache-dir -r requirements.txt
 
 # ------------------------------------------------------------------
@@ -67,14 +58,4 @@ ENV FLEX_TEMPLATE_PYTHON_PY_FILE=/app/main.py
 ENV FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE=/app/requirements.txt
 ENV FLEX_TEMPLATE_PYTHON_SETUP_FILE=/app/setup.py
 
-# ------------------------------------------------------------------
-# Ponto de Entrada (Entrypoint)
-# Ao contrário da imagem base do Google, esta não tem um entrypoint pré-configurado.
-# O serviço Dataflow irá sobrescrever o entrypoint ao iniciar o job,
-# mas definir um pode ser útil para depuração. O Beam SDK inclui um
-# entrypoint que pode ser usado.
-# A documentação sugere que o serviço de template vai invocar o setup.py
-# ou o arquivo principal diretamente. Não precisamos definir um entrypoint customizado.
-# O serviço do Dataflow sabe como iniciar o pipeline Python.
-# ------------------------------------------------------------------
 # ENTRYPOINT ["python3", "/app/main.py"] # Descomente apenas para testes locais específicos.

@@ -125,10 +125,6 @@ def run():
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
 
-        # start_signal = pipeline | 'Start Pipeline' >> beam.Create([
-        #     {'status': 'started', 'start_timestamp': int(time.time())}
-        # ])
-
         for table_name in TABLE_LIST:
             for table in app_config['tables']:
                 try:
@@ -158,28 +154,14 @@ def run():
                 | f'Convert {table_name} to Dict' >> beam.Map(lambda row: row._asdict())
             )
 
-            # --- ALTERAÇÃO: Aplicando a transformação usando o novo DoFn com Side Input ---
             transformed_data = (
                 rows
                 | f'Transform {table_name}' >> beam.ParDo(
                     TransformWithSideInputDoFn(transform_function),
-                    # Passa o 'start_signal' como uma entrada lateral.
-                    # AsSingleton trata a PCollection como um único valor a ser compartilhado.
-                    # start_signal_info=AsSingleton(start_signal)
                 )
             )
-
-            # Filtragem e Escrita continuam iguais, mas agora partem do dado transformado
-            final_flow = transformed_data
-            # if table_name == 'pedidos':
-            #     final_flow = (
-            #         transformed_data
-            #         | f'Filter {table_name}' >> beam.Filter(
-            #             lambda row: row.get('status') in ["CONCLUIDO", "ENVIADO"]
-            #         )
-            #     )
-
-            (final_flow
+            
+            (transformed_data
                 | f'Write {table_name} to BigQuery' >> beam.io.WriteToBigQuery(
                     table=f'{project_id}:{bq_dataset}.{table_name}',
                     schema=_schema,
