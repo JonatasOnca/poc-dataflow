@@ -161,22 +161,6 @@ docker-test-local:
 	  mysql-to-bq-local-test \
 	  python main.py --config_file /app/config.local.yaml
 
-# Executa o job do Dataflow a partir do template Localmente
-docker-test-local-m1:
-	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local) ---"
-	# Usamos -f para especificar qual Dockerfile usar
-	@docker buildx build --platform linux/amd64 -f Dockerfile.local.m1 -t mysql-to-bq-local-test . --load
-	@echo "\n--- Executando contêiner de teste localmente ---"
-	@docker run -it --rm \
-  		--platform linux/amd64 \
-		--network="host" \
-		-v "$(CURDIR)/config.local.yaml:/app/config.local.yaml:ro" \
-		-v "$(HOME)/.config/gcloud/application_default_credentials.json:/gcp/creds.json:ro" \
-		-e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
-		-e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
-		mysql-to-bq-local-test \
-		python main.py 
-
 # Executa o job do Dataflow localmente
 test-local:
 	@echo "--- Iniciando Teste Local com DirectRunner ---"
