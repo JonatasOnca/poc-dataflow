@@ -33,7 +33,7 @@ class TransformWithSideInputDoFn(beam.DoFn):
     def __init__(self, transform_fn):
         self._transform_fn = transform_fn
 
-    def process(self, element, start_signal_info):
+    def process(self, element):
         # 'element' é o registro principal (a linha da tabela)
         # 'start_signal_info' é o dado vindo do passo "Start"
         

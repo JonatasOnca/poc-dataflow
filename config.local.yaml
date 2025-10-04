@@ -4,18 +4,15 @@ gcp:
   network: default
   subnetwork: default
   bucket_name: gs://abemcomum-saev-prod
-
 artefact_registry:
   repository: dataflow-templates
   location: us-central1
   image_name: mysql-to-bq-dataflow-multiple-tables
-
 database:
   driver_class_name: com.mysql.cj.jdbc.Driver
   driver_jars: _drivers/mysql-connector-j-8.0.33.jar
-
 dataflow:
-  job_name: '{{ artefact_registry.image_name }}-ingestion'
+  job_name: test-mysql-to-bq-multiple-ingestion-local-job
   template_file_name: '{{ artefact_registry.image_name }}-template.json'
   parameters:
     sdk_container_image: ''
@@ -25,37 +22,32 @@ dataflow:
     schemas_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/schemas'
     machine_type: n1-standard-1
     runner: DirectRunner
-
-# Credenciais do banco de dados de origem
 source_db:
   secret_id: dataflow-mysql-credentials
-  secret_version: latest
-
-# Dataset de destino no BigQuery
+  secret_version: 1
 landing_zone_dataset: landing_zone
 bronze_dataset: bronze
 silver_dataset: silver
 gold_dataset: gold
-
-# Lista de tabelas para ingestão
 tables:
-  - name: genero
-    query_file: genero.sql
-    schema_file: genero.json
-    write_disposition: WRITE_TRUNCATE
-    map_function: map_genero_to_dict
-
-  - name: raca
-    query_file: raca.sql
-    schema_file: raca.json
-    write_disposition: WRITE_TRUNCATE
-    map_function: map_raca_to_dict
-
-# Chunks de tabelas para ingestão
+- name: genero
+  query_file: genero.sql
+  schema_file: genero.json
+  write_disposition: WRITE_TRUNCATE
+  map_function: map_genero_to_dict
+- name: raca
+  query_file: raca.sql
+  schema_file: raca.json
+  write_disposition: WRITE_TRUNCATE
+  map_function: map_raca_to_dict
 chunks:
-  - name: ALL
-    lista: [genero, raca]
-  - name: genero
-    lista: [genero]
-  - name: raca
-    lista: [raca]
+- name: ALL
+  lista:
+  - genero
+  - raca
+- name: genero
+  lista:
+  - genero
+- name: raca
+  lista:
+  - raca
