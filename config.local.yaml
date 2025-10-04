@@ -41,14 +41,14 @@ tables:
   write_disposition: WRITE_TRUNCATE
   map_function: map_genero_to_dict
   watermark_column: GEN_DT_ATUALIZACAO
-  landing_zone_gcs_path_table: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/landing_zone/genero
+  landing_zone_gcs_path_table: gs://abemcomum-saev-prod/landing_zone/genero
 - name: raca
   query_file: raca.sql
   schema_file: raca.json
   write_disposition: WRITE_TRUNCATE
   map_function: map_raca_to_dict
   watermark_column: PEL_DT_ATUALIZACAO
-  landing_zone_gcs_path_table: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/landing_zone/raca
+  landing_zone_gcs_path_table: gs://abemcomum-saev-prod/landing_zone/raca
 chunks:
 - name: ALL
   lista:
