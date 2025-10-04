@@ -127,7 +127,7 @@ build-template: metadata.json
 upload-config:
 	@echo "Enviando config.yaml para $(CONFIG_GCS_PATH)..."
 	@gcloud config set project $(PROJECT_ID)
-	@gsutil -m rsync -r -d config.yaml $(CONFIG_GCS_PATH)
+	@gsutil cp config.yaml $(CONFIG_GCS_PATH)
 	@echo ">>> Sincronizando! '$(CONFIG_GCS_PATH)'..."
 
 # Envia os arquivos de assets (SQL, JSON) para o GCS.
