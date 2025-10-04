@@ -50,3 +50,14 @@ tables:
     schema_file: raca.json
     write_disposition: WRITE_TRUNCATE
     map_function: map_raca_to_dict
+
+# Chunks de tabelas para ingestão
+chunks:
+  - name: ALL
+    lista: [genero, raca]
+  - name: genero
+    lista: [genero]
+  - name: raca
+    lista: [raca]
+
+

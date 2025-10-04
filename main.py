@@ -10,7 +10,7 @@ from utils.secret_manager import get_secret
 from utils.file_handler import load_yaml, load_schema, load_query
 
 
-def run(argv=None):
+def run():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--config_file',
@@ -24,10 +24,20 @@ def run(argv=None):
         type=str,
         help='Chunk a ser executado'
     )
+    parser.add_argument(
+        '--table_name', 
+        required=False,
+        default=None,
+        type=str, 
+        help='Nome da tabela no banco de dados',
+    )
+
     known_args, pipeline_args = parser.parse_known_args()
 
     logging.info("Le o YAML de com as configuraçoes")
     app_config =  load_yaml(known_args.config_file)
+    chunk_name = known_args.chunk_name
+    table_name = known_args.table_name
 
     logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
     logging.info("Busca os dados de acesso ao Banco na Secrets")
@@ -73,7 +83,7 @@ def run(argv=None):
 
     for table in app_config['tables']:
         try:
-            if 'genero' == table:
+            if 'genero' == table.get('name', 'N/A'):
                 break
         except Exception as e:
             logging.error(f"Falha ao construir o pipeline para a tabela '{_table_name}': {e}")

@@ -8,7 +8,11 @@
       "program": "${workspaceFolder}/main.py",
       "args": [
         "--config_file",
-        "config.local.yaml"
+        "config.local.yaml",
+        "--chunk_name",
+        "genero",
+        "--table_name",
+        "genero"
       ],
       "console": "integratedTerminal",
       "justMyCode": true

@@ -32,7 +32,10 @@ source_db:
   secret_version: latest
 
 # Dataset de destino no BigQuery
-destination_dataset: bronze
+landing_zone_dataset: landing_zone
+bronze_dataset: bronze
+silver_dataset: silver
+gold_dataset: gold
 
 # Lista de tabelas para ingestão
 tables:
@@ -47,3 +50,14 @@ tables:
     schema_file: raca.json
     write_disposition: WRITE_TRUNCATE
     map_function: map_raca_to_dict
+
+# Chunks de tabelas para ingestão
+chunks:
+  - name: ALL
+    lista: [genero, raca]
+  - name: genero
+    lista: [genero]
+  - name: raca
+    lista: [raca]
+
+
