@@ -1,21 +1,28 @@
 import argparse
-import yaml
 
 import logging
 import apache_beam as beam
-from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
+from apache_beam.options.pipeline_options import SetupOptions
+from apache_beam.options.pipeline_options import WorkerOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from utils.secret_manager import get_secret
 from utils.file_handler import load_yaml, load_schema, load_query
 
 
-def run():
+def run(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--config_file',
         required=True,
-        help='Caminho para o arquivo de configuração YAML.'
+        help='Caminho GCS para o arquivo config.yaml'
+    )
+    parser.add_argument(
+        '--chunk_name',
+        required=False,
+        default="ALL",
+        type=str,
+        help='Chunk a ser executado'
     )
     known_args, pipeline_args = parser.parse_known_args()
 
@@ -51,49 +58,56 @@ def run():
         job_name=app_config['dataflow']['job_name'],
         setup_file='./setup.py'
     )
+    # pipeline_options = PipelineOptions(flags=argv)
+
+    # pipeline_options.view_as(SetupOptions).save_main_session = True
+
+    # #: Make sure the job runs using private IPs.
+    # pipeline_options.view_as(WorkerOptions).use_public_ips = False
+
     project_id = app_config['gcp']['project_id']
-    bq_dataset = app_config['destination_dataset']
+    bq_dataset = app_config['bronze_dataset']
 
     queries_location = app_config['dataflow']['parameters']['queries_location']
     schemas_location = app_config['dataflow']['parameters']['schemas_location']
 
     for table in app_config['tables']:
         try:
-            _query_file = table['query_file']
-            _schema_file = table['schema_file']
-            # _queries_location = f'{queries_location}/{_query_file}'
-            # _schemas_location = f'{schemas_location}/{_schema_file}'
-            _query = load_query(f'{queries_location}/{_query_file}')
-            _schema = load_schema(f'{schemas_location}/{_schema_file}')
-            _table_name = table.get('name', 'N/A')
-            logging.info("Executa a pipeline de ingestão.")
-            
-            with beam.Pipeline(options=pipeline_options) as pipeline:
-                
-                logging.info("1. Leitura do MySQL usando ReadFromJdbc")
-                dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
-                    driver_class_name=app_config['database']['driver_class_name'],
-                    table_name=_table_name,
-                    jdbc_url=JDBC_URL,
-                    username=DB_USER,
-                    password=DB_PASSWORD,
-                    query=_query,
-                    driver_jars=app_config['database']['driver_jars'],
-                )
-
-                logging.info("2. Transformação para dicionários")
-                dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
-                
-                logging.info("3. Escrita no BigQuery")
-                dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
-                    table=f'{project_id}:{bq_dataset}.{_table_name}',
-                    schema=_schema,
-                    create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-                    write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
-                )
-
+            if 'genero' == table:
+                break
         except Exception as e:
             logging.error(f"Falha ao construir o pipeline para a tabela '{_table_name}': {e}")
+
+    _query_file = table['query_file']
+    _schema_file = table['schema_file']
+    _query = load_query(f'{queries_location}/{_query_file}')
+    _schema = load_schema(f'{schemas_location}/{_schema_file}')
+    _table_name = table.get('name', 'N/A')
+    logging.info("Executa a pipeline de ingestão.")
+    
+    with beam.Pipeline(options=pipeline_options) as pipeline:
+        
+        logging.info("1. Leitura do MySQL usando ReadFromJdbc")
+        dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
+            driver_class_name=app_config['database']['driver_class_name'],
+            table_name=_table_name,
+            jdbc_url=JDBC_URL,
+            username=DB_USER,
+            password=DB_PASSWORD,
+            query=_query,
+            driver_jars=app_config['database']['driver_jars'],
+        )
+
+        logging.info("2. Transformação para dicionários")
+        dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
+        
+        logging.info("3. Escrita no BigQuery")
+        dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
+            table=f'{project_id}:{bq_dataset}.{_table_name}',
+            schema=_schema,
+            create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+            write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
+        )
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)

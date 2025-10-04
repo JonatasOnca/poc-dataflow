@@ -6,6 +6,12 @@
             "name": "config_file",
             "label": "Arquivo de Configuração",
             "helpText": "Caminho GCS para o arquivo config.yaml"
+        },
+        {
+            "name": "chunk_name",
+            "label": "Chunk a ser executado",
+            "helpText": "Chunk a ser executado",
+            "isOptional": true
         }
     ]
 }
