@@ -32,7 +32,39 @@ QUERIES_GCS_PATH := $(GCS_BASE_PATH)/queries/
 SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 
 # Comandos do Makefile
-.PHONY: sa all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
+.PHONY: teste sa all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
+
+variaveis:
+
+	@echo "---------------------------------------"
+	@echo "ID do Projeto: $(PROJECT_ID)"
+	@echo "Projeto Number: $(PROJECT_NUMBER)"
+	@echo "Service Account Email: $(SERVICE_ACCOUNT_EMAIL)"
+
+	@echo "Regiao: $(REGION)"
+	@echo "Network: $(NETWORK)"
+	@echo "SubNetwork: $(SUBNETWORK)"
+	@echo "Bucket Name: $(BUCKET_NAME)"
+
+	@echo "AR Repo: $(AR_REPO)"
+	@echo "AR Location: $(AR_LOCATION)"
+	@echo "Image Name: $(IMAGE_NAME)"
+	@echo "Image Tag: $(IMAGE_TAG)"
+	@echo "Image URI: $(IMAGE_URI)"
+
+	@echo "Template Name: $(TEMPLATE_NAME)"
+	@echo "Template File: $(TEMPLATE_FILE)"
+
+	@echo "Queries Local Path: $(QUERIES_LOCAL_PATH)"
+	@echo "Schemas Local Path: $(SCHEMAS_LOCAL_PATH)"
+
+	@echo "GCS Base Path: $(GCS_BASE_PATH)"
+	@echo "Template Path: $(TEMPLATE_PATH)"
+	@echo "Config GCS Path: $(CONFIG_GCS_PATH)"
+	@echo "Queries GCS Path: $(QUERIES_GCS_PATH)"
+	@echo "Schemas GCS Path: $(SCHEMAS_GCS_PATH)"
+
+	@echo "---------------------------------------"
 
 sa:
 	@echo "---------------------------------------"
