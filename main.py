@@ -1,9 +1,9 @@
 import logging
 import argparse
-import time
+# import time
 
 import apache_beam as beam
-from apache_beam.pvalue import AsSingleton
+# from apache_beam.pvalue import AsSingleton
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from utils.secret_manager import get_secret
@@ -125,10 +125,9 @@ def run():
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
 
-        # Cria uma PCollection que servirá como o "sinal de partida".
-        start_signal = pipeline | 'Start Pipeline' >> beam.Create([
-            {'status': 'started', 'start_timestamp': int(time.time())}
-        ])
+        # start_signal = pipeline | 'Start Pipeline' >> beam.Create([
+        #     {'status': 'started', 'start_timestamp': int(time.time())}
+        # ])
 
         for table_name in TABLE_LIST:
             for table in app_config['tables']:
@@ -146,7 +145,7 @@ def run():
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
             rows = (
-                start_signal
+                pipeline
                 | f'Read {table_name} from MySQL' >> ReadFromJdbc(
                     driver_class_name=app_config['database']['driver_class_name'],
                     table_name=table_name,
