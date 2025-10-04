@@ -4,34 +4,46 @@ gcp:
   network: default
   subnetwork: default
   bucket_name: gs://abemcomum-saev-prod
+
 artefact_registry:
   repository: dataflow-templates
   location: us-central1
   image_name: mysql-to-bq-dataflow-multiple-tables
+
 database:
   driver_class_name: com.mysql.cj.jdbc.Driver
   driver_jars: _drivers/mysql-connector-j-8.0.33.jar
+
 dataflow:
-  job_name: test-mysql-to-bq-multiple-ingestion-local-job
+  job_name: mysql-to-bq-dataflow-multiple-tables-ingestion
   template_file_name: mysql-to-bq-dataflow-multiple-tables-template.json
   parameters:
     sdk_container_image: ''
     temp_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/temp
     staging_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/staging
+    queries_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/queries
+    schemas_location: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/schemas
     machine_type: n1-standard-1
     runner: DirectRunner
+
+# Credenciais do banco de dados de origem
 source_db:
   secret_id: dataflow-mysql-credentials
   secret_version: latest
+
+# Dataset de destino no BigQuery
 destination_dataset: bronze
+
+# Lista de tabelas para ingestão
 tables:
-- name: genero
-  query_file: genero.sql
-  schema_file: genero.json
-  write_disposition: WRITE_TRUNCATE
-  map_function: map_genero_to_dict
-- name: raca
-  query_file: raca.sql
-  schema_file: raca.json
-  write_disposition: WRITE_TRUNCATE
-  map_function: map_raca_to_dict
+  - name: genero
+    query_file: genero.sql
+    schema_file: genero.json
+    write_disposition: WRITE_TRUNCATE
+    map_function: map_genero_to_dict
+
+  - name: raca
+    query_file: raca.sql
+    schema_file: raca.json
+    write_disposition: WRITE_TRUNCATE
+    map_function: map_raca_to_dict

@@ -45,8 +45,8 @@ def run():
 
         staging_location=app_config['dataflow']['parameters']['staging_location'],
         temp_location=app_config['dataflow']['parameters']['temp_location'],
-        queries_location=app_config['dataflow']['parameters']['queries'],
-        schemas_location=app_config['dataflow']['parameters']['schemas'],
+        queries_location=app_config['dataflow']['parameters']['queries_location'],
+        schemas_location=app_config['dataflow']['parameters']['schemas_location'],
 
         job_name=app_config['dataflow']['job_name'],
         setup_file='./setup.py'
@@ -54,13 +54,17 @@ def run():
     project_id = app_config['gcp']['project_id']
     bq_dataset = app_config['destination_dataset']
 
-    queries_location = app_config['dataflow']['parameters']['queries']
-    schemas_location = app_config['dataflow']['parameters']['schemas']
+    queries_location = app_config['dataflow']['parameters']['queries_location']
+    schemas_location = app_config['dataflow']['parameters']['schemas_location']
 
     for table in app_config['tables']:
         try:
-            _query = load_query(f'{queries_location}/{table['query_file']}')
-            _schema = load_schema(f'{schemas_location}/{table['schema_file']}')
+            _query_file = table['query_file']
+            _schema_file = table['schema_file']
+            # _queries_location = f'{queries_location}/{_query_file}'
+            # _schemas_location = f'{schemas_location}/{_schema_file}'
+            _query = load_query(f'{queries_location}/{_query_file}')
+            _schema = load_schema(f'{schemas_location}/{_schema_file}')
             _table_name = table.get('name', 'N/A')
             logging.info("Executa a pipeline de ingestão.")
             
