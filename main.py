@@ -34,18 +34,20 @@ def run():
 
     known_args, pipeline_args = parser.parse_known_args()
 
-    logging.info("Le o YAML de com as configuraçoes")
     app_config =  load_yaml(known_args.config_file)
+    logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
+
     chunk_name = known_args.chunk_name
     table_name = known_args.table_name
 
-    logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
+    
     logging.info("Busca os dados de acesso ao Banco na Secrets")
     db_creds = get_secret(
         project_id=app_config['gcp']['project_id'], 
         secret_id=app_config['source_db']['secret_id'], 
         version_id=app_config['source_db']['secret_version']
     )
+
     DB_HOST = db_creds['host']
     DB_NAME = db_creds['database']
     DB_USER = db_creds['user']
@@ -68,56 +70,75 @@ def run():
         job_name=app_config['dataflow']['job_name'],
         setup_file='./setup.py'
     )
-    # pipeline_options = PipelineOptions(flags=argv)
-
-    # pipeline_options.view_as(SetupOptions).save_main_session = True
-
-    # #: Make sure the job runs using private IPs.
-    # pipeline_options.view_as(WorkerOptions).use_public_ips = False
-
+    
     project_id = app_config['gcp']['project_id']
     bq_dataset = app_config['bronze_dataset']
 
     queries_location = app_config['dataflow']['parameters']['queries_location']
     schemas_location = app_config['dataflow']['parameters']['schemas_location']
-
-    for table in app_config['tables']:
-        try:
-            if 'genero' == table.get('name', 'N/A'):
-                break
-        except Exception as e:
-            logging.error(f"Falha ao construir o pipeline para a tabela '{_table_name}': {e}")
-
-    _query_file = table['query_file']
-    _schema_file = table['schema_file']
-    _query = load_query(f'{queries_location}/{_query_file}')
-    _schema = load_schema(f'{schemas_location}/{_schema_file}')
-    _table_name = table.get('name', 'N/A')
-    logging.info("Executa a pipeline de ingestão.")
     
-    with beam.Pipeline(options=pipeline_options) as pipeline:
-        
-        logging.info("1. Leitura do MySQL usando ReadFromJdbc")
-        dados_mysql = pipeline | 'Ler do MySQL' >> ReadFromJdbc(
-            driver_class_name=app_config['database']['driver_class_name'],
-            table_name=_table_name,
-            jdbc_url=JDBC_URL,
-            username=DB_USER,
-            password=DB_PASSWORD,
-            query=_query,
-            driver_jars=app_config['database']['driver_jars'],
-        )
+    chunk_name = known_args.chunk_name
+    table_name = known_args.table_name
+    if table_name:
+        TABLE_LIST = [table_name]
+    else:
+        for chunk in app_config['chunks']:
+            if chunk.get('name', 'ALL') == chunk_name:
+                TABLE_LIST = chunk['lista']
+                break
+    
 
-        logging.info("2. Transformação para dicionários")
-        dados_formatados = dados_mysql | 'Converter para Dicionário' >> beam.Map(lambda row: dict(row._asdict()))
-        
-        logging.info("3. Escrita no BigQuery")
-        dados_formatados | 'Escrever no BigQuery' >> beam.io.WriteToBigQuery(
-            table=f'{project_id}:{bq_dataset}.{_table_name}',
-            schema=_schema,
-            create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-            write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
-        )
+    with beam.Pipeline(options=pipeline_options) as pipeline:
+        for table_name in TABLE_LIST:
+            for table in app_config['tables']:
+                try:
+                    if table_name == table.get('name', 'N/A'):
+                        break
+                except Exception as e:
+                    logging.error(f"Falha ao construir o pipeline para a tabela '{table_name}': {e}")
+
+            _query_file = table['query_file']
+            _schema_file = table['schema_file']
+            _query = load_query(f'{queries_location}/{_query_file}')
+            _schema = load_schema(f'{schemas_location}/{_schema_file}')
+
+            # Cria o fluxo de dados para esta tabela
+            data_flow = (
+                pipeline
+                | f'Read {table_name} from MySQL' >> ReadFromJdbc(
+                    driver_class_name=app_config['database']['driver_class_name'],
+                    table_name=table_name,
+                    jdbc_url=JDBC_URL,
+                    username=DB_USER,
+                    password=DB_PASSWORD,
+                    query=_query,
+                    driver_jars=app_config['database']['driver_jars'],
+                )
+                # Converte o objeto beam.Row para um dicionário Python para facilitar a manipulação.
+                | f'Convert {table_name} to Dict' >> beam.Map(lambda row: row._asdict())
+                
+                # APLICA A ETAPA DE TRATAMENTO
+                # | f'Transform {table_name}' >> beam.Map(transform_function)
+            )
+ 
+            # Exemplo de passo de FILTRAGEM condicional para a tabela de pedidos
+            # if table_name == 'pedidos':
+            #     data_flow = (
+            #         data_flow
+            #         | f'Filter {table_name}' >> beam.Filter(
+            #             lambda row: row.get('status') in ["CONCLUIDO", "ENVIADO"]
+            #         )
+            #     )
+ 
+            # Escreve o resultado transformado e filtrado no BigQuery
+            (data_flow
+                | f'Write {table_name} to BigQuery' >> beam.io.WriteToBigQuery(
+                    table=f'{project_id}:{bq_dataset}.{table_name}',
+                    schema=_schema,
+                    create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+                    write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
+                )
+            )
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
