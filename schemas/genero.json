@@ -2,21 +2,35 @@
     "fields": [
         {
             "name": "GEN_ATIVO",
-            "mode": "",
+            "mode": "NULLABLE",
             "type": "INTEGER",
             "description": "",
             "fields": []
         },
         {
+            "name": "GEN_DT_ATUALIZACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "GEN_DT_CRIACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
             "name": "GEN_ID",
-            "mode": "",
+            "mode": "NULLABLE",
             "type": "INTEGER",
             "description": "",
             "fields": []
         },
         {
             "name": "GEN_NOME",
-            "mode": "",
+            "mode": "NULLABLE",
             "type": "STRING",
             "description": "",
             "fields": []

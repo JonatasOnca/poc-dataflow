@@ -148,6 +148,8 @@ run-job: upload-config
 
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local:
+	@echo "--- Atualiza o Dockerfile.local ---"
+	python3 utils/config_modifier.py config.yaml config.local.yaml
 	@echo "--- Construindo imagem Docker local para ARM64 (usando Dockerfile.local) ---"
 	# Usamos -f para especificar qual Dockerfile usar
 	@docker build --platform=linux/amd64 -f Dockerfile.local -t mysql-to-bq-local-test . --load

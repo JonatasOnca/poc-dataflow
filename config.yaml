@@ -23,8 +23,13 @@ dataflow:
     staging_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/staging'
     queries_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/queries'
     schemas_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/schemas'
+    landing_zone_gcs_path_table: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/landing_zone'
+    runner: DataflowRunner    
+    # Parâmetros adicionais para otimização
     machine_type: n1-standard-1
-    runner: DataflowRunner
+    # machine_type: "n1-standard-2"
+    # num_workers: 1
+    # max_num_workers: 5
 
 # Credenciais do banco de dados de origem
 source_db:
@@ -37,6 +42,11 @@ bronze_dataset: bronze
 silver_dataset: silver
 gold_dataset: gold
 
+# Tabela de controle para o processo incremental
+watermark_table:
+  dataset_id: 'meta_controle'
+  table_id: 'watermarks'
+
 # Lista de tabelas para ingestão
 tables:
   - name: genero
@@ -44,13 +54,17 @@ tables:
     schema_file: genero.json
     write_disposition: WRITE_TRUNCATE
     map_function: map_genero_to_dict
+    watermark_column: GEN_DT_ATUALIZACAO
+    landing_zone_gcs_path_table: 'gs://abemcomum-saev-prod/landing_zone/genero'
 
   - name: raca
     query_file: raca.sql
     schema_file: raca.json
     write_disposition: WRITE_TRUNCATE
     map_function: map_raca_to_dict
-
+    watermark_column: PEL_DT_ATUALIZACAO
+    landing_zone_gcs_path_table: 'gs://abemcomum-saev-prod/landing_zone/raca'
+    
 # Chunks de tabelas para ingestão
 chunks:
   - name: ALL

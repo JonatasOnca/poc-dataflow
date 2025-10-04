@@ -20,8 +20,10 @@ dataflow:
     staging_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/staging'
     queries_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/queries'
     schemas_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/schemas'
-    machine_type: n1-standard-1
+    landing_zone_gcs_path_table: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name
+      }}/landing_zone'
     runner: DirectRunner
+    machine_type: n1-standard-1
 source_db:
   secret_id: dataflow-mysql-credentials
   secret_version: 1
@@ -29,17 +31,24 @@ landing_zone_dataset: landing_zone
 bronze_dataset: bronze
 silver_dataset: silver
 gold_dataset: gold
+watermark_table:
+  dataset_id: meta_controle
+  table_id: watermarks
 tables:
 - name: genero
   query_file: genero.sql
   schema_file: genero.json
   write_disposition: WRITE_TRUNCATE
   map_function: map_genero_to_dict
+  watermark_column: GEN_DT_ATUALIZACAO
+  landing_zone_gcs_path_table: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/landing_zone/genero
 - name: raca
   query_file: raca.sql
   schema_file: raca.json
   write_disposition: WRITE_TRUNCATE
   map_function: map_raca_to_dict
+  watermark_column: PEL_DT_ATUALIZACAO
+  landing_zone_gcs_path_table: gs://abemcomum-saev-prod/mysql-to-bq-dataflow-multiple-tables/landing_zone/raca
 chunks:
 - name: ALL
   lista:
