@@ -1,5 +1,5 @@
 # Extrai variáveis do config.yaml para usar nos comandos
-get_config = python3 -c "import yaml; f=open('config.yaml'); d=yaml.safe_load(f); print(d['$(1)']['$(2)'])"
+get_config = python3 -c "import yaml; from jinja2 import Template; from apache_beam.io.filesystems import FileSystems; yaml_as_bytes = FileSystems.open('config.yaml').read(); yaml_as_text = yaml_as_bytes.decode('utf-8'); initial_data = yaml.safe_load(yaml_as_text); template = Template(yaml_as_text); rendered_yaml_text = template.render(initial_data); data = yaml.safe_load(rendered_yaml_text); print(data['$(1)']['$(2)'])"
 
 # Configurações do GCP
 PROJECT_ID := $(shell $(call get_config,gcp,project_id))

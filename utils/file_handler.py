@@ -49,10 +49,16 @@ def load_yaml(bucket_yaml: str) -> str:
     
 def load_query(bucket_query: str) -> str:
     """Lê um arquivo .sql do GCS."""
-    with FileSystems.open(bucket_query) as f:
-        return f.read()
+    with FileSystems.open(bucket_query) as file:
+        # 1. file.read() retorna um objeto de bytes
+        yaml_as_bytes = file.read()
+
+        # 2. Precisamos decodificar os bytes para uma string (usando utf-8)
+        # para que o Jinja2 e o PyYAML possam processá-la.
+        yaml_as_text = yaml_as_bytes.decode('utf-8')
+        return yaml_as_text
 
 def load_schema(bucket_schema: str) -> dict:
     """Lê um arquivo .json do GCS."""
-    with FileSystems.open(bucket_schema) as f:
-        return json.load(f)
+    with FileSystems.open(bucket_schema) as file:
+        return json.load(file)
