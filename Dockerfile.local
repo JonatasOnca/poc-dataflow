@@ -25,6 +25,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Cria o diretório para o driver JDBC e o copia
+RUN mkdir -p _drivers
+COPY _drivers/mysql-connector-j-8.0.33.jar _drivers/
+
 # ------------------------------------------------------------------
 # Configuração do Ambiente da Aplicação
 # ------------------------------------------------------------------
@@ -39,15 +43,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ------------------------------------------------------------------
 # Cópia do Código da Aplicação
 # ------------------------------------------------------------------
+COPY  beam_core/_helpers/ beam_core/_helpers/
+
 COPY main.py .
 COPY setup.py .
-
-# Cria o diretório para o driver JDBC e o copia
-RUN mkdir -p _drivers
-COPY _drivers/mysql-connector-j-8.0.33.jar _drivers/
-
-# Cria um diretório para os módulos 'utils' e copia o conteúdo
-COPY utils/ ./utils/
 
 # ------------------------------------------------------------------
 # Configuração para o Flex Template

@@ -6,8 +6,8 @@ import apache_beam as beam
 # from apache_beam.pvalue import AsSingleton
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
-from utils.secret_manager import get_secret
-from utils.file_handler import load_yaml, load_schema, load_query
+from beam_core._helpers.secret_manager import get_secret
+from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
 
 def generic_transform(row_dict):
     return row_dict
