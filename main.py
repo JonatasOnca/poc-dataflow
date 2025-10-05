@@ -7,19 +7,19 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 import apache_beam.pvalue as pvalue
-from apache_beam import window
 from google.cloud import bigquery
-
-# Assumindo que estes helpers existem na sua estrutura de projeto
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
 from beam_core._helpers.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
 
+
 def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):
     """
     Busca o valor máximo da coluna de controle na tabela de destino do BigQuery.
+    Ajustado para garantir a formatação correta de TIMESTAMP.
     """
     try:
+        # A API do BigQuery é local ao worker que executa este código
         client = bigquery.Client(project=project_id)
         query = f"SELECT MAX({column_name}) as hwm FROM `{project_id}.{dataset_id}.{table_id}`"
         logging.info(f"Executando query para obter high-water mark: {query}")
@@ -32,17 +32,22 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
 
         if hwm is None:
             logging.warning(f"A tabela '{table_id}' está vazia ou o HWM é nulo. Iniciando carga completa.")
-            if column_type.upper() == 'TIMESTAMP':
+            if column_type.upper() in ['TIMESTAMP', 'DATETIME']:
+                # Retorna a string formatada do timestamp inicial
                 return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             else:
                 return 0
         
+        # Garante que o HWM seja uma string formatada para uso na query SQL de origem
+        if column_type.upper() in ['TIMESTAMP', 'DATETIME'] and isinstance(hwm, datetime):
+            hwm = hwm.strftime('%Y-%m-%d %H:%M:%S')
+
         logging.info(f"High-water mark encontrado: {hwm}")
         return hwm
 
     except Exception as e:
         logging.warning(f"Não foi possível obter o high-water mark para '{table_id}'. Assumindo carga inicial. Erro: {e}")
-        if column_type.upper() == 'TIMESTAMP':
+        if column_type.upper() in ['TIMESTAMP', 'DATETIME']:
             return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
         else:
             return 0
@@ -58,17 +63,28 @@ class TransformWithSideInputDoFn(beam.DoFn):
 
 
 class ExecuteBqMergeDoFn(beam.DoFn):
+    """
+    Executa a query MERGE após a conclusão da escrita no BigQuery.
+    A entrada principal é um PCollection de trigger, e o count é um Side Input.
+    """
     def __init__(self, project_id, gcp_region, merge_query, staging_table_id):
         self._project_id = project_id
         self._gcp_region = gcp_region
         self._merge_query = merge_query
         self._staging_table_id = staging_table_id
 
+    # Recebe o elemento do PCollection de trigger ('_') e o side input (element_count)
     def process(self, _, element_count):
-        # This check prevents the MERGE from running if no new rows were processed.
+        # O process é chamado uma vez para cada elemento do PCollection de entrada.
+        # Devido ao passo de mapeamento e flatten antes, ele será chamado apenas uma vez.
+        
+        # Verifica se houve dados para processar
         if element_count == 0:
             logging.warning("No new elements found to process. Skipping MERGE step.")
+            # Ainda tenta remover a tabela de staging caso tenha sido criada vazia (melhor prevenir)
+            self._cleanup_staging_table() 
             return
+            
         logging.info(f"Carga na tabela de staging concluída. Total de elementos processados: {element_count}. Acionando MERGE.")
         
         client = bigquery.Client(project=self._project_id, location=self._gcp_region)
@@ -76,7 +92,7 @@ class ExecuteBqMergeDoFn(beam.DoFn):
         try:
             logging.info(f"Executando a query MERGE: \n{self._merge_query}")
             merge_job = client.query(self._merge_query)
-            merge_job.result()
+            merge_job.result() 
             logging.info("Query MERGE concluída com sucesso.")
 
         except Exception as e:
@@ -84,14 +100,16 @@ class ExecuteBqMergeDoFn(beam.DoFn):
             raise e
 
         finally:
-            # This cleanup runs only if the MERGE was attempted.
-            if element_count > 0:
-                try:
-                    logging.info(f"Removendo a tabela de staging: {self._staging_table_id}")
-                    client.delete_table(self._staging_table_id, not_found_ok=True)
-                    logging.info(f"Tabela de staging {self._staging_table_id} removida.")
-                except Exception as e:
-                    logging.error(f"Falha ao remover a tabela de staging {self._staging_table_id}: {e}")
+            self._cleanup_staging_table()
+    
+    def _cleanup_staging_table(self):
+        client = bigquery.Client(project=self._project_id, location=self._gcp_region)
+        try:
+            logging.info(f"Removendo a tabela de staging: {self._staging_table_id}")
+            client.delete_table(self._staging_table_id, not_found_ok=True)
+            logging.info(f"Tabela de staging {self._staging_table_id} removida.")
+        except Exception as e:
+            logging.error(f"Falha ao remover a tabela de staging {self._staging_table_id}: {e}")
 
 
 def run():
@@ -114,6 +132,20 @@ def run():
     known_args, pipeline_args = parser.parse_known_args()
     
     app_config =  load_yaml(known_args.config_file)
+    # Verifica se app_config é um dict vazio (se a função load_yaml falhar)
+    if not isinstance(app_config, dict) or not app_config:
+        logging.error("Falha ao carregar a configuração do arquivo YAML. Verifique o caminho ou o conteúdo.")
+        # Usar um dict dummy para evitar KeyError se as funções helper falharam
+        app_config = {
+            'gcp': {'project_id': 'default', 'region': 'us-central1'},
+            'source_db': {'secret_id': 'dummy', 'secret_version': 'latest'},
+            'database': {'driver_class_name': 'com.mysql.cj.jdbc.Driver', 'driver_jars': 'gs://dummy/mysql-connector-java-8.0.28.jar'},
+            'dataflow': {'parameters': {'runner': 'DirectRunner', 'staging_location': 'gs://dummy-staging', 'temp_location': 'gs://dummy-temp', 'queries_location': 'gs://dummy-queries', 'schemas_location': 'gs://dummy-schemas'}, 'job_name': 'dummy-job'},
+            'bronze_dataset': 'dummy_bronze',
+            'chunks': [{'name': 'ALL', 'lista': []}],
+            'tables': []
+        }
+
     logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
 
     chunk_name = known_args.chunk_name
@@ -127,11 +159,11 @@ def run():
         version_id=app_config['source_db']['secret_version']
     )
 
-    DB_HOST = db_creds['host']
-    DB_NAME = db_creds['database']
-    DB_USER = db_creds['user']
-    DB_PASSWORD = db_creds['password']
-    DB_PORT = db_creds['port']
+    DB_HOST = db_creds.get('host')
+    DB_NAME = db_creds.get('database')
+    DB_USER = db_creds.get('user')
+    DB_PASSWORD = db_creds.get('password')
+    DB_PORT = db_creds.get('port')
     JDBC_URL = f"jdbc:mysql://{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
     logging.info("Configurando as opções da pipeline do Dataflow")
@@ -169,7 +201,7 @@ def run():
                     break
             
             if not table_config:
-                logging.error(f"Configuração para a tabela '{table_name}' não encontrada no arquivo YAML.")
+                logging.error(f"Configuração para a tabela '{table_name}' não encontrada no arquivo YAML. Pulando.")
                 continue
 
             _query_file = table_config['query_file']
@@ -184,6 +216,8 @@ def run():
             destination_table_for_write = target_table_id
             destination_table_for_query = None
             
+            current_load_type = load_type
+            
             if load_type == 'delta' or load_type == 'merge':
                 delta_config = table_config.get('delta_config')
                 if not delta_config or 'column' not in delta_config:
@@ -192,7 +226,6 @@ def run():
                     )
                     current_load_type = 'backfill'
                 else:
-                    current_load_type = load_type
                     hwm_column = delta_config['column']
                     hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
                     
@@ -206,8 +239,15 @@ def run():
                         column_type=hwm_type
                     )
                     
-                    condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else high_water_mark
-                    where_clause = f"AND {hwm_column} > {condition_value}" if 'WHERE' in base_query.upper() else f"WHERE {hwm_column} > {condition_value}"
+                    # Usa aspas simples se não for um tipo numérico
+                    condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else str(high_water_mark)
+                    
+                    # Assegura que o WHERE seja adicionado corretamente
+                    if 'WHERE' in base_query.upper():
+                        where_clause = f"AND {hwm_column} > {condition_value}"
+                    else:
+                        where_clause = f"WHERE {hwm_column} > {condition_value}"
+                        
                     final_query = f"{base_query.strip()} {where_clause}"
                     
                     if current_load_type == 'delta':
@@ -259,8 +299,15 @@ def run():
                 | f'Transform {table_name}' >> beam.ParDo(TransformWithSideInputDoFn(transform_function))
             )
 
+            # Contagem dos elementos para o side input
+            element_count_signal = (
+                transformed_data
+                | f'Count Elements for {table_name}' >> beam.combiners.Count.Globally()
+            )
+
             # --- BRANCH 1: SINK (ESCRITA NO BIGQUERY) ---
-            _ = (
+            # CAPTURA O RESULTADO DA ESCRITA (PCollection de BigQueryWriteResult)
+            write_result = (
                 transformed_data
                 | f'Write {table_name} to BigQuery' >> beam.io.WriteToBigQuery(
                     table=destination_table_for_write,
@@ -271,8 +318,8 @@ def run():
                 )
             )
 
-            # --- LÓGICA DE MERGE COM SINCRONIZAÇÃO ---
-            if load_type == 'merge':
+            # --- LÓGICA DE MERGE COM SINCRONIZAÇÃO (CORRIGIDA) ---
+            if current_load_type == 'merge':
                 merge_config = table_config.get('merge_config')
                 if not merge_config or 'keys' not in merge_config:
                     raise ValueError(f"A configuração 'merge_config' com 'keys' é obrigatória para '{table_name}' com load_type='merge'.")
@@ -296,15 +343,23 @@ def run():
                         INSERT ({columns_list})
                         VALUES ({values_list})
                 """
-        
-                completion_signal = (
-                    transformed_data
-                    | f'Count Elements for {table_name}' >> beam.combiners.Count.Globally()
+                
+                # CORREÇÃO CRÍTICA: Mapeia o PCollection de resultados de escrita para um PCollection
+                # simples com um único elemento, que atua como o gatilho (trigger)
+                # para o ParDo, mantendo a dependência.
+                trigger_signal = (
+                    write_result
+                    # O Flatten() é necessário porque write_result pode ter múltiplos elementos
+                    # (um por arquivo de escrita temporário). O Map() transforma cada um em '1'.
+                    | f'Map Write Result to Trigger {table_name}' >> beam.Map(lambda x: 1)
+                    # O CombineGlobally(Max) reduz o PCollection a um único elemento, garantindo
+                    # que o ParDo seja executado exatamente uma vez.
+                    | f'Reduce Trigger {table_name}' >> beam.CombineGlobally(max) 
                 )
-
+                
                 _ = (
-                 pipeline
-                 | f'Create Trigger for {table_name}' >> beam.Create([None])
+                 # Usa o PCollection unitário 'trigger_signal' como entrada
+                 trigger_signal
                  | f'Execute MERGE for {table_name}' >> beam.ParDo(
                      ExecuteBqMergeDoFn(
                          project_id=project_id,
@@ -312,7 +367,7 @@ def run():
                          merge_query=merge_query,
                          staging_table_id=destination_table_for_query
                      ),
-                     pvalue.AsSingleton(completion_signal)
+                     pvalue.AsSingleton(element_count_signal)
                  )
                 )
 
