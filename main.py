@@ -64,14 +64,15 @@ class ExecuteBqMergeDoFn(beam.DoFn):
         self._merge_query = merge_query
         self._staging_table_id = staging_table_id
 
-
     def process(self, _, element_count):
+        # This check prevents the MERGE from running if no new rows were processed.
         if element_count == 0:
             logging.warning("No new elements found to process. Skipping MERGE step.")
-            return  # Exit the function gracefully
+            return
         logging.info(f"Carga na tabela de staging concluída. Total de elementos processados: {element_count}. Acionando MERGE.")
         
-        client = bigquery.Client(project=self._project_id)
+        client = bigquery.Client(project=self._project_id, location=self._gcp_region)
+        
         try:
             logging.info(f"Executando a query MERGE: \n{self._merge_query}")
             merge_job = client.query(self._merge_query)
@@ -83,12 +84,14 @@ class ExecuteBqMergeDoFn(beam.DoFn):
             raise e
 
         finally:
-            try:
-                logging.info(f"Removendo a tabela de staging: {self._staging_table_id}")
-                client.delete_table(self._staging_table_id, not_found_ok=True)
-                logging.info(f"Tabela de staging {self._staging_table_id} removida.")
-            except Exception as e:
-                logging.error(f"Falha ao remover a tabela de staging {self._staging_table_id}: {e}")
+            # This cleanup runs only if the MERGE was attempted.
+            if element_count > 0:
+                try:
+                    logging.info(f"Removendo a tabela de staging: {self._staging_table_id}")
+                    client.delete_table(self._staging_table_id, not_found_ok=True)
+                    logging.info(f"Tabela de staging {self._staging_table_id} removida.")
+                except Exception as e:
+                    logging.error(f"Falha ao remover a tabela de staging {self._staging_table_id}: {e}")
 
 
 def run():
@@ -292,20 +295,14 @@ def run():
                         INSERT ({columns_list})
                         VALUES ({columns_list})
                 """
-                
-                # --- BRANCH 2: SINAL DE CONCLUSÃO ---
-                # Esta contagem global só termina quando toda a PCollection 'transformed_data'
-                # for processada, agindo como um sinal de que a escrita pode ser considerada concluída.
+        
                 completion_signal = (
                     transformed_data
                     | f'Count Elements for {table_name}' >> beam.combiners.Count.Globally()
                 )
 
-                # --- TRIGGER PARA O MERGE ---
-                # A etapa de MERGE é acionada por um gatilho, mas depende do 'completion_signal'
-                # como side input, garantindo que só execute no final.
                 _ = (
-                 pipeline 
+                 pipeline
                  | f'Create Trigger for {table_name}' >> beam.Create([None])
                  | f'Execute MERGE for {table_name}' >> beam.ParDo(
                      ExecuteBqMergeDoFn(
@@ -314,7 +311,7 @@ def run():
                          merge_query=merge_query,
                          staging_table_id=destination_table_for_query
                      ),
-                     pvalue.AsSingleton(completion_signal) # Usa o sinal como dependência
+                     pvalue.AsSingleton(completion_signal)
                  )
                 )
 

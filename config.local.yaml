@@ -1,6 +1,6 @@
 gcp:
   project_id: abemcomum-saev-prod
-  region: us-central1
+  region: US
   network: default
   subnetwork: default
   bucket_name: gs://abemcomum-saev-prod
