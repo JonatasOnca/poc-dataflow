@@ -2,7 +2,7 @@ import logging
 import argparse
 
 import apache_beam as beam
-# from apache_beam.pvalue import AsSingleton
+
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from beam_core._helpers.secret_manager import get_secret
@@ -16,14 +16,6 @@ class TransformWithSideInputDoFn(beam.DoFn):
         self._transform_fn = transform_fn
 
     def process(self, element):
-        # 'element' é o registro principal (a linha da tabela)
-        # 'start_signal_info' é o dado vindo do passo "Start"
-
-        # Você pode usar a informação do side input se quiser
-        # Por exemplo, logar ou adicionar ao registro
-        # logging.info(f"Start signal received: {start_signal_info}")
-
-        # Aplica a função de transformação original
         transformed_element = self._transform_fn(element)
         yield transformed_element
 
