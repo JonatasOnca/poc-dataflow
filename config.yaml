@@ -55,9 +55,16 @@ tables:
     delta_config:
       column: GEN_DT_ATUALIZACAO
       type: TIMESTAMP
+    merge_config:
+      keys:
+        - GEN_ID
     partitioning_config:
       type: DAY
       column: GEN_DT_ATUALIZACAO
+    clustering_config:
+      columns: 
+        - GEN_ID
+        - GEN_ATIVO
 
   - name: raca
     query_file: raca.sql
@@ -65,10 +72,17 @@ tables:
     delta_config:
       column: PEL_DT_ATUALIZACAO
       type: TIMESTAMP
+    merge_config:
+      keys:
+        - PEL_ID
     partitioning_config:
       type: DAY
       column: PEL_DT_ATUALIZACAO
-      
+    clustering_config:
+      columns: 
+        - PEL_ID
+        - PEL_ATIVO
+        - PEL_OLD_ID
     
 # Chunks de tabelas para ingestão
 chunks:

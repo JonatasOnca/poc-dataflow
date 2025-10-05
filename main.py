@@ -54,7 +54,7 @@ class TransformWithSideInputDoFn(beam.DoFn):
         transformed_element = self._transform_fn(element)
         yield transformed_element
 
-# NOVO: DoFn para executar a query MERGE e limpar a tabela de staging
+# ... (A classe ExecuteBqMergeDoFn permanece a mesma) ...
 class ExecuteBqMergeDoFn(beam.DoFn):
     def __init__(self, project_id, merge_query, staging_table_id):
         self._project_id = project_id
@@ -65,10 +65,9 @@ class ExecuteBqMergeDoFn(beam.DoFn):
         client = bigquery.Client(project=self._project_id)
 
         try:
-            # Etapa 2: Executar a query MERGE
             logging.info(f"Executando a query MERGE: \n{self._merge_query}")
             merge_job = client.query(self._merge_query)
-            merge_job.result()  # Espera a conclusão do job
+            merge_job.result()
             logging.info("Query MERGE concluída com sucesso.")
 
         except Exception as e:
@@ -76,18 +75,16 @@ class ExecuteBqMergeDoFn(beam.DoFn):
             raise e
 
         finally:
-            # Etapa 3: Limpar a tabela de staging
             try:
                 logging.info(f"Removendo a tabela de staging: {self._staging_table_id}")
                 client.delete_table(self._staging_table_id, not_found_ok=True)
                 logging.info(f"Tabela de staging {self._staging_table_id} removida.")
             except Exception as e:
                 logging.error(f"Falha ao remover a tabela de staging {self._staging_table_id}: {e}")
-                # Não relança a exceção para não falhar o pipeline se apenas a limpeza falhar
 
 def run():
+    # ... (A lógica de parsing de argumentos permanece a mesma) ...
     parser = argparse.ArgumentParser()
-    # ... (argumentos --config_file, --chunk_name, --table_name permanecem os mesmos) ...
     parser.add_argument(
         '--config_file',
         required=True,
@@ -109,14 +106,13 @@ def run():
     )
     parser.add_argument(
         '--load_type',
-        choices=['backfill', 'delta', 'merge'], # MODIFICADO: Adicionada a opção 'merge'
+        choices=['backfill', 'delta', 'merge'],
         default='backfill',
         help='Tipo de carga: "backfill", "delta" (append-only), ou "merge" (upsert).'
     )
-
     known_args, pipeline_args = parser.parse_known_args()
     
-    # ... (o código de configuração inicial permanece o mesmo) ...
+    # ... (O restante da configuração inicial permanece o mesmo) ...
     app_config =  load_yaml(known_args.config_file)
     logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
 
@@ -183,21 +179,18 @@ def run():
             _schema = load_schema(f'{schemas_location}/{_schema_file}')
             
             final_query = base_query
-            # MODIFICADO: Lógica de escrita agora é mais complexa
             target_table_id = f'{project_id}.{bq_dataset}.{table_name}'
             write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
             destination_table = target_table_id
             
-            # A lógica para `backfill` e `delta` permanece a mesma
             if load_type == 'delta' or load_type == 'merge':
-                # Tanto delta quanto merge precisam buscar o high-water mark
                 delta_config = table_config.get('delta_config')
                 
                 if not delta_config or 'column' not in delta_config:
                     logging.warning(
                         f"Configuração 'delta_config' não encontrada para '{table_name}'. Executando como backfill."
                     )
-                    load_type = 'backfill' # Força backfill se a config não existir
+                    load_type = 'backfill'
                 else:
                     hwm_column = delta_config['column']
                     hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
@@ -219,16 +212,17 @@ def run():
                     
                     if load_type == 'delta':
                         write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
-                    # NOVO: Lógica específica para o MERGE
                     elif load_type == 'merge':
-                        # Etapa 1: Apontar a escrita para uma tabela de staging
                         staging_table_name = f"{table_name}_staging_{uuid.uuid4().hex}"
                         destination_table = f"{project_id}:{bq_dataset}.{staging_table_name}"
-                        write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE # Sempre truncar a staging
+                        write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
                         logging.info(f"Dados serão carregados na tabela de staging: {destination_table}")
             
-            # ... (a lógica de particionamento permanece a mesma) ...
-            time_partitioning_config = None
+            # --- INÍCIO DA MODIFICAÇÃO ---
+
+            additional_bq_params = {} # Dicionário para unir todas as configurações
+            
+            # Lógica de Particionamento (existente)
             partitioning_info = table_config.get('partitioning_config')
             if partitioning_info:
                 part_type = partitioning_info.get('type', 'DAY').upper()
@@ -236,18 +230,30 @@ def run():
                 
                 if part_column:
                     logging.info(f"Configurando particionamento do tipo '{part_type}' na coluna '{part_column}' para a tabela '{table_name}'.")
-                    time_partitioning_config = {
-                            'timePartitioning': {
-                                'type': part_type,
-                                'field': part_column
-                            }
-                        }
+                    additional_bq_params['timePartitioning'] = {
+                        'type': part_type,
+                        'field': part_column
+                    }
                 else:
                     logging.warning(f"Configuração de particionamento para '{table_name}' está incompleta (falta 'column'). A tabela não será particionada.")
 
+            # NOVA LÓGICA DE CLUSTERIZAÇÃO
+            clustering_info = table_config.get('clustering_config')
+            if clustering_info:
+                cluster_columns = clustering_info.get('columns')
+                # Valida se as colunas foram fornecidas e se é uma lista
+                if cluster_columns and isinstance(cluster_columns, list):
+                    logging.info(f"Configurando clusterização nas colunas '{', '.join(cluster_columns)}' para a tabela '{table_name}'.")
+                    additional_bq_params['clustering'] = {
+                        'fields': cluster_columns
+                    }
+                else:
+                    logging.warning(f"Configuração de clusterização para '{table_name}' está incorreta ou vazia (falta 'columns' ou não é uma lista). A tabela não será clusterizada.")
+            
+            # --- FIM DA MODIFICAÇÃO ---
+
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
-            # A parte de leitura e transformação do pipeline é a mesma
             rows = (
                 pipeline
                 | f'Read {table_name} from MySQL' >> ReadFromJdbc(
@@ -269,36 +275,32 @@ def run():
                 )
             )
 
-            # MODIFICADO: A escrita agora é para 'destination_table'
             write_result = (
                 transformed_data
                 | f'Write {table_name} to BigQuery' >> beam.io.WriteToBigQuery(
-                    table=destination_table, # Escreve na tabela final ou na de staging
+                    table=destination_table,
                     schema=_schema,
                     create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
                     write_disposition=write_disposition,
-                    additional_bq_parameters=time_partitioning_config or {}
+                    # MODIFICADO: Usa o dicionário unificado de parâmetros
+                    additional_bq_parameters=additional_bq_params
                 )
             )
 
-            # NOVO: Passo condicional para executar o MERGE
+            # ... (A lógica de MERGE permanece a mesma) ...
             if load_type == 'merge':
                 merge_config = table_config.get('merge_config')
                 if not merge_config or 'keys' not in merge_config:
                     raise ValueError(f"A configuração 'merge_config' com 'keys' é obrigatória para a tabela '{table_name}' com load_type='merge'.")
 
-                # Construir a query MERGE dinamicamente
                 merge_keys = merge_config['keys']
                 schema_fields = [field['name'] for field in _schema['fields']]
                 
-                # ON T.key1 = S.key1 AND T.key2 = S.key2
                 on_clause = " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
                 
-                # UPDATE SET T.col1 = S.col1, T.col2 = S.col2 ...
                 update_cols = [col for col in schema_fields if col not in merge_keys]
                 update_set_clause = ", ".join([f"T.{col} = S.{col}" for col in update_cols])
                 
-                # INSERT (col1, col2, ...) VALUES (col1, col2, ...)
                 columns_list = ", ".join(schema_fields)
                 
                 merge_query = f"""
@@ -314,9 +316,7 @@ def run():
                 
                 (
                  pipeline
-                 # Cria um gatilho para executar após a escrita principal
                  | f'Create Merge Trigger for {table_name}' >> beam.Create([None])
-                 # Espera o passo de escrita na staging terminar
                  | f'Execute MERGE for {table_name}' >> beam.ParDo(
                      ExecuteBqMergeDoFn(
                          project_id=project_id,
