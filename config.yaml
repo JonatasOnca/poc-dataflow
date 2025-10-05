@@ -55,6 +55,9 @@ tables:
     delta_config:
       column: GEN_DT_ATUALIZACAO
       type: TIMESTAMP
+    partitioning_config:
+      type: DAY
+      column: GEN_DT_ATUALIZACAO
 
   - name: raca
     query_file: raca.sql
@@ -62,6 +65,10 @@ tables:
     delta_config:
       column: PEL_DT_ATUALIZACAO
       type: TIMESTAMP
+    partitioning_config:
+      type: DAY
+      column: PEL_DT_ATUALIZACAO
+      
     
 # Chunks de tabelas para ingestão
 chunks:

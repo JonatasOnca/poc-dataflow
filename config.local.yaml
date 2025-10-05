@@ -41,12 +41,18 @@ tables:
   delta_config:
     column: GEN_DT_ATUALIZACAO
     type: TIMESTAMP
+  partitioning_config:
+    type: 'DAY'
+    column: 'GEN_DT_ATUALIZACAO'
 - name: raca
   query_file: raca.sql
   schema_file: raca.json
   delta_config:
     column: PEL_DT_ATUALIZACAO
     type: TIMESTAMP
+  partitioning_config:
+    type: DAY
+    column: PEL_DT_ATUALIZACAO
 chunks:
 - name: ALL
   lista:

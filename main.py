@@ -5,13 +5,14 @@ from datetime import datetime, timezone
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
-from google.cloud import bigquery # NOVO: Importa o cliente do BigQuery
+from google.cloud.bigquery import TimePartitioning # Importa TimePartitioning
+from google.cloud import bigquery
 
+# Supondo que estes helpers existem na estrutura de pastas do seu projeto
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
 from beam_core._helpers.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
 
-# NOVO: Função para obter o high-water mark do BigQuery
 def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):
     """
     Busca o valor máximo da coluna de controle na tabela de destino do BigQuery.
@@ -40,6 +41,7 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
         return hwm
 
     except Exception as e:
+        # Se a tabela não existir, ou outro erro ocorrer, assume uma carga inicial
         logging.warning(f"Não foi possível obter o high-water mark para '{table_id}'. Assumindo carga inicial. Erro: {e}")
         if column_type.upper() == 'TIMESTAMP':
             return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
@@ -76,7 +78,6 @@ def run():
         type=str, 
         help='Nome da tabela no banco de dados',
     )
-    # NOVO: Argumento para controlar o tipo de carga
     parser.add_argument(
         '--load_type',
         choices=['backfill', 'delta'],
@@ -91,9 +92,9 @@ def run():
 
     chunk_name = known_args.chunk_name
     table_name = known_args.table_name
-    load_type = known_args.load_type # NOVO
+    load_type = known_args.load_type
 
-    logging.info("Busca os dados de acesso ao Banco na Secrets")
+    logging.info("Buscando dados de acesso ao Banco de Dados no Secret Manager")
     db_creds = get_secret(
         project_id=app_config['gcp']['project_id'], 
         secret_id=app_config['source_db']['secret_id'], 
@@ -107,7 +108,7 @@ def run():
     DB_PORT = db_creds['port']
     JDBC_URL = f"jdbc:mysql://{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-    logging.info("Configura as opções da pipeline")
+    logging.info("Configurando as opções da pipeline do Dataflow")
     pipeline_options = PipelineOptions(
         pipeline_args,
         runner=app_config['dataflow']['parameters']['runner'],
@@ -127,6 +128,7 @@ def run():
     if table_name:
         TABLE_LIST = [table_name]
     else:
+        TABLE_LIST = []
         for chunk in app_config['chunks']:
             if chunk.get('name', 'ALL') == chunk_name:
                 TABLE_LIST = chunk['lista']
@@ -149,17 +151,22 @@ def run():
             base_query = load_query(f'{queries_location}/{_query_file}')
             _schema = load_schema(f'{schemas_location}/{_schema_file}')
             
-            # MODIFICADO: Lógica para construir a query final
             final_query = base_query
             write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
 
             if load_type == 'delta':
                 delta_config = table_config.get('delta_config')
+                
                 if not delta_config or 'column' not in delta_config:
-                    logging.warning(f"Configuração 'delta_config' não encontrada para a tabela '{table_name}'. Executando como backfill.")
+                    logging.warning(
+                        f"Configuração 'delta_config' não encontrada ou inválida para a tabela '{table_name}'. "
+                        f"Executando como backfill (WRITE_TRUNCATE)."
+                    )
                 else:
                     hwm_column = delta_config['column']
-                    hwm_type = delta_config.get('type', 'TIMESTAMP')
+                    hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
+                    
+                    logging.info(f"Iniciando carga delta para '{table_name}' usando a coluna '{hwm_column}'.")
                     
                     high_water_mark = get_high_water_mark(
                         project_id=project_id,
@@ -169,14 +176,37 @@ def run():
                         column_type=hwm_type
                     )
                     
-                    # Adiciona a cláusula WHERE na query
-                    # ATENÇÃO: Isso assume que a query base não tem uma cláusula WHERE.
-                    # Se tiver, a lógica precisa ser mais inteligente para adicionar com 'AND'.
-                    where_clause = f"WHERE {hwm_column} > '{high_water_mark}'"
-                    final_query = f"{base_query} {where_clause}"
+                    if hwm_type in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC']:
+                        condition_value = high_water_mark
+                    else:
+                        condition_value = f"'{high_water_mark}'"
+
+                    if 'WHERE' in base_query.upper():
+                        where_clause = f"AND {hwm_column} > {condition_value}"
+                    else:
+                        where_clause = f"WHERE {hwm_column} > {condition_value}"
                     
-                    logging.info(f"Query delta para a tabela '{table_name}': {final_query}")
-                    write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND # Muda para append
+                    final_query = f"{base_query.strip()} {where_clause}"
+                    
+                    logging.info(f"Query delta final para a tabela '{table_name}': {final_query}")
+                    write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
+            
+            time_partitioning_config = None
+            partitioning_info = table_config.get('partitioning_config')
+            if partitioning_info:
+                part_type = partitioning_info.get('type', 'DAY').upper()
+                part_column = partitioning_info.get('column')
+                
+                if part_column:
+                    logging.info(f"Configurando particionamento do tipo '{part_type}' na coluna '{part_column}' para a tabela '{table_name}'.")
+                    time_partitioning_config = {
+                            'timePartitioning': {
+                                'type': part_type,
+                                'field': part_column
+                            }
+                        }
+                else:
+                    logging.warning(f"Configuração de particionamento para '{table_name}' está incompleta (falta 'column'). A tabela não será particionada.")
 
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
@@ -188,7 +218,7 @@ def run():
                     jdbc_url=JDBC_URL,
                     username=DB_USER,
                     password=DB_PASSWORD,
-                    query=final_query, # Usa a query final (com ou sem filtro)
+                    query=final_query,
                     driver_jars=app_config['database']['driver_jars'],
                 )
                 | f'Convert {table_name} to Dict' >> beam.Map(lambda row: row._asdict())
@@ -206,7 +236,8 @@ def run():
                     table=f'{project_id}:{bq_dataset}.{table_name}',
                     schema=_schema,
                     create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-                    write_disposition=write_disposition # MODIFICADO: Usa a disposição correta
+                    write_disposition=write_disposition,
+                    additional_bq_parameters=time_partitioning_config or {}
                 )
             )
 
