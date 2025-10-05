@@ -18,6 +18,12 @@
             "label": "Nome da tabela no banco de dados",
             "helpText": "Nome da tabela no banco de dados",
             "isOptional": true
+        },
+        {
+            "name": "load_type",
+            "label": "Tipo de carga: 'backfill' para carga completa ou 'delta' para incremental.",
+            "helpText": "Tipo de carga: 'backfill' para carga completa ou 'delta' para incremental.",
+            "isOptional": true
         }
     ]
 }

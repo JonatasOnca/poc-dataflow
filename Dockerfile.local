@@ -43,7 +43,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ------------------------------------------------------------------
 # Cópia do Código da Aplicação
 # ------------------------------------------------------------------
-COPY  beam_core/_helpers/ beam_core/_helpers/
+COPY beam_core/_helpers/ beam_core/_helpers/
 
 COPY main.py .
 COPY setup.py .
