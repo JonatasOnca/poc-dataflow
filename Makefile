@@ -161,7 +161,10 @@ docker-test-local:
 	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
 	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
 	  mysql-to-bq-local-test \
-	  python main.py --config_file /app/config.local.yaml --load_type backfill
+	  python main.py --config_file /app/config.local.yaml --load_type merge
+# 	  python main.py --config_file /app/config.local.yaml --load_type backfill
+# 	  python main.py --config_file /app/config.local.yaml --load_type delta
+# 	  python main.py --config_file /app/config.local.yaml --load_type merge
 
 # Executa o job do Dataflow localmente
 test-local:
@@ -175,9 +178,9 @@ test-local:
 	python3 utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-# 	python3 main.py --config_file config.local.yaml --load_type backfill
+	python3 main.py --config_file config.local.yaml --load_type backfill
 # 	python3 main.py --config_file config.local.yaml --load_type delta
-	python3 main.py --config_file config.local.yaml --load_type merge
+# 	python3 main.py --config_file config.local.yaml --load_type merge
 	
 # 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
 # 	@rm config.local.yaml
