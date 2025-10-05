@@ -15,12 +15,7 @@ from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_tr
 
 
 def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):
-    """
-    Busca o valor máximo da coluna de controle na tabela de destino do BigQuery.
-    Ajustado para garantir a formatação correta de TIMESTAMP.
-    """
     try:
-        # A API do BigQuery é local ao worker que executa este código
         client = bigquery.Client(project=project_id)
         query = f"SELECT MAX({column_name}) as hwm FROM `{project_id}.{dataset_id}.{table_id}`"
         logging.info(f"Executando query para obter high-water mark: {query}")
@@ -34,12 +29,10 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
         if hwm is None:
             logging.warning(f"A tabela '{table_id}' está vazia ou o HWM é nulo. Iniciando carga completa.")
             if column_type.upper() in ['TIMESTAMP', 'DATETIME']:
-                # Retorna a string formatada do timestamp inicial
                 return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             else:
                 return 0
         
-        # Garante que o HWM seja uma string formatada para uso na query SQL de origem
         if column_type.upper() in ['TIMESTAMP', 'DATETIME'] and isinstance(hwm, datetime):
             hwm = hwm.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -65,8 +58,9 @@ class TransformWithSideInputDoFn(beam.DoFn):
 
 class ExecuteBqMergeDoFn(beam.DoFn):
     """
-    Executa a query MERGE após a conclusão da escrita no BigQuery.
-    A entrada principal é um PCollection de trigger, e o count é um Side Input.
+    Executa a query MERGE após a conclusão do fluxo (disparado pela contagem global).
+    NOTE: Não usamos side-input vindo de WriteToBigQuery, pois WriteToBigQuery não
+    retorna uma PCollection com failed_rows ou similar.
     """
     def __init__(self, project_id, gcp_region, merge_query, staging_table_id):
         self._project_id = project_id
@@ -74,18 +68,16 @@ class ExecuteBqMergeDoFn(beam.DoFn):
         self._merge_query = merge_query
         self._staging_table_id = staging_table_id
 
-    # Recebe o elemento do PCollection de trigger ('_') e o side input (element_count)
-    def process(self, _, element_count):
-        # O process é chamado uma vez para cada elemento do PCollection de entrada.
-        # Devido ao passo de mapeamento e flatten antes, ele será chamado apenas uma vez.
-        
-        # Verifica se houve dados para processar
+    # >>> ALTERAÇÃO: removido o parâmetro de side-input inexistente
+    def process(self, element_count):
+        """
+        'element_count' é a contagem global (um inteiro).
+        """
         if element_count == 0:
             logging.warning("No new elements found to process. Skipping MERGE step.")
-            # Ainda tenta remover a tabela de staging caso tenha sido criada vazia (melhor prevenir)
-            self._cleanup_staging_table() 
+            self._cleanup_staging_table()
             return
-            
+
         logging.info(f"Carga na tabela de staging concluída. Total de elementos processados: {element_count}. Acionando MERGE.")
         
         client = bigquery.Client(project=self._project_id, location=self._gcp_region)
@@ -93,7 +85,7 @@ class ExecuteBqMergeDoFn(beam.DoFn):
         try:
             logging.info(f"Executando a query MERGE: \n{self._merge_query}")
             merge_job = client.query(self._merge_query)
-            merge_job.result() 
+            merge_job.result()
             logging.info("Query MERGE concluída com sucesso.")
 
         except Exception as e:
@@ -227,10 +219,8 @@ def run():
                         column_type=hwm_type
                     )
                     
-                    # Usa aspas simples se não for um tipo numérico
                     condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else str(high_water_mark)
                     
-                    # Assegura que o WHERE seja adicionado corretamente
                     if 'WHERE' in base_query.upper():
                         where_clause = f"AND {hwm_column} > {condition_value}"
                     else:
@@ -287,26 +277,27 @@ def run():
                 | f'Transform {table_name}' >> beam.ParDo(TransformWithSideInputDoFn(transform_function))
             )
 
-            # Contagem dos elementos para o side input
+            # Contagem global dos elementos (usada para disparar o MERGE)
             element_count_signal = (
                 transformed_data
                 | f'Count Elements for {table_name}' >> beam.combiners.Count.Globally()
             )
 
             # --- BRANCH 1: SINK (ESCRITA NO BIGQUERY) ---
-            # CAPTURA O RESULTADO DA ESCRITA (PCollection de BigQueryWriteResult)
-            write_result = (
+            # >>> MANTEMOS a escrita — mas NÃO tentamos capturar um retorno (WriteToBigQuery não retorna PCollection)
+            _ = (
                 transformed_data
                 | f'Write {table_name} to BigQuery' >> beam.io.WriteToBigQuery(
                     table=destination_table_for_write,
                     schema=_schema,
                     create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
                     write_disposition=write_disposition,
-                    additional_bq_parameters=additional_bq_params
+                    additional_bq_parameters=additional_bq_params,
+                    insert_retry_strategy='RETRY_NEVER',
                 )
             )
 
-            # --- LÓGICA DE MERGE COM SINCRONIZAÇÃO (CORRIGIDA) ---
+            # --- LÓGICA DE MERGE COM SINCRONIZAÇÃO (USANDO element_count_signal) ---
             if current_load_type == 'merge':
                 merge_config = table_config.get('merge_config')
                 if not merge_config or 'keys' not in merge_config:
@@ -332,31 +323,17 @@ def run():
                         VALUES ({values_list})
                 """
                 
-                # CORREÇÃO CRÍTICA: Mapeia o PCollection de resultados de escrita para um PCollection
-                # simples com um único elemento, que atua como o gatilho (trigger)
-                # para o ParDo, mantendo a dependência.
-                trigger_signal = (
-                    write_result
-                    # O Flatten() é necessário porque write_result pode ter múltiplos elementos
-                    # (um por arquivo de escrita temporário). O Map() transforma cada um em '1'.
-                    | f'Map Write Result to Trigger {table_name}' >> beam.Map(lambda x: 1)
-                    # O CombineGlobally(Max) reduz o PCollection a um único elemento, garantindo
-                    # que o ParDo seja executado exatamente uma vez.
-                    | f'Reduce Trigger {table_name}' >> beam.CombineGlobally(max) 
-                )
-                
+                # >>> CHAMADA CORRIGIDA: usamos a contagem global como entrada do ParDo que executa o MERGE
                 _ = (
-                 # Usa o PCollection unitário 'trigger_signal' como entrada
-                 trigger_signal
-                 | f'Execute MERGE for {table_name}' >> beam.ParDo(
-                     ExecuteBqMergeDoFn(
-                         project_id=project_id,
-                         gcp_region=app_config['gcp']['region'],
-                         merge_query=merge_query,
-                         staging_table_id=destination_table_for_query
-                     ),
-                     pvalue.AsSingleton(element_count_signal)
-                 )
+                    element_count_signal
+                    | f'Execute MERGE for {table_name}' >> beam.ParDo(
+                        ExecuteBqMergeDoFn(
+                            project_id=project_id,
+                            gcp_region=app_config['gcp']['region'],
+                            merge_query=merge_query,
+                            staging_table_id=destination_table_for_query
+                        )
+                    )
                 )
 
 if __name__ == '__main__':
