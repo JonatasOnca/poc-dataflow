@@ -8,6 +8,7 @@ from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 import apache_beam.pvalue as pvalue
 from google.cloud import bigquery
+
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
 from beam_core._helpers.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
@@ -132,19 +133,6 @@ def run():
     known_args, pipeline_args = parser.parse_known_args()
     
     app_config =  load_yaml(known_args.config_file)
-    # Verifica se app_config é um dict vazio (se a função load_yaml falhar)
-    if not isinstance(app_config, dict) or not app_config:
-        logging.error("Falha ao carregar a configuração do arquivo YAML. Verifique o caminho ou o conteúdo.")
-        # Usar um dict dummy para evitar KeyError se as funções helper falharam
-        app_config = {
-            'gcp': {'project_id': 'default', 'region': 'us-central1'},
-            'source_db': {'secret_id': 'dummy', 'secret_version': 'latest'},
-            'database': {'driver_class_name': 'com.mysql.cj.jdbc.Driver', 'driver_jars': 'gs://dummy/mysql-connector-java-8.0.28.jar'},
-            'dataflow': {'parameters': {'runner': 'DirectRunner', 'staging_location': 'gs://dummy-staging', 'temp_location': 'gs://dummy-temp', 'queries_location': 'gs://dummy-queries', 'schemas_location': 'gs://dummy-schemas'}, 'job_name': 'dummy-job'},
-            'bronze_dataset': 'dummy_bronze',
-            'chunks': [{'name': 'ALL', 'lista': []}],
-            'tables': []
-        }
 
     logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
 
