@@ -1,7 +1,7 @@
 gcp:
   project_id: abemcomum-saev-prod
-  # region: us-central1
-  region: US
+  region: us-central1
+  # region: US
   network: default
   subnetwork: default
   bucket_name: gs://abemcomum-saev-prod
@@ -42,6 +42,7 @@ landing_zone_dataset: landing_zone
 bronze_dataset: bronze
 silver_dataset: silver
 gold_dataset: gold
+region: US
 
 # Tabela de controle para o processo incremental
 watermark_table:

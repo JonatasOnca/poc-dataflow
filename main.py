@@ -223,7 +223,7 @@ def run():
             logging.info(f"Tabela de staging encontrada. Executando MERGE para {task['target_table_id']}.")
             execute_merge(
                 project_id=project_id,
-                gcp_region=app_config['gcp']['region'],
+                gcp_region=app_config['region'],
                 target_table_id=task['target_table_id'],
                 staging_table_id=staging_table_id,
                 merge_keys=task['merge_keys'],

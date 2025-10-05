@@ -144,10 +144,11 @@ run-job: upload-config
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
-		--parameters=config_file=$(CONFIG_GCS_PATH),load_type=backfill
-# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type=backfill
-# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type=delta
-# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type=merge
+		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='backfill'
+		
+# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='backfill'
+# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='delta'
+# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='merge'
 
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local:
