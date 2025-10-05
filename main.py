@@ -284,6 +284,7 @@ def run():
                 update_cols = [col for col in schema_fields if col not in merge_keys]
                 update_set_clause = ", ".join([f"T.{col} = S.{col}" for col in update_cols])
                 columns_list = ", ".join(schema_fields)
+                values_list = ", ".join([f"S.{col}" for col in schema_fields])
                 
                 merge_query = f"""
                     MERGE `{target_table_id}` AS T
@@ -293,7 +294,7 @@ def run():
                         UPDATE SET {update_set_clause}
                     WHEN NOT MATCHED THEN
                         INSERT ({columns_list})
-                        VALUES ({columns_list})
+                        VALUES ({values_list})
                 """
         
                 completion_signal = (
