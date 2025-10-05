@@ -175,7 +175,7 @@ test-local:
 	python3 utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-	python3 main.py --config_file config.local.yaml --load_type backfill
+	python3 main.py --config_file config.local.yaml --load_type delta
 	
 # 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
 # 	@rm config.local.yaml

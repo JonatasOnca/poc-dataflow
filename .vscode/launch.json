@@ -15,8 +15,10 @@
         // "genero"
         // "--load_type",
         // "backfill",
+        // "--load_type",
+        // "delta",
         "--load_type",
-        "delta",
+        "merge",
       ],
       "console": "integratedTerminal",
       "justMyCode": true
