@@ -1,18 +1,18 @@
 import logging
 import argparse
 from datetime import datetime, timezone
+import uuid # NOVO: Para gerar nomes de tabela únicos
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
-from google.cloud.bigquery import TimePartitioning # Importa TimePartitioning
 from google.cloud import bigquery
 
-# Supondo que estes helpers existem na estrutura de pastas do seu projeto
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
 from beam_core._helpers.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
 
+# ... (A função get_high_water_mark permanece a mesma) ...
 def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):
     """
     Busca o valor máximo da coluna de controle na tabela de destino do BigQuery.
@@ -29,19 +29,16 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
         hwm = row.hwm
 
         if hwm is None:
-            # Se a tabela estiver vazia, retorna um valor inicial padrão
             logging.warning(f"A tabela '{table_id}' está vazia ou o HWM é nulo. Iniciando carga completa.")
             if column_type.upper() == 'TIMESTAMP':
-                # Retorna uma data muito antiga para buscar todos os registros
                 return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
-            else: # INTEGER, etc.
+            else:
                 return 0
         
         logging.info(f"High-water mark encontrado: {hwm}")
         return hwm
 
     except Exception as e:
-        # Se a tabela não existir, ou outro erro ocorrer, assume uma carga inicial
         logging.warning(f"Não foi possível obter o high-water mark para '{table_id}'. Assumindo carga inicial. Erro: {e}")
         if column_type.upper() == 'TIMESTAMP':
             return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
@@ -57,8 +54,40 @@ class TransformWithSideInputDoFn(beam.DoFn):
         transformed_element = self._transform_fn(element)
         yield transformed_element
 
+# NOVO: DoFn para executar a query MERGE e limpar a tabela de staging
+class ExecuteBqMergeDoFn(beam.DoFn):
+    def __init__(self, project_id, merge_query, staging_table_id):
+        self._project_id = project_id
+        self._merge_query = merge_query
+        self._staging_table_id = staging_table_id
+
+    def process(self, element):
+        client = bigquery.Client(project=self._project_id)
+
+        try:
+            # Etapa 2: Executar a query MERGE
+            logging.info(f"Executando a query MERGE: \n{self._merge_query}")
+            merge_job = client.query(self._merge_query)
+            merge_job.result()  # Espera a conclusão do job
+            logging.info("Query MERGE concluída com sucesso.")
+
+        except Exception as e:
+            logging.error(f"Falha ao executar a query MERGE: {e}")
+            raise e
+
+        finally:
+            # Etapa 3: Limpar a tabela de staging
+            try:
+                logging.info(f"Removendo a tabela de staging: {self._staging_table_id}")
+                client.delete_table(self._staging_table_id, not_found_ok=True)
+                logging.info(f"Tabela de staging {self._staging_table_id} removida.")
+            except Exception as e:
+                logging.error(f"Falha ao remover a tabela de staging {self._staging_table_id}: {e}")
+                # Não relança a exceção para não falhar o pipeline se apenas a limpeza falhar
+
 def run():
     parser = argparse.ArgumentParser()
+    # ... (argumentos --config_file, --chunk_name, --table_name permanecem os mesmos) ...
     parser.add_argument(
         '--config_file',
         required=True,
@@ -80,13 +109,14 @@ def run():
     )
     parser.add_argument(
         '--load_type',
-        choices=['backfill', 'delta'],
+        choices=['backfill', 'delta', 'merge'], # MODIFICADO: Adicionada a opção 'merge'
         default='backfill',
-        help='Tipo de carga: "backfill" para carga completa ou "delta" para incremental.'
+        help='Tipo de carga: "backfill", "delta" (append-only), ou "merge" (upsert).'
     )
 
     known_args, pipeline_args = parser.parse_known_args()
-
+    
+    # ... (o código de configuração inicial permanece o mesmo) ...
     app_config =  load_yaml(known_args.config_file)
     logging.info("Iniciando o pipeline com a seguinte configuração: %s", app_config)
 
@@ -136,6 +166,7 @@ def run():
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
         for table_name in TABLE_LIST:
+            # ... (a lógica para encontrar table_config, query e schema permanece a mesma) ...
             table_config = None
             for t in app_config['tables']:
                 if t.get('name') == table_name:
@@ -152,21 +183,26 @@ def run():
             _schema = load_schema(f'{schemas_location}/{_schema_file}')
             
             final_query = base_query
+            # MODIFICADO: Lógica de escrita agora é mais complexa
+            target_table_id = f'{project_id}.{bq_dataset}.{table_name}'
             write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
-
-            if load_type == 'delta':
+            destination_table = target_table_id
+            
+            # A lógica para `backfill` e `delta` permanece a mesma
+            if load_type == 'delta' or load_type == 'merge':
+                # Tanto delta quanto merge precisam buscar o high-water mark
                 delta_config = table_config.get('delta_config')
                 
                 if not delta_config or 'column' not in delta_config:
                     logging.warning(
-                        f"Configuração 'delta_config' não encontrada ou inválida para a tabela '{table_name}'. "
-                        f"Executando como backfill (WRITE_TRUNCATE)."
+                        f"Configuração 'delta_config' não encontrada para '{table_name}'. Executando como backfill."
                     )
+                    load_type = 'backfill' # Força backfill se a config não existir
                 else:
                     hwm_column = delta_config['column']
                     hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
                     
-                    logging.info(f"Iniciando carga delta para '{table_name}' usando a coluna '{hwm_column}'.")
+                    logging.info(f"Iniciando carga {load_type} para '{table_name}' usando a coluna '{hwm_column}'.")
                     
                     high_water_mark = get_high_water_mark(
                         project_id=project_id,
@@ -176,21 +212,22 @@ def run():
                         column_type=hwm_type
                     )
                     
-                    if hwm_type in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC']:
-                        condition_value = high_water_mark
-                    else:
-                        condition_value = f"'{high_water_mark}'"
+                    condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else high_water_mark
 
-                    if 'WHERE' in base_query.upper():
-                        where_clause = f"AND {hwm_column} > {condition_value}"
-                    else:
-                        where_clause = f"WHERE {hwm_column} > {condition_value}"
-                    
+                    where_clause = f"AND {hwm_column} > {condition_value}" if 'WHERE' in base_query.upper() else f"WHERE {hwm_column} > {condition_value}"
                     final_query = f"{base_query.strip()} {where_clause}"
                     
-                    logging.info(f"Query delta final para a tabela '{table_name}': {final_query}")
-                    write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
+                    if load_type == 'delta':
+                        write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
+                    # NOVO: Lógica específica para o MERGE
+                    elif load_type == 'merge':
+                        # Etapa 1: Apontar a escrita para uma tabela de staging
+                        staging_table_name = f"{table_name}_staging_{uuid.uuid4().hex}"
+                        destination_table = f"{project_id}:{bq_dataset}.{staging_table_name}"
+                        write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE # Sempre truncar a staging
+                        logging.info(f"Dados serão carregados na tabela de staging: {destination_table}")
             
+            # ... (a lógica de particionamento permanece a mesma) ...
             time_partitioning_config = None
             partitioning_info = table_config.get('partitioning_config')
             if partitioning_info:
@@ -210,6 +247,7 @@ def run():
 
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
+            # A parte de leitura e transformação do pipeline é a mesma
             rows = (
                 pipeline
                 | f'Read {table_name} from MySQL' >> ReadFromJdbc(
@@ -231,15 +269,62 @@ def run():
                 )
             )
 
-            (transformed_data
+            # MODIFICADO: A escrita agora é para 'destination_table'
+            write_result = (
+                transformed_data
                 | f'Write {table_name} to BigQuery' >> beam.io.WriteToBigQuery(
-                    table=f'{project_id}:{bq_dataset}.{table_name}',
+                    table=destination_table, # Escreve na tabela final ou na de staging
                     schema=_schema,
                     create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
                     write_disposition=write_disposition,
                     additional_bq_parameters=time_partitioning_config or {}
                 )
             )
+
+            # NOVO: Passo condicional para executar o MERGE
+            if load_type == 'merge':
+                merge_config = table_config.get('merge_config')
+                if not merge_config or 'keys' not in merge_config:
+                    raise ValueError(f"A configuração 'merge_config' com 'keys' é obrigatória para a tabela '{table_name}' com load_type='merge'.")
+
+                # Construir a query MERGE dinamicamente
+                merge_keys = merge_config['keys']
+                schema_fields = [field['name'] for field in _schema['fields']]
+                
+                # ON T.key1 = S.key1 AND T.key2 = S.key2
+                on_clause = " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
+                
+                # UPDATE SET T.col1 = S.col1, T.col2 = S.col2 ...
+                update_cols = [col for col in schema_fields if col not in merge_keys]
+                update_set_clause = ", ".join([f"T.{col} = S.{col}" for col in update_cols])
+                
+                # INSERT (col1, col2, ...) VALUES (col1, col2, ...)
+                columns_list = ", ".join(schema_fields)
+                
+                merge_query = f"""
+                    MERGE `{target_table_id}` AS T
+                    USING `{destination_table}` AS S
+                    ON {on_clause}
+                    WHEN MATCHED THEN
+                        UPDATE SET {update_set_clause}
+                    WHEN NOT MATCHED THEN
+                        INSERT ({columns_list})
+                        VALUES ({columns_list})
+                """
+                
+                (
+                 pipeline
+                 # Cria um gatilho para executar após a escrita principal
+                 | f'Create Merge Trigger for {table_name}' >> beam.Create([None])
+                 # Espera o passo de escrita na staging terminar
+                 | f'Execute MERGE for {table_name}' >> beam.ParDo(
+                     ExecuteBqMergeDoFn(
+                         project_id=project_id,
+                         merge_query=merge_query,
+                         staging_table_id=destination_table
+                     )
+                 )
+                )
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)

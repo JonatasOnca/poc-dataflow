@@ -13,8 +13,10 @@
         // "ALL",
         // "--table_name",
         // "genero"
+        // "--load_type",
+        // "backfill",
         "--load_type",
-        "backfill",
+        "delta",
       ],
       "console": "integratedTerminal",
       "justMyCode": true
