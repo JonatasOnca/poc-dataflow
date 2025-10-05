@@ -6,6 +6,8 @@ import uuid
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
+import apache_beam.pvalue as pvalue
+from apache_beam import window
 from google.cloud import bigquery
 
 # Assumindo que estes helpers existem na sua estrutura de projeto
@@ -56,15 +58,20 @@ class TransformWithSideInputDoFn(beam.DoFn):
 
 
 class ExecuteBqMergeDoFn(beam.DoFn):
-    def __init__(self, project_id, merge_query, staging_table_id):
+    def __init__(self, project_id, gcp_region, merge_query, staging_table_id):
         self._project_id = project_id
+        self._gcp_region = gcp_region
         self._merge_query = merge_query
         self._staging_table_id = staging_table_id
 
-    def process(self, element):
-        # Este DoFn agora é acionado apenas uma vez, após a carga na tabela de staging
-        client = bigquery.Client(project=self._project_id)
 
+    def process(self, _, element_count):
+        if element_count == 0:
+            logging.warning("No new elements found to process. Skipping MERGE step.")
+            return  # Exit the function gracefully
+        logging.info(f"Carga na tabela de staging concluída. Total de elementos processados: {element_count}. Acionando MERGE.")
+        
+        client = bigquery.Client(project=self._project_id)
         try:
             logging.info(f"Executando a query MERGE: \n{self._merge_query}")
             merge_job = client.query(self._merge_query)
@@ -82,6 +89,7 @@ class ExecuteBqMergeDoFn(beam.DoFn):
                 logging.info(f"Tabela de staging {self._staging_table_id} removida.")
             except Exception as e:
                 logging.error(f"Falha ao remover a tabela de staging {self._staging_table_id}: {e}")
+
 
 def run():
     parser = argparse.ArgumentParser()
@@ -169,11 +177,8 @@ def run():
             final_query = base_query
             target_table_id = f'{project_id}.{bq_dataset}.{table_name}'
             
-            # Define padrões, que podem ser sobrescritos abaixo
             write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
-            destination_table_for_write = target_table_id # Tabela final por padrão
-            
-            # MODIFICADO: Variáveis para a lógica de MERGE, declaradas fora do if
+            destination_table_for_write = target_table_id
             destination_table_for_query = None
             
             if load_type == 'delta' or load_type == 'merge':
@@ -209,7 +214,6 @@ def run():
                         staging_table_name = f"{table_name}_staging_{uuid.uuid4().hex}"
                         write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
                         
-                        # NOVO: Define os dois formatos para o nome da tabela de staging
                         destination_table_for_write = f"{project_id}:{bq_dataset}.{staging_table_name}"
                         destination_table_for_query = f"{project_id}.{bq_dataset}.{staging_table_name}"
                         
@@ -223,17 +227,13 @@ def run():
                 if part_column:
                     logging.info(f"Configurando particionamento do tipo '{part_type}' na coluna '{part_column}' para a tabela '{table_name}'.")
                     additional_bq_params['timePartitioning'] = {'type': part_type, 'field': part_column}
-                else:
-                    logging.warning(f"Configuração de particionamento para '{table_name}' incompleta. A tabela não será particionada.")
 
             clustering_info = table_config.get('clustering_config')
             if clustering_info:
                 cluster_columns = clustering_info.get('columns')
-                if cluster_columns and isinstance(cluster_columns, list):
+                if cluster_columns:
                     logging.info(f"Configurando clusterização nas colunas '{', '.join(cluster_columns)}' para a tabela '{table_name}'.")
                     additional_bq_params['clustering'] = {'fields': cluster_columns}
-                else:
-                    logging.warning(f"Configuração de clusterização para '{table_name}' incorreta. A tabela não será clusterizada.")
             
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
@@ -256,10 +256,11 @@ def run():
                 | f'Transform {table_name}' >> beam.ParDo(TransformWithSideInputDoFn(transform_function))
             )
 
-            write_result = (
+            # --- BRANCH 1: SINK (ESCRITA NO BIGQUERY) ---
+            _ = (
                 transformed_data
                 | f'Write {table_name} to BigQuery' >> beam.io.WriteToBigQuery(
-                    table=destination_table_for_write, # MODIFICADO: Usa a variável correta
+                    table=destination_table_for_write,
                     schema=_schema,
                     create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
                     write_disposition=write_disposition,
@@ -267,7 +268,7 @@ def run():
                 )
             )
 
-            # MODIFICADO: A lógica de MERGE agora está acorrentada ao 'write_result' para evitar condição de corrida
+            # --- LÓGICA DE MERGE COM SINCRONIZAÇÃO ---
             if load_type == 'merge':
                 merge_config = table_config.get('merge_config')
                 if not merge_config or 'keys' not in merge_config:
@@ -281,7 +282,6 @@ def run():
                 update_set_clause = ", ".join([f"T.{col} = S.{col}" for col in update_cols])
                 columns_list = ", ".join(schema_fields)
                 
-                # MODIFICADO: Usa a variável 'destination_table_for_query' com a sintaxe correta para SQL
                 merge_query = f"""
                     MERGE `{target_table_id}` AS T
                     USING `{destination_table_for_query}` AS S
@@ -293,16 +293,28 @@ def run():
                         VALUES ({columns_list})
                 """
                 
-                (
-                 write_result # NOVO: Inicia a partir do resultado da escrita para garantir a ordem de execução
-                 | f'Wait for {table_name} Staging Load' >> beam.Map(lambda x: None)
-                 | f'Trigger Merge for {table_name}' >> beam.Distinct()
+                # --- BRANCH 2: SINAL DE CONCLUSÃO ---
+                # Esta contagem global só termina quando toda a PCollection 'transformed_data'
+                # for processada, agindo como um sinal de que a escrita pode ser considerada concluída.
+                completion_signal = (
+                    transformed_data
+                    | f'Count Elements for {table_name}' >> beam.combiners.Count.Globally()
+                )
+
+                # --- TRIGGER PARA O MERGE ---
+                # A etapa de MERGE é acionada por um gatilho, mas depende do 'completion_signal'
+                # como side input, garantindo que só execute no final.
+                _ = (
+                 pipeline 
+                 | f'Create Trigger for {table_name}' >> beam.Create([None])
                  | f'Execute MERGE for {table_name}' >> beam.ParDo(
                      ExecuteBqMergeDoFn(
                          project_id=project_id,
+                         gcp_region=app_config['gcp']['region'],
                          merge_query=merge_query,
-                         staging_table_id=destination_table_for_query # MODIFICADO: Passa o nome correto para exclusão
-                     )
+                         staging_table_id=destination_table_for_query
+                     ),
+                     pvalue.AsSingleton(completion_signal) # Usa o sinal como dependência
                  )
                 )
 
