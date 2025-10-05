@@ -1,0 +1,38 @@
+# Arquivo .dockerignore
+
+# Ignorar pastas do Git e do Python
+.git
+.gitignore
+__pycache__/
+*.pyc
+
+# Ignorar ambientes virtuais
+.venv/
+venv/
+env/
+
+# Ignorar arquivos de configuração local ou segredos
+*.env
+local_settings.py
+
+# Ignorar documentação e testes que não são necessários na imagem final
+docs/
+tests/
+README.md
+
+# Ignorar arquivos específicos do seu editor de código
+.vscode/
+.idea/
+
+Makefile
+
+_SQLs/
+.vscode/
+queries/
+schemas/
+utils/
+
+config.local.yaml
+config.yaml
+Dockerfile.local
+secretManagerTemplate.json

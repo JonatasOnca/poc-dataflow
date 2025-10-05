@@ -19,7 +19,7 @@ COPY _drivers/mysql-connector-j-8.0.33.jar _drivers/
 WORKDIR /app
 
 # Assim, se você mudar apenas seu código .py, esta camada não precisará ser reconstruída.
-COPY beam_core/_helpers/ beam_core/_helpers/
+COPY beam_core/ beam_core/
 COPY main.py .
 COPY requirements.txt .
 COPY setup.py .
