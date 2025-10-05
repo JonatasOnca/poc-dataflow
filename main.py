@@ -7,6 +7,7 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
 from google.cloud import bigquery
+from google.api_core.exceptions import NotFound
 
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
 from beam_core._helpers.secret_manager import get_secret
@@ -209,16 +210,30 @@ def run():
                 custom_gcs_temp_location=app_config['dataflow']['parameters']['temp_location']
             )
 
-    # Após pipeline terminar, executar MERGE para cada staging
+    client = bigquery.Client(project=project_id)
+
     for task in merge_tasks:
-        execute_merge(
-            project_id=project_id,
-            gcp_region=app_config['gcp']['region'],
-            target_table_id=task['target_table_id'],
-            staging_table_id=task['staging_table_id'],
-            merge_keys=task['merge_keys'],
-            schema_fields=task['schema_fields']
-        )
+        staging_table_id = task['staging_table_id']
+        logging.info(f"Verificando a existência da tabela de staging: {staging_table_id}")
+
+        try:
+            # Tenta obter os metadados da tabela. Se não existir, lança NotFound.
+            client.get_table(staging_table_id)
+            
+            logging.info(f"Tabela de staging encontrada. Executando MERGE para {task['target_table_id']}.")
+            execute_merge(
+                project_id=project_id,
+                gcp_region=app_config['gcp']['region'],
+                target_table_id=task['target_table_id'],
+                staging_table_id=staging_table_id,
+                merge_keys=task['merge_keys'],
+                schema_fields=task['schema_fields']
+            )
+        except NotFound:
+            logging.warning(
+                f"Tabela de staging '{staging_table_id}' não foi criada (nenhum dado novo para processar). "
+                f"Pulando a etapa de MERGE para {task['target_table_id']}."
+            )
 
 
 if __name__ == "__main__":
