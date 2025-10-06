@@ -85,6 +85,8 @@ sa:
 # O alvo 'all' é para o deploy completo na nuvem
 all: setup-gcp build-image build-template upload-config upload-assets run-job
 
+update-files: setup-gcp build-image build-template upload-config upload-assets
+
 # Cria o ambiente virtual
 cria-venv:
 	@echo "Cria o ambiente virtual criado"
