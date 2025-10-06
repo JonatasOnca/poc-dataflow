@@ -1,7 +1,7 @@
 --  Copyright 2025 TecOnca Data Solutions.
 
 SELECT 
-    DATE_FORMAT(createdAt, "") AS createdAt,
+    CAST(createdAt AS CHAR) AS createdAt,
     CAST(fluente AS SIGNED) AS fluente,
     CAST(frases AS SIGNED) AS frases,
     CAST(id AS SIGNED) AS id,
@@ -9,7 +9,7 @@ SELECT
     CAST(nao_fluente AS SIGNED) AS nao_fluente,
     CAST(nao_informado AS SIGNED) AS nao_informado,
     CAST(nao_leitor AS SIGNED) AS nao_leitor,
-    CAST(option AS CHAR) AS option,
+    CAST(`option` AS CHAR) AS `option`,
     CAST(palavras AS SIGNED) AS palavras,
     CAST(reportQuestionId AS SIGNED) AS reportQuestionId,
     CAST(silabas AS SIGNED) AS silabas,

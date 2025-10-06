@@ -1122,8 +1122,7 @@ tables:
     - USU_EMAIL
 chunks:
 - name: ALL
-  lista:
-  - genero
+  lista: [aluno_teste_resposta, aluno_teste_resposta_historico, aluno_teste, report_question, report_descriptor, report_race, turma_aluno, aluno, report_subject, report_not_evaluated, infrequencia, notifications, report_edition, transferencia, turma, avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito, turma_professor, job, escola, professor, matriz_referencia_topico_items, envios_tutor_mensagens, microdata, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, importar_dados, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, tutor_mensagens, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, templates_mensagens, report_question_option, dados, avaliacao_online, arquivo, external_reports]
 - name: TABELAS_PEQUENAS
   lista:
   - turma_professor

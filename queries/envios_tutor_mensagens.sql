@@ -1,7 +1,7 @@
 --  Copyright 2025 TecOnca Data Solutions.
 
 SELECT 
-    DATE_FORMAT(createdAt, "%Y-%m-%d %H:%M:%S.%f") AS createdAt,
+    CAST(createdAt AS CHAR) AS createdAt,
     CAST(id AS SIGNED) AS id,
     CAST(statusEmail AS CHAR) AS statusEmail,
     CAST(statusWhatsapp AS CHAR) AS statusWhatsapp,
