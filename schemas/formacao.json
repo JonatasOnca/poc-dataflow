@@ -1,0 +1,39 @@
+{
+    "fields": [
+        {
+            "name": "FOR_ATIVO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "FOR_DT_ATUALIZACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "FOR_DT_CRIACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "FOR_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "FOR_NOME",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

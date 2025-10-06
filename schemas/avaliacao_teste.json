@@ -1,0 +1,32 @@
+{
+    "fields": [
+        {
+            "name": "AVA_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "AVA_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TES_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TES_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

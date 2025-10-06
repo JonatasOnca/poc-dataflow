@@ -1,0 +1,123 @@
+{
+    "fields": [
+        {
+            "name": "abandono",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "ausencia",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "countPresentStudents",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "countStudentsLaunched",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "countTotalStudents",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "createdAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "deficiencia",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "id",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "idStudents",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "name",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "nao_participou",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "recusa",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "reportEditionId",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "testTESID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "transferencia",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "type",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "updatedAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

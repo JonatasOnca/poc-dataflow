@@ -1,0 +1,179 @@
+{
+    "fields": [
+        {
+            "name": "MUN_ARQ_CONVENIO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o arquivo de convênio",
+            "fields": []
+        },
+        {
+            "name": "MUN_ATIVO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_BAIRRO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_CEP",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_CIDADE",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_COD_IBGE",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_COMPARTILHAR_DADOS",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_COMPLEMENTO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_DT_ATUALIZACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_DT_CRIACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_DT_FIM",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_DT_INICIO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_ENDERECO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_LOGO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o arquivo de upload da logo",
+            "fields": []
+        },
+        {
+            "name": "MUN_MENSAGEM_EMAIL_ATIVO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_MENSAGEM_WHATSAPP_ATIVO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_NOME",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_NUMERO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_OLD_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "Campo para informar o ID antigo",
+            "fields": []
+        },
+        {
+            "name": "MUN_PARCEIRO_EPV",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_STATUS",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "MUN_UF",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "stateId",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "stateRegionalId",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

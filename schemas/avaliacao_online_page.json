@@ -1,0 +1,53 @@
+{
+    "fields": [
+        {
+            "name": "assessmentOnlineId",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "createdAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "id",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "image",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "order",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "title",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "updatedAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

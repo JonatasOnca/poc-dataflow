@@ -1,0 +1,109 @@
+{
+    "fields": [
+        {
+            "name": "USU_ATIVO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_AVATAR",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o upload do avatar",
+            "fields": []
+        },
+        {
+            "name": "USU_DOCUMENTO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_DT_ATUALIZACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_DT_CRIACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_EMAIL",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_ESC_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_FONE",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_MUN_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_NOME",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_SENHA",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "USU_SPE_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "isChangePasswordWelcome",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "stateId",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

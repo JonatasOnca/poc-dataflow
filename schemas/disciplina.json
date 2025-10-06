@@ -1,0 +1,60 @@
+{
+    "fields": [
+        {
+            "name": "DIS_ATIVO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "DIS_COLOR",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "DIS_DT_ATUALIZACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "DIS_DT_CRIACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "DIS_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "DIS_NOME",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "DIS_OLD_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "DIS_TIPO",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

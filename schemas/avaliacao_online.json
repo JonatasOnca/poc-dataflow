@@ -1,0 +1,32 @@
+{
+    "fields": [
+        {
+            "name": "active",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "createdAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "id",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "updatedAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

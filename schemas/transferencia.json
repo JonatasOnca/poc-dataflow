@@ -1,0 +1,95 @@
+{
+    "fields": [
+        {
+            "name": "TRF_ALU_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_DT_ATUALIZACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_DT_CRIACAO",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_ESC_ID_DESTINO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_ESC_ID_ORIGEM",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_JUSTIFICATIVA",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar a justificativa da transferência",
+            "fields": []
+        },
+        {
+            "name": "TRF_OLD_ID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_STATUS",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o status da transferência",
+            "fields": []
+        },
+        {
+            "name": "TRF_TUR_ID_DESTINO",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_TUR_ID_ORIGEM",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_USU",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "TRF_USU_STATUS",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

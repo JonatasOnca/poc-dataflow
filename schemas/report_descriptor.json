@@ -1,0 +1,60 @@
+{
+    "fields": [
+        {
+            "name": "createdAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "descriptorMTIID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "id",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "reportEditionId",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "testTESID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "total",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "Campo destinado a informar quantidade de alunos",
+            "fields": []
+        },
+        {
+            "name": "totalCorrect",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "Campo destinado a informar a quantidade de alunos que acertaram",
+            "fields": []
+        },
+        {
+            "name": "updatedAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

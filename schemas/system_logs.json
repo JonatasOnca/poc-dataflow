@@ -1,0 +1,53 @@
+{
+    "fields": [
+        {
+            "name": "createdAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "id",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "method",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o método: POST\"",
+            "fields": []
+        },
+        {
+            "name": "stateFinal",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o estado final do dado que será gerado o log",
+            "fields": []
+        },
+        {
+            "name": "stateInitial",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o estado inicial do dado que será gerado o log",
+            "fields": []
+        },
+        {
+            "name": "updatedAt",
+            "mode": "NULLABLE",
+            "type": "DATETIME",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "userUSUID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

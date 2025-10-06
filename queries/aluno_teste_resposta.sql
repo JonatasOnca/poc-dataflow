@@ -1,0 +1,11 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+SELECT 
+    CAST(ATR_ALT_ID AS SIGNED) AS ATR_ALT_ID,
+    CAST(ATR_CERTO AS SIGNED) AS ATR_CERTO,
+    DATE_FORMAT(ATR_DT_CRIACAO, "%Y-%m-%d %H:%i:%s.%f") AS ATR_DT_CRIACAO,
+    CAST(ATR_ID AS SIGNED) AS ATR_ID,
+    CAST(ATR_MTI_ID AS SIGNED) AS ATR_MTI_ID,
+    CAST(ATR_RESPOSTA AS CHAR) AS ATR_RESPOSTA,
+    CAST(questionTemplateTEGID AS SIGNED) AS questionTemplateTEGID
+FROM Saev.aluno_teste_resposta

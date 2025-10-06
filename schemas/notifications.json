@@ -1,0 +1,53 @@
+{
+    "fields": [
+        {
+            "name": "createdAt",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "Campo destinado a informar quando a notificação foi criada",
+            "fields": []
+        },
+        {
+            "name": "id",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        },
+        {
+            "name": "isReading",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "Campo destinado a informar se a notificação foi lida",
+            "fields": []
+        },
+        {
+            "name": "message",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o corpo da notificação",
+            "fields": []
+        },
+        {
+            "name": "title",
+            "mode": "NULLABLE",
+            "type": "STRING",
+            "description": "Campo destinado a informar o título da notificicação",
+            "fields": []
+        },
+        {
+            "name": "updateAt",
+            "mode": "NULLABLE",
+            "type": "TIMESTAMP",
+            "description": "Campo destinado a informar quando a notificação foi atualizada",
+            "fields": []
+        },
+        {
+            "name": "userUSUID",
+            "mode": "NULLABLE",
+            "type": "INTEGER",
+            "description": "",
+            "fields": []
+        }
+    ]
+}

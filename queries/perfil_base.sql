@@ -1,0 +1,9 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+SELECT 
+    CAST(PER_ATIVO AS SIGNED) AS PER_ATIVO,
+    DATE_FORMAT(PER_DT_ATUALIZACAO, "%Y-%m-%d %H:%i:%s.%f") AS PER_DT_ATUALIZACAO,
+    DATE_FORMAT(PER_DT_CRIACAO, "%Y-%m-%d %H:%i:%s.%f") AS PER_DT_CRIACAO,
+    CAST(PER_ID AS SIGNED) AS PER_ID,
+    CAST(PER_NOME AS CHAR) AS PER_NOME
+FROM Saev.perfil_base
