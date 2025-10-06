@@ -2,11 +2,11 @@
 
 SELECT 
     CAST(createdAt AS CHAR) AS createdAt,
-    CAST(descriptorMTIID AS SIGNED) AS descriptorMTIID,
-    CAST(id AS SIGNED) AS id,
-    CAST(reportEditionId AS SIGNED) AS reportEditionId,
-    CAST(testTESID AS SIGNED) AS testTESID,
-    CAST(total AS SIGNED) AS total,
-    CAST(totalCorrect AS SIGNED) AS totalCorrect,
+    CAST(descriptorMTIID AS CHAR) AS descriptorMTIID,
+    CAST(id AS CHAR) AS id,
+    CAST(reportEditionId AS CHAR) AS reportEditionId,
+    CAST(testTESID AS CHAR) AS testTESID,
+    CAST(total AS CHAR) AS total,
+    CAST(totalCorrect AS CHAR) AS totalCorrect,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.report_descriptor limit 1
+FROM Saev_Final.report_descriptor limit 1

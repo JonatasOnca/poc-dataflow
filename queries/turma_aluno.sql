@@ -3,9 +3,9 @@
 SELECT 
     CAST(createdAt AS CHAR) AS createdAt,
     CAST(endDate AS CHAR) AS endDate,
-    CAST(id AS SIGNED) AS id,
-    CAST(schoolClassTURID AS SIGNED) AS schoolClassTURID,
+    CAST(id AS CHAR) AS id,
+    CAST(schoolClassTURID AS CHAR) AS schoolClassTURID,
     CAST(startDate AS CHAR) AS startDate,
-    CAST(studentALUID AS SIGNED) AS studentALUID,
+    CAST(studentALUID AS CHAR) AS studentALUID,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.turma_aluno limit 1
+FROM Saev_Final.turma_aluno limit 1

@@ -55,18 +55,18 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - ALU_OLD_ID
-    - ALU_COD
     - ALU_ID
+    - ALU_COD
+    - ALU_OLD_ID
     
   partitioning_config:
     type: DAY
     column: ALU_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ALU_OLD_ID
-    - ALU_COD
     - ALU_ID
+    - ALU_COD
+    - ALU_OLD_ID
     
   
 - name: aluno_alu_deficiencias_pcd
@@ -78,16 +78,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - pcdPCDID
     - alunoALUID
+    - pcdPCDID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - pcdPCDID
     - alunoALUID
+    - pcdPCDID
     
   
 - name: aluno_teste
@@ -99,18 +99,18 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - ALT_TES_ID
-    - ALT_ALU_ID
     - ALT_ID
+    - ALT_ALU_ID
+    - ALT_TES_ID
     
   partitioning_config:
     type: DAY
     column: ALT_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ALT_TES_ID
-    - ALT_ALU_ID
     - ALT_ID
+    - ALT_ALU_ID
+    - ALT_TES_ID
     
   
 - name: aluno_teste_resposta
@@ -160,16 +160,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - ANO_ID
     - ANO_OLD_ID
+    - ANO_ID
     
   partitioning_config:
     type: DAY
     column: ANO_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ANO_ID
     - ANO_OLD_ID
+    - ANO_ID
     
   
 - name: area
@@ -200,16 +200,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - AVA_OLD_ID
     - AVA_ID
+    - AVA_OLD_ID
     
   partitioning_config:
     type: DAY
     column: AVA_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - AVA_OLD_ID
     - AVA_ID
+    - AVA_OLD_ID
     
   
 - name: avaliacao_municipio
@@ -221,22 +221,22 @@ tables:
     type: timestamp
   merge_config:
     keys:
+    - AVM_TIPO
     - AVM_ID
     - AVM_MUN_ID
-    - AVM_AVA_ID
-    - AVM_TIPO
     - AVM_OLD_ID
+    - AVM_AVA_ID
     
   partitioning_config:
     type: DAY
     column: AVM_DT_ATUALIZACAO
   clustering_config:
     columns: 
+    - AVM_TIPO
     - AVM_ID
     - AVM_MUN_ID
-    - AVM_AVA_ID
-    - AVM_TIPO
     - AVM_OLD_ID
+    - AVM_AVA_ID
     
   
 - name: avaliacao_online
@@ -286,16 +286,16 @@ tables:
     type: datetime
   merge_config:
     keys:
-    - id
     - questionTemplateId
+    - id
     
   partitioning_config:
     type: DAY
     column: updatedAt
   clustering_config:
     columns: 
-    - id
     - questionTemplateId
+    - id
     
   
 - name: avaliacao_online_question_alternative
@@ -326,16 +326,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - TES_ID
     - AVA_ID
+    - TES_ID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - TES_ID
     - AVA_ID
+    - TES_ID
     
   
 - name: disciplina
@@ -389,18 +389,18 @@ tables:
     type: timestamp
   merge_config:
     keys:
+    - abbreviation
     - id
     - name
-    - abbreviation
     
   partitioning_config:
     type: DAY
     column: updatedAt
   clustering_config:
     columns: 
+    - abbreviation
     - id
     - name
-    - abbreviation
     
   
 - name: forget_password
@@ -412,16 +412,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - id
     - userUSUID
+    - id
     
   partitioning_config:
     type: DAY
     column: updatedAt
   clustering_config:
     columns: 
-    - id
     - userUSUID
+    - id
     
   
 - name: formacao
@@ -471,16 +471,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - IFR_OLD_ID
     - IFR_ID
+    - IFR_OLD_ID
     
   partitioning_config:
     type: DAY
     column: IFR_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - IFR_OLD_ID
     - IFR_ID
+    - IFR_OLD_ID
     
   
 - name: job
@@ -511,16 +511,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - MAR_ID
     - MAR_OLD_ID
+    - MAR_ID
     
   partitioning_config:
     type: DAY
     column: MAR_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MAR_ID
     - MAR_OLD_ID
+    - MAR_ID
     
   
 - name: matriz_referencia_serie
@@ -532,16 +532,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - MAR_ID
     - SER_ID
+    - MAR_ID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - MAR_ID
     - SER_ID
+    - MAR_ID
     
   
 - name: matriz_referencia_topico
@@ -553,16 +553,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - MTO_OLD_ID
     - MTO_ID
+    - MTO_OLD_ID
     
   partitioning_config:
     type: DAY
     column: MTO_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MTO_OLD_ID
     - MTO_ID
+    - MTO_OLD_ID
     
   
 - name: matriz_referencia_topico_items
@@ -574,16 +574,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - MTI_ID
     - MTI_OLD_ID
+    - MTI_ID
     
   partitioning_config:
     type: DAY
     column: MTI_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MTI_ID
     - MTI_OLD_ID
+    - MTI_ID
     
   
 - name: messages
@@ -696,16 +696,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - PCD_ID
     - PCD_OLD_ID
+    - PCD_ID
     
   partitioning_config:
     type: DAY
     column: PCD_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - PCD_ID
     - PCD_OLD_ID
+    - PCD_ID
     
   
 - name: perfil_base
@@ -911,16 +911,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - SER_OLD_ID
     - SER_ID
+    - SER_OLD_ID
     
   partitioning_config:
     type: DAY
     column: SER_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - SER_OLD_ID
     - SER_ID
+    - SER_OLD_ID
     
   
 - name: sub_perfil
@@ -1098,16 +1098,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - USU_ID
     - USU_EMAIL
+    - USU_ID
     
   partitioning_config:
     type: DAY
     column: USU_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - USU_ID
     - USU_EMAIL
+    - USU_ID
     
 
 # Chunks de tabelas para ingestão

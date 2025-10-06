@@ -1,6 +1,6 @@
 --  Copyright 2025 TecOnca Data Solutions.
 
 SELECT 
-    CAST(alunoALUID AS SIGNED) AS alunoALUID,
-    CAST(pcdPCDID AS SIGNED) AS pcdPCDID
-FROM Saev.aluno_alu_deficiencias_pcd limit 1
+    CAST(alunoALUID AS CHAR) AS alunoALUID,
+    CAST(pcdPCDID AS CHAR) AS pcdPCDID
+FROM Saev_Final.aluno_alu_deficiencias_pcd limit 1
