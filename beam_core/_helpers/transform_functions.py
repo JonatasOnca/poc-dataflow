@@ -84,7 +84,7 @@ def transform_aluno_teste_resposta_table(row_dict):
         
     transformed_row['ATR_DT_CRIACAO'] = formatar_data(
         valor_data=transformed_row.get('ATR_DT_CRIACAO'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -95,7 +95,7 @@ def transform_aluno_teste_resposta_historico_table(row_dict):
         
     transformed_row['ATH_DT_CRIACAO'] = formatar_data(
         valor_data=transformed_row.get('ATH_DT_CRIACAO'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -111,7 +111,7 @@ def transform_ano_letivo_table(row_dict):
     )
     transformed_row['ANO_DT_CRIACAO'] = formatar_data(
         valor_data=transformed_row.get('ANO_DT_CRIACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -180,17 +180,17 @@ def transform_avaliacao_municipio_table(row_dict):
     )
     transformed_row['AVM_DT_DISPONIVEL'] = formatar_data(
         valor_data=transformed_row.get('AVM_DT_DISPONIVEL'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['AVM_DT_FIM'] = formatar_data(
         valor_data=transformed_row.get('AVM_DT_FIM'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['AVM_DT_INICIO'] = formatar_data(
         valor_data=transformed_row.get('AVM_DT_INICIO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -201,12 +201,12 @@ def transform_avaliacao_online_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -217,12 +217,12 @@ def transform_avaliacao_online_page_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -233,12 +233,12 @@ def transform_avaliacao_online_question_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -249,12 +249,12 @@ def transform_avaliacao_online_question_alternative_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -314,7 +314,7 @@ def transform_escola_table(row_dict):
         
     transformed_row['ESC_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('ESC_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['ESC_DT_CRIACAO'] = formatar_data(
@@ -367,7 +367,7 @@ def transform_forget_password_table(row_dict):
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -378,12 +378,12 @@ def transform_formacao_table(row_dict):
         
     transformed_row['FOR_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('FOR_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['FOR_DT_CRIACAO'] = formatar_data(
         valor_data=transformed_row.get('FOR_DT_CRIACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -410,7 +410,7 @@ def transform_importar_dados_table(row_dict):
         
     transformed_row['DAT_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('DAT_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['DAT_DT_CRIACAO'] = formatar_data(
@@ -447,17 +447,17 @@ def transform_job_table(row_dict):
     )
     transformed_row['endDate'] = formatar_data(
         valor_data=transformed_row.get('endDate'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['startDate'] = formatar_data(
         valor_data=transformed_row.get('startDate'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -468,7 +468,7 @@ def transform_matriz_referencia_table(row_dict):
         
     transformed_row['MAR_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('MAR_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['MAR_DT_CRIACAO'] = formatar_data(
@@ -555,7 +555,7 @@ def transform_microdata_table(row_dict):
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -572,7 +572,7 @@ def transform_municipio_table(row_dict):
         
     transformed_row['MUN_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('MUN_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['MUN_DT_CRIACAO'] = formatar_data(
@@ -582,12 +582,12 @@ def transform_municipio_table(row_dict):
     )
     transformed_row['MUN_DT_FIM'] = formatar_data(
         valor_data=transformed_row.get('MUN_DT_FIM'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['MUN_DT_INICIO'] = formatar_data(
         valor_data=transformed_row.get('MUN_DT_INICIO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -603,7 +603,7 @@ def transform_notifications_table(row_dict):
     )
     transformed_row['updateAt'] = formatar_data(
         valor_data=transformed_row.get('updateAt'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -646,7 +646,7 @@ def transform_professor_table(row_dict):
         
     transformed_row['PRO_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('PRO_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['PRO_DT_CRIACAO'] = formatar_data(
@@ -656,7 +656,7 @@ def transform_professor_table(row_dict):
     )
     transformed_row['PRO_DT_NASC'] = formatar_data(
         valor_data=transformed_row.get('PRO_DT_NASC'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -667,12 +667,12 @@ def transform_raca_table(row_dict):
         
     transformed_row['PEL_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('PEL_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['PEL_DT_CRIACAO'] = formatar_data(
         valor_data=transformed_row.get('PEL_DT_CRIACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -688,7 +688,7 @@ def transform_regionais_table(row_dict):
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -699,12 +699,12 @@ def transform_report_descriptor_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -715,12 +715,12 @@ def transform_report_edition_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -731,12 +731,12 @@ def transform_report_not_evaluated_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -764,12 +764,12 @@ def transform_report_race_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -780,12 +780,12 @@ def transform_report_subject_table(row_dict):
         
     transformed_row['createdAt'] = formatar_data(
         valor_data=transformed_row.get('createdAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['updatedAt'] = formatar_data(
         valor_data=transformed_row.get('updatedAt'),
-        formato_entrada='%Y-%m-%dT%H:%M:%S.%f',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -796,12 +796,12 @@ def transform_series_table(row_dict):
         
     transformed_row['SER_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('SER_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['SER_DT_CRIACAO'] = formatar_data(
         valor_data=transformed_row.get('SER_DT_CRIACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
 
@@ -866,7 +866,7 @@ def transform_teste_table(row_dict):
         
     transformed_row['TES_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('TES_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['TES_DT_CRIACAO'] = formatar_data(
@@ -882,7 +882,7 @@ def transform_teste_gabarito_table(row_dict):
         
     transformed_row['TEG_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('TEG_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['TEG_DT_CRIACAO'] = formatar_data(
@@ -898,7 +898,7 @@ def transform_transferencia_table(row_dict):
         
     transformed_row['TRF_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('TRF_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['TRF_DT_CRIACAO'] = formatar_data(
@@ -914,7 +914,7 @@ def transform_turma_table(row_dict):
         
     transformed_row['TUR_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('TUR_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['TUR_DT_CRIACAO'] = formatar_data(
@@ -978,7 +978,7 @@ def transform_usuario_table(row_dict):
         
     transformed_row['USU_DT_ATUALIZACAO'] = formatar_data(
         valor_data=transformed_row.get('USU_DT_ATUALIZACAO'),
-        formato_entrada='%Y-%m-%d %H:%M:%S',
+        formato_entrada='%Y-%m-%d %H:%M:%S.%f',
         formato_saida='%Y-%m-%d %H:%M:%S.%f' # Formato DATETIME para o BigQuery
     )
     transformed_row['USU_DT_CRIACAO'] = formatar_data(

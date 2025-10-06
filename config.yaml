@@ -124,7 +124,7 @@ tables:
   schema_file: aluno_teste_resposta.json
   delta_config:
     column: ATR_DT_CRIACAO
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -143,7 +143,7 @@ tables:
   schema_file: aluno_teste_resposta_historico.json
   delta_config:
     column: ATH_DT_CRIACAO
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -269,7 +269,7 @@ tables:
   schema_file: avaliacao_online.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -288,7 +288,7 @@ tables:
   schema_file: avaliacao_online_page.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -307,7 +307,7 @@ tables:
   schema_file: avaliacao_online_question.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -328,7 +328,7 @@ tables:
   schema_file: avaliacao_online_question_alternative.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -427,7 +427,7 @@ tables:
   schema_file: escola.json
   delta_config:
     column: ESC_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -490,7 +490,7 @@ tables:
   schema_file: forget_password.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -511,7 +511,7 @@ tables:
   schema_file: formacao.json
   delta_config:
     column: FOR_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -549,7 +549,7 @@ tables:
   schema_file: importar_dados.json
   delta_config:
     column: DAT_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -589,7 +589,7 @@ tables:
   schema_file: job.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -608,7 +608,7 @@ tables:
   schema_file: matriz_referencia.json
   delta_config:
     column: MAR_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -791,7 +791,7 @@ tables:
   schema_file: municipio.json
   delta_config:
     column: MUN_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -871,7 +871,7 @@ tables:
   schema_file: professor.json
   delta_config:
     column: PRO_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -892,7 +892,7 @@ tables:
   schema_file: raca.json
   delta_config:
     column: PEL_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -913,7 +913,7 @@ tables:
   schema_file: regionais.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -932,7 +932,7 @@ tables:
   schema_file: report_descriptor.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -951,7 +951,7 @@ tables:
   schema_file: report_edition.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -970,7 +970,7 @@ tables:
   schema_file: report_not_evaluated.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -1027,7 +1027,7 @@ tables:
   schema_file: report_race.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -1046,7 +1046,7 @@ tables:
   schema_file: report_subject.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -1065,7 +1065,7 @@ tables:
   schema_file: series.json
   delta_config:
     column: SER_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -1164,7 +1164,7 @@ tables:
   schema_file: teste.json
   delta_config:
     column: TES_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -1187,7 +1187,7 @@ tables:
   schema_file: teste_gabarito.json
   delta_config:
     column: TEG_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -1208,7 +1208,7 @@ tables:
   schema_file: transferencia.json
   delta_config:
     column: TRF_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -1229,7 +1229,7 @@ tables:
   schema_file: turma.json
   delta_config:
     column: TUR_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -1309,7 +1309,7 @@ tables:
   schema_file: usuario.json
   delta_config:
     column: USU_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:

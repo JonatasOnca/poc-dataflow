@@ -99,7 +99,7 @@ tables:
   schema_file: aluno_teste_resposta.json
   delta_config:
     column: ATR_DT_CRIACAO
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -115,7 +115,7 @@ tables:
   schema_file: aluno_teste_resposta_historico.json
   delta_config:
     column: ATH_DT_CRIACAO
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -223,7 +223,7 @@ tables:
   schema_file: avaliacao_online.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -239,7 +239,7 @@ tables:
   schema_file: avaliacao_online_page.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -255,7 +255,7 @@ tables:
   schema_file: avaliacao_online_question.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -273,7 +273,7 @@ tables:
   schema_file: avaliacao_online_question_alternative.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -461,7 +461,7 @@ tables:
   schema_file: importar_dados.json
   delta_config:
     column: DAT_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -787,7 +787,7 @@ tables:
   schema_file: report_descriptor.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -803,7 +803,7 @@ tables:
   schema_file: report_edition.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -819,7 +819,7 @@ tables:
   schema_file: report_not_evaluated.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -867,7 +867,7 @@ tables:
   schema_file: report_race.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
@@ -883,7 +883,7 @@ tables:
   schema_file: report_subject.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%dT%H:%M:%S.%f'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: datetime
   merge_config:
     keys:
