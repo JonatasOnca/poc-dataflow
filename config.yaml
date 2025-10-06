@@ -191,25 +191,6 @@ tables:
     - ARE_ID
     
   
-- name: arquivo
-  query_file: arquivo.sql
-  schema_file: arquivo.json
-  delta_config:
-    column: 
-    format: ''
-    type: 
-  merge_config:
-    keys:
-    - ARQ_ID
-    
-  partitioning_config:
-    type: DAY
-    column: 
-  clustering_config:
-    columns: 
-    - ARQ_ID
-    
-  
 - name: avaliacao
   query_file: avaliacao.sql
   schema_file: avaliacao.json
@@ -357,25 +338,6 @@ tables:
     - AVA_ID
     
   
-- name: dados
-  query_file: dados.sql
-  schema_file: dados.json
-  delta_config:
-    column: DAT_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
-    type: timestamp
-  merge_config:
-    keys:
-    - DAT_ID
-    
-  partitioning_config:
-    type: DAY
-    column: DAT_DT_ATUALIZACAO
-  clustering_config:
-    columns: 
-    - DAT_ID
-    
-  
 - name: disciplina
   query_file: disciplina.sql
   schema_file: disciplina.json
@@ -395,25 +357,6 @@ tables:
     columns: 
     - DIS_ID
     - DIS_OLD_ID
-    
-  
-- name: envios_tutor_mensagens
-  query_file: envios_tutor_mensagens.sql
-  schema_file: envios_tutor_mensagens.json
-  delta_config:
-    column: 
-    format: ''
-    type: 
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: 
-  clustering_config:
-    columns: 
-    - id
     
   
 - name: escola
@@ -458,25 +401,6 @@ tables:
     - id
     - name
     - abbreviation
-    
-  
-- name: external_reports
-  query_file: external_reports.sql
-  schema_file: external_reports.json
-  delta_config:
-    column: 
-    format: ''
-    type: 
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: 
-  clustering_config:
-    columns: 
-    - id
     
   
 - name: forget_password
@@ -536,25 +460,6 @@ tables:
   clustering_config:
     columns: 
     - GEN_ID
-    
-  
-- name: importar_dados
-  query_file: importar_dados.sql
-  schema_file: importar_dados.json
-  delta_config:
-    column: DAT_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S'
-    type: timestamp
-  merge_config:
-    keys:
-    - DAT_ID
-    
-  partitioning_config:
-    type: DAY
-    column: DAT_DT_ATUALIZACAO
-  clustering_config:
-    columns: 
-    - DAT_ID
     
   
 - name: infrequencia
@@ -742,25 +647,6 @@ tables:
     - messagesMENID
     
   
-- name: microdata
-  query_file: microdata.sql
-  schema_file: microdata.json
-  delta_config:
-    column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S'
-    type: datetime
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: updatedAt
-  clustering_config:
-    columns: 
-    - id
-    
-  
 - name: migrations
   query_file: migrations.sql
   schema_file: migrations.json
@@ -799,25 +685,6 @@ tables:
     columns: 
     - MUN_OLD_ID
     - MUN_ID
-    
-  
-- name: notifications
-  query_file: notifications.sql
-  schema_file: notifications.json
-  delta_config:
-    column: updateAt
-    format: '%Y-%m-%d %H:%M:%S'
-    type: timestamp
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: updateAt
-  clustering_config:
-    columns: 
-    - id
     
   
 - name: pcd
@@ -997,25 +864,6 @@ tables:
     - id
     
   
-- name: report_question_option
-  query_file: report_question_option.sql
-  schema_file: report_question_option.json
-  delta_config:
-    column: 
-    format: ''
-    type: 
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: 
-  clustering_config:
-    columns: 
-    - id
-    
-  
 - name: report_race
   query_file: report_race.sql
   schema_file: report_race.json
@@ -1113,44 +961,6 @@ tables:
     columns: 
     - SPE_ID
     - ARE_ID
-    
-  
-- name: system_logs
-  query_file: system_logs.sql
-  schema_file: system_logs.json
-  delta_config:
-    column: 
-    format: ''
-    type: 
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: 
-  clustering_config:
-    columns: 
-    - id
-    
-  
-- name: templates_mensagens
-  query_file: templates_mensagens.sql
-  schema_file: templates_mensagens.json
-  delta_config:
-    column: 
-    format: ''
-    type: 
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: 
-  clustering_config:
-    columns: 
-    - id
     
   
 - name: teste
@@ -1279,25 +1089,6 @@ tables:
     - PRO_ID
     
   
-- name: tutor_mensagens
-  query_file: tutor_mensagens.sql
-  schema_file: tutor_mensagens.json
-  delta_config:
-    column: 
-    format: ''
-    type: 
-  merge_config:
-    keys:
-    - id
-    
-  partitioning_config:
-    type: DAY
-    column: 
-  clustering_config:
-    columns: 
-    - id
-    
-  
 - name: usuario
   query_file: usuario.sql
   schema_file: usuario.json
@@ -1321,10 +1112,10 @@ tables:
 # Chunks de tabelas para ingestão
 chunks:
   - name: ALL
-    lista: [aluno_teste_resposta, aluno_teste_resposta_historico, aluno_teste, report_question, report_descriptor, report_race, turma_aluno, aluno, report_subject, report_not_evaluated, infrequencia, notifications, report_edition, transferencia, turma, avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito, turma_professor, job, escola, professor, matriz_referencia_topico_items, envios_tutor_mensagens, microdata, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, importar_dados, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, tutor_mensagens, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, templates_mensagens, report_question_option, dados, avaliacao_online, arquivo, external_reports]
+    lista: [aluno_teste_resposta, aluno_teste_resposta_historico, aluno_teste, report_question, report_descriptor, report_race, turma_aluno, aluno, report_subject, report_not_evaluated, infrequencia, report_edition, transferencia, turma, avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito, turma_professor, job, escola, professor, matriz_referencia_topico_items, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, avaliacao_online,  external_reports]
     # lista: [genero]
   - name: TABELAS_PEQUENAS
-    lista: [turma_professor, job, escola, professor, matriz_referencia_topico_items, envios_tutor_mensagens, microdata, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, importar_dados, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, tutor_mensagens, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, templates_mensagens, report_question_option, dados, avaliacao_online, arquivo, external_reports]
+    lista: [turma_professor, job, escola, professor, matriz_referencia_topico_items, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, avaliacao_online,  external_reports]
   - name: TABELAS_MEDIAS
     lista: [avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito]
   - name: turma

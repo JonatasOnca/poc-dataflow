@@ -85,7 +85,7 @@ sa:
 # O alvo 'all' é para o deploy completo na nuvem
 all: setup-gcp build-image build-template upload-config upload-assets run-job
 
-update-files: setup-gcp build-image build-template upload-config upload-assets
+update-files: upload-config setup-gcp build-image build-template upload-config upload-assets
 
 # Cria o ambiente virtual
 cria-venv:
@@ -133,12 +133,17 @@ upload-config:
 	@echo ">>> Sincronizando! '$(CONFIG_GCS_PATH)'..."
 
 # Envia os arquivos de assets (SQL, JSON) para o GCS.
-upload-assets:
+upload-assets: 
 	@echo ">>> Sincronizando pastas de assets para o bucket '$(BUCKET_NAME)'..."
 	gcloud config set project $(PROJECT_ID)
 	gsutil -m rsync -r -d $(QUERIES_LOCAL_PATH) $(QUERIES_GCS_PATH)
 	gsutil -m rsync -r -d $(SCHEMAS_LOCAL_PATH) $(SCHEMAS_GCS_PATH)
 	@echo ">>> Sincronizando! '$(BUCKET_NAME)'..."
+
+update-config:
+	@echo "--- Atualiza o Dockerfile.local ---"
+	python3 utils/config_modifier.py config.yaml config.local.yaml
+
 
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
