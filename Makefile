@@ -182,7 +182,7 @@ test-local:
 	python3 utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type backfill
+	python3 main.py --config_file config.local.yaml --chunk_name TABELAS_PEQUENAS --load_type backfill
 # 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type backfill
 # 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type merge
 # 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type delta
