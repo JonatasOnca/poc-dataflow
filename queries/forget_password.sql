@@ -6,6 +6,5 @@ SELECT
     CAST(isValid AS SIGNED) AS isValid,
     CAST(token AS CHAR) AS token,
     DATE_FORMAT(updatedAt, "%Y-%m-%d %H:%i:%s.%f") AS updatedAt,
-    CAST(userUSUID AS SIGNED) AS userUSUID,
     CAST(userUSUID AS SIGNED) AS userUSUID
 FROM Saev.forget_password

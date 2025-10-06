@@ -90,13 +90,6 @@
             "type": "INTEGER",
             "description": "",
             "fields": []
-        },
-        {
-            "name": "assessmentOnlineId",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
         }
     ]
 }

@@ -7,6 +7,5 @@ SELECT
     CAST(order AS SIGNED) AS order,
     CAST(pageId AS SIGNED) AS pageId,
     CAST(questionTemplateId AS SIGNED) AS questionTemplateId,
-    CAST(questionTemplateId AS SIGNED) AS questionTemplateId,
     DATE_FORMAT(updatedAt, "%Y-%m-%d %H:%i:%s.%f") AS updatedAt
 FROM Saev.avaliacao_online_question

@@ -15,13 +15,6 @@
             "fields": []
         },
         {
-            "name": "AVM_AVA_ID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
             "name": "AVM_DT_ATUALIZACAO",
             "mode": "NULLABLE",
             "type": "TIMESTAMP",
@@ -58,13 +51,6 @@
         },
         {
             "name": "AVM_ID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
-            "name": "AVM_MUN_ID",
             "mode": "NULLABLE",
             "type": "INTEGER",
             "description": "",

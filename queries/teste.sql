@@ -13,6 +13,5 @@ SELECT
     CAST(TES_NOME AS CHAR) AS TES_NOME,
     CAST(TES_OLD_ID AS SIGNED) AS TES_OLD_ID,
     CAST(TES_SER_ID AS SIGNED) AS TES_SER_ID,
-    CAST(assessmentOnlineId AS SIGNED) AS assessmentOnlineId,
     CAST(assessmentOnlineId AS SIGNED) AS assessmentOnlineId
 FROM Saev.teste

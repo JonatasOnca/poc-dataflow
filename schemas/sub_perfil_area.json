@@ -8,20 +8,6 @@
             "fields": []
         },
         {
-            "name": "ARE_ID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
-            "name": "SPE_ID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
             "name": "SPE_ID",
             "mode": "NULLABLE",
             "type": "INTEGER",

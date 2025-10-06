@@ -8,20 +8,6 @@
             "fields": []
         },
         {
-            "name": "alunoALUID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
-            "name": "pcdPCDID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
             "name": "pcdPCDID",
             "mode": "NULLABLE",
             "type": "INTEGER",

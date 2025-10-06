@@ -8,20 +8,6 @@
             "fields": []
         },
         {
-            "name": "escolaESCID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
-            "name": "messagesMENID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
             "name": "messagesMENID",
             "mode": "NULLABLE",
             "type": "INTEGER",

@@ -8,13 +8,6 @@
             "fields": []
         },
         {
-            "name": "ALT_ALU_ID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
             "name": "ALT_ATIVO",
             "mode": "NULLABLE",
             "type": "INTEGER",
@@ -82,13 +75,6 @@
             "mode": "NULLABLE",
             "type": "STRING",
             "description": "Campo destinado a justificar caso o aluno não tenha realizado o teste",
-            "fields": []
-        },
-        {
-            "name": "ALT_TES_ID",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
             "fields": []
         },
         {

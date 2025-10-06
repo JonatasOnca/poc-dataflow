@@ -49,6 +49,7 @@ watermark_table:
   dataset_id: 'meta_controle'
   table_id: 'watermarks'
 
+
 # Lista de tabelas para ingestão
 tables:
 - name: aluno
@@ -56,12 +57,12 @@ tables:
   schema_file: aluno.json
   delta_config:
     column: ALU_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - ALU_COD
     - ALU_ID
+    - ALU_COD
     - ALU_OLD_ID
     
   partitioning_config:
@@ -69,8 +70,8 @@ tables:
     column: ALU_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ALU_COD
     - ALU_ID
+    - ALU_COD
     - ALU_OLD_ID
     
   
@@ -83,16 +84,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - pcdPCDID
     - alunoALUID
+    - pcdPCDID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - pcdPCDID
     - alunoALUID
+    - pcdPCDID
     
   
 - name: aluno_teste
@@ -100,13 +101,13 @@ tables:
   schema_file: aluno_teste.json
   delta_config:
     column: ALT_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
     - ALT_ALU_ID
-    - ALT_ID
     - ALT_TES_ID
+    - ALT_ID
     
   partitioning_config:
     type: DAY
@@ -114,8 +115,8 @@ tables:
   clustering_config:
     columns: 
     - ALT_ALU_ID
-    - ALT_ID
     - ALT_TES_ID
+    - ALT_ID
     
   
 - name: aluno_teste_resposta
@@ -161,20 +162,20 @@ tables:
   schema_file: ano_letivo.json
   delta_config:
     column: ANO_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - ANO_OLD_ID
     - ANO_ID
+    - ANO_OLD_ID
     
   partitioning_config:
     type: DAY
     column: ANO_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ANO_OLD_ID
     - ANO_ID
+    - ANO_OLD_ID
     
   
 - name: area
@@ -182,7 +183,7 @@ tables:
   schema_file: area.json
   delta_config:
     column: ARE_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -220,20 +221,20 @@ tables:
   schema_file: avaliacao.json
   delta_config:
     column: AVA_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - AVA_ID
     - AVA_OLD_ID
+    - AVA_ID
     
   partitioning_config:
     type: DAY
     column: AVA_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - AVA_ID
     - AVA_OLD_ID
+    - AVA_ID
     
   
 - name: avaliacao_municipio
@@ -241,26 +242,26 @@ tables:
   schema_file: avaliacao_municipio.json
   delta_config:
     column: AVM_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
+    - AVM_MUN_ID
     - AVM_AVA_ID
     - AVM_TIPO
     - AVM_OLD_ID
     - AVM_ID
-    - AVM_MUN_ID
     
   partitioning_config:
     type: DAY
     column: AVM_DT_ATUALIZACAO
   clustering_config:
     columns: 
+    - AVM_MUN_ID
     - AVM_AVA_ID
     - AVM_TIPO
     - AVM_OLD_ID
     - AVM_ID
-    - AVM_MUN_ID
     
   
 - name: avaliacao_online
@@ -386,20 +387,20 @@ tables:
   schema_file: disciplina.json
   delta_config:
     column: DIS_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - DIS_ID
     - DIS_OLD_ID
+    - DIS_ID
     
   partitioning_config:
     type: DAY
     column: DIS_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - DIS_ID
     - DIS_OLD_ID
+    - DIS_ID
     
   
 - name: envios_tutor_mensagens
@@ -426,20 +427,20 @@ tables:
   schema_file: escola.json
   delta_config:
     column: ESC_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
-    - ESC_ID
     - ESC_OLD_ID
+    - ESC_ID
     
   partitioning_config:
     type: DAY
     column: ESC_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ESC_ID
     - ESC_OLD_ID
+    - ESC_ID
     
   
 - name: estados
@@ -447,12 +448,12 @@ tables:
   schema_file: estados.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - name
     - id
+    - name
     - abbreviation
     
   partitioning_config:
@@ -460,8 +461,8 @@ tables:
     column: updatedAt
   clustering_config:
     columns: 
-    - name
     - id
+    - name
     - abbreviation
     
   
@@ -489,7 +490,7 @@ tables:
   schema_file: forget_password.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
@@ -510,7 +511,7 @@ tables:
   schema_file: formacao.json
   delta_config:
     column: FOR_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
@@ -529,7 +530,7 @@ tables:
   schema_file: genero.json
   delta_config:
     column: GEN_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -567,20 +568,20 @@ tables:
   schema_file: infrequencia.json
   delta_config:
     column: IFR_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - IFR_ID
     - IFR_OLD_ID
+    - IFR_ID
     
   partitioning_config:
     type: DAY
     column: IFR_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - IFR_ID
     - IFR_OLD_ID
+    - IFR_ID
     
   
 - name: job
@@ -588,7 +589,7 @@ tables:
   schema_file: job.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
@@ -607,20 +608,20 @@ tables:
   schema_file: matriz_referencia.json
   delta_config:
     column: MAR_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
-    - MAR_OLD_ID
     - MAR_ID
+    - MAR_OLD_ID
     
   partitioning_config:
     type: DAY
     column: MAR_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MAR_OLD_ID
     - MAR_ID
+    - MAR_OLD_ID
     
   
 - name: matriz_referencia_serie
@@ -632,16 +633,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - SER_ID
     - MAR_ID
+    - SER_ID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - SER_ID
     - MAR_ID
+    - SER_ID
     
   
 - name: matriz_referencia_topico
@@ -649,20 +650,20 @@ tables:
   schema_file: matriz_referencia_topico.json
   delta_config:
     column: MTO_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - MTO_ID
     - MTO_OLD_ID
+    - MTO_ID
     
   partitioning_config:
     type: DAY
     column: MTO_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MTO_ID
     - MTO_OLD_ID
+    - MTO_ID
     
   
 - name: matriz_referencia_topico_items
@@ -670,20 +671,20 @@ tables:
   schema_file: matriz_referencia_topico_items.json
   delta_config:
     column: MTI_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - MTI_ID
     - MTI_OLD_ID
+    - MTI_ID
     
   partitioning_config:
     type: DAY
     column: MTI_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MTI_ID
     - MTI_OLD_ID
+    - MTI_ID
     
   
 - name: messages
@@ -691,7 +692,7 @@ tables:
   schema_file: messages.json
   delta_config:
     column: MEN_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -714,16 +715,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - municipioMUNID
     - messagesMENID
+    - municipioMUNID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - municipioMUNID
     - messagesMENID
+    - municipioMUNID
     
   
 - name: messages_schools_escola
@@ -790,20 +791,20 @@ tables:
   schema_file: municipio.json
   delta_config:
     column: MUN_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
-    - MUN_OLD_ID
     - MUN_ID
+    - MUN_OLD_ID
     
   partitioning_config:
     type: DAY
     column: MUN_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MUN_OLD_ID
     - MUN_ID
+    - MUN_OLD_ID
     
   
 - name: notifications
@@ -830,20 +831,20 @@ tables:
   schema_file: pcd.json
   delta_config:
     column: PCD_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
-    - PCD_OLD_ID
     - PCD_ID
+    - PCD_OLD_ID
     
   partitioning_config:
     type: DAY
     column: PCD_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - PCD_OLD_ID
     - PCD_ID
+    - PCD_OLD_ID
     
   
 - name: perfil_base
@@ -851,7 +852,7 @@ tables:
   schema_file: perfil_base.json
   delta_config:
     column: PER_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -870,7 +871,7 @@ tables:
   schema_file: professor.json
   delta_config:
     column: PRO_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
@@ -891,20 +892,20 @@ tables:
   schema_file: raca.json
   delta_config:
     column: PEL_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
-    - PEL_ID
     - PEL_OLD_ID
+    - PEL_ID
     
   partitioning_config:
     type: DAY
     column: PEL_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - PEL_ID
     - PEL_OLD_ID
+    - PEL_ID
     
   
 - name: regionais
@@ -912,7 +913,7 @@ tables:
   schema_file: regionais.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
@@ -1064,20 +1065,20 @@ tables:
   schema_file: series.json
   delta_config:
     column: SER_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
-    - SER_OLD_ID
     - SER_ID
+    - SER_OLD_ID
     
   partitioning_config:
     type: DAY
     column: SER_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - SER_OLD_ID
     - SER_ID
+    - SER_OLD_ID
     
   
 - name: sub_perfil
@@ -1085,7 +1086,7 @@ tables:
   schema_file: sub_perfil.json
   delta_config:
     column: SPE_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -1163,22 +1164,22 @@ tables:
   schema_file: teste.json
   delta_config:
     column: TES_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
+    - assessmentOnlineId
     - TES_OLD_ID
     - TES_ID
-    - assessmentOnlineId
     
   partitioning_config:
     type: DAY
     column: TES_DT_ATUALIZACAO
   clustering_config:
     columns: 
+    - assessmentOnlineId
     - TES_OLD_ID
     - TES_ID
-    - assessmentOnlineId
     
   
 - name: teste_gabarito
@@ -1186,7 +1187,7 @@ tables:
   schema_file: teste_gabarito.json
   delta_config:
     column: TEG_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
@@ -1207,20 +1208,20 @@ tables:
   schema_file: transferencia.json
   delta_config:
     column: TRF_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
-    - TRF_ID
     - TRF_OLD_ID
+    - TRF_ID
     
   partitioning_config:
     type: DAY
     column: TRF_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - TRF_ID
     - TRF_OLD_ID
+    - TRF_ID
     
   
 - name: turma
@@ -1228,7 +1229,7 @@ tables:
   schema_file: turma.json
   delta_config:
     column: TUR_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:
@@ -1249,7 +1250,7 @@ tables:
   schema_file: turma_aluno.json
   delta_config:
     column: updatedAt
-    format: '%Y-%m-%d %H:%M:%S.%f %Z'
+    format: '%Y-%m-%d %H:%M:%S.%f'
     type: timestamp
   merge_config:
     keys:
@@ -1308,7 +1309,7 @@ tables:
   schema_file: usuario.json
   delta_config:
     column: USU_DT_ATUALIZACAO
-    format: '%Y-%m-%d %H:%M:%S %Z'
+    format: '%Y-%m-%d %H:%M:%S'
     type: timestamp
   merge_config:
     keys:

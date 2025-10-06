@@ -43,13 +43,6 @@
             "fields": []
         },
         {
-            "name": "questionTemplateId",
-            "mode": "NULLABLE",
-            "type": "INTEGER",
-            "description": "",
-            "fields": []
-        },
-        {
             "name": "updatedAt",
             "mode": "NULLABLE",
             "type": "DATETIME",
