@@ -144,7 +144,7 @@ run-job: upload-config
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
-		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name='TABELAS_PEQUENAS',load_type='backfill'
+		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name='ALL',load_type='backfill'
 		
 # 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='backfill'
 # 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='delta'
@@ -165,10 +165,10 @@ docker-test-local:
 	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
 	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
 	  mysql-to-bq-local-test \
-	  python main.py --config_file /app/config.local.yaml --chunk_name=TABELAS_PEQUENAS --load_type backfill
-# 	  python main.py --config_file /app/config.local.yaml --chunk_name=TABELAS_PEQUENAS --load_type backfill
-# 	  python main.py --config_file /app/config.local.yaml --chunk_name=TABELAS_PEQUENAS --load_type delta
-# 	  python main.py --config_file /app/config.local.yaml --chunk_name=TABELAS_PEQUENAS --load_type merge
+	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type backfill
+# 	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type backfill
+# 	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type delta
+# 	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type merge
 
 # Executa o job do Dataflow localmente
 test-local:
@@ -182,7 +182,7 @@ test-local:
 	python3 utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-	python3 main.py --config_file config.local.yaml --chunk_name TABELAS_PEQUENAS --load_type backfill
+	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type backfill
 # 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type backfill
 # 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type merge
 # 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type delta
