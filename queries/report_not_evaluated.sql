@@ -6,7 +6,7 @@ SELECT
     CAST(countPresentStudents AS SIGNED) AS countPresentStudents,
     CAST(countStudentsLaunched AS SIGNED) AS countStudentsLaunched,
     CAST(countTotalStudents AS SIGNED) AS countTotalStudents,
-    DATE_FORMAT(createdAt, "%Y-%m-%d %H:%i:%s.%f") AS createdAt,
+    DATE_FORMAT(createdAt, "%Y-%m-%dT%H:%M:%S.%f") AS createdAt,
     CAST(deficiencia AS SIGNED) AS deficiencia,
     CAST(id AS SIGNED) AS id,
     CAST(idStudents AS CHAR) AS idStudents,
@@ -17,5 +17,5 @@ SELECT
     CAST(testTESID AS SIGNED) AS testTESID,
     CAST(transferencia AS SIGNED) AS transferencia,
     CAST(type AS CHAR) AS type,
-    DATE_FORMAT(updatedAt, "%Y-%m-%d %H:%i:%s.%f") AS updatedAt
-FROM Saev.report_not_evaluated
+    DATE_FORMAT(updatedAt, "%Y-%m-%dT%H:%M:%S.%f") AS updatedAt
+FROM Saev.report_not_evaluated limit 1

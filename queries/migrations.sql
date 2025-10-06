@@ -4,4 +4,4 @@ SELECT
     CAST(id AS SIGNED) AS id,
     CAST(name AS CHAR) AS name,
     CAST(timestamp AS SIGNED) AS timestamp
-FROM Saev.migrations
+FROM Saev.migrations limit 1

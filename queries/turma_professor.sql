@@ -3,4 +3,4 @@
 SELECT 
     CAST(PRO_ID AS SIGNED) AS PRO_ID,
     CAST(TUR_ID AS SIGNED) AS TUR_ID
-FROM Saev.turma_professor
+FROM Saev.turma_professor limit 1

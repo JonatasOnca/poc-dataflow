@@ -1,7 +1,7 @@
 --  Copyright 2025 TecOnca Data Solutions.
 
 SELECT 
-    DATE_FORMAT(createdAt, "%Y-%m-%d %H:%i:%s.%f") AS createdAt,
+    DATE_FORMAT(createdAt, "") AS createdAt,
     CAST(fluente AS SIGNED) AS fluente,
     CAST(frases AS SIGNED) AS frases,
     CAST(id AS SIGNED) AS id,
@@ -14,4 +14,4 @@ SELECT
     CAST(reportQuestionId AS SIGNED) AS reportQuestionId,
     CAST(silabas AS SIGNED) AS silabas,
     CAST(totalCorrect AS SIGNED) AS totalCorrect
-FROM Saev.report_question_option
+FROM Saev.report_question_option limit 1

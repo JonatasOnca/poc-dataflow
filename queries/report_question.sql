@@ -18,4 +18,4 @@ SELECT
     CAST(total_c AS SIGNED) AS total_c,
     CAST(total_d AS SIGNED) AS total_d,
     CAST(total_null AS SIGNED) AS total_null
-FROM Saev.report_question
+FROM Saev.report_question limit 1

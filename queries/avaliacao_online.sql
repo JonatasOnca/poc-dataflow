@@ -2,7 +2,7 @@
 
 SELECT 
     CAST(active AS SIGNED) AS active,
-    DATE_FORMAT(createdAt, "%Y-%m-%d %H:%i:%s.%f") AS createdAt,
+    DATE_FORMAT(createdAt, "%Y-%m-%dT%H:%M:%S.%f") AS createdAt,
     CAST(id AS SIGNED) AS id,
-    DATE_FORMAT(updatedAt, "%Y-%m-%d %H:%i:%s.%f") AS updatedAt
-FROM Saev.avaliacao_online
+    DATE_FORMAT(updatedAt, "%Y-%m-%dT%H:%M:%S.%f") AS updatedAt
+FROM Saev.avaliacao_online limit 1

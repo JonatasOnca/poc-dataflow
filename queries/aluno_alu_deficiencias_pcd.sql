@@ -3,4 +3,4 @@
 SELECT 
     CAST(alunoALUID AS SIGNED) AS alunoALUID,
     CAST(pcdPCDID AS SIGNED) AS pcdPCDID
-FROM Saev.aluno_alu_deficiencias_pcd
+FROM Saev.aluno_alu_deficiencias_pcd limit 1
