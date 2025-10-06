@@ -179,7 +179,7 @@ def run():
                     'field': table_config['partitioning_config']['column']
                 }
             if table_config.get('clustering_config') and table_config['clustering_config'].get('columns'):
-                additional_bq_params['clustering'] = {'fields': table_config['clustering_config']['columns'][:4]}
+                additional_bq_params['clustering'] = {'fields': table_config['clustering_config']['columns'][:4].sort()}
 
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
