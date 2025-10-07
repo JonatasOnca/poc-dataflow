@@ -15,4 +15,4 @@ SELECT
     CAST(ALT_TES_ID AS CHAR) AS ALT_TES_ID,
     CAST(ALT_USU_ID AS CHAR) AS ALT_USU_ID,
     CAST(schoolClassTURID AS CHAR) AS schoolClassTURID
-FROM Saev.aluno_teste limit 1
+FROM Saev.aluno_teste

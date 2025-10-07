@@ -20,4 +20,4 @@ SELECT
     CAST(silabas AS CHAR) AS silabas,
     CAST(totalGradesStudents AS CHAR) AS totalGradesStudents,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.report_race limit 1
+FROM Saev.report_race

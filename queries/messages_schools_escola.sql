@@ -3,4 +3,4 @@
 SELECT 
     CAST(escolaESCID AS CHAR) AS escolaESCID,
     CAST(messagesMENID AS CHAR) AS messagesMENID
-FROM Saev.messages_schools_escola limit 1
+FROM Saev.messages_schools_escola

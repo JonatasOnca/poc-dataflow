@@ -8,4 +8,4 @@ SELECT
     CAST(`order` AS CHAR) AS `order`,
     CAST(title AS CHAR) AS title,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.avaliacao_online_page limit 1
+FROM Saev.avaliacao_online_page

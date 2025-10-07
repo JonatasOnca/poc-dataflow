@@ -12,4 +12,4 @@ SELECT
     CAST(AVM_MUN_ID AS CHAR) AS AVM_MUN_ID,
     CAST(AVM_OLD_ID AS CHAR) AS AVM_OLD_ID,
     CAST(AVM_TIPO AS CHAR) AS AVM_TIPO
-FROM Saev.avaliacao_municipio limit 1
+FROM Saev.avaliacao_municipio
