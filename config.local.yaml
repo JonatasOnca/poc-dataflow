@@ -950,7 +950,7 @@ chunks:
   - report_question
   - report_descriptor
   - report_race
-  - turma_aluno
+  # - turma_aluno
   - aluno
   - report_subject
   - report_not_evaluated
