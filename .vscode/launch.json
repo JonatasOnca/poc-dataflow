@@ -10,7 +10,7 @@
         "--config_file",
         "config.local.yaml",
         "--chunk_name",
-        "turma_aluno",
+        "ALL",
         // "--table_name",
         // "genero"
         "--load_type",

@@ -212,7 +212,7 @@ def run():
             # WriteToBigQuery
             _ = transformed_data | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
                 table=destination_table_for_write,
-                schema=_schema,
+                schema=schema,
                 create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
                 write_disposition=write_disposition,
                 additional_bq_parameters=additional_bq_params,
