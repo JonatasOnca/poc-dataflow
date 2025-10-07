@@ -10,7 +10,7 @@
         {
             "name": "endDate",
             "mode": "NULLABLE",
-            "type": "DATE",
+            "type": "TIMESTAMP",
             "description": "Campo destinado a quando o aluno saiu da turma",
             "fields": []
         },
@@ -31,7 +31,7 @@
         {
             "name": "startDate",
             "mode": "NULLABLE",
-            "type": "DATE",
+            "type": "TIMESTAMP",,
             "description": "Campo destinado a quando o aluno entrou na turma",
             "fields": []
         },

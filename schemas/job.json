@@ -31,7 +31,7 @@
         {
             "name": "endDate",
             "mode": "NULLABLE",
-            "type": "DATETIME",
+            "type": "TIMESTAMP",
             "description": "",
             "fields": []
         },
@@ -52,7 +52,7 @@
         {
             "name": "startDate",
             "mode": "NULLABLE",
-            "type": "DATETIME",
+            "type": "TIMESTAMP",
             "description": "",
             "fields": []
         },

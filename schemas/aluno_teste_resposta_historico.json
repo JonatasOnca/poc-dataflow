@@ -31,7 +31,7 @@
         {
             "name": "ATH_DT_CRIACAO",
             "mode": "NULLABLE",
-            "type": "DATETIME",
+            "type": "TIMESTAMP",
             "description": "",
             "fields": []
         },

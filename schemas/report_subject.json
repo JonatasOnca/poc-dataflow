@@ -24,7 +24,7 @@
         {
             "name": "createdAt",
             "mode": "NULLABLE",
-            "type": "DATETIME",
+            "type": "TIMESTAMP",
             "description": "",
             "fields": []
         },
@@ -136,7 +136,7 @@
         {
             "name": "updatedAt",
             "mode": "NULLABLE",
-            "type": "DATETIME",
+            "type": "TIMESTAMP",
             "description": "",
             "fields": []
         }
