@@ -1114,37 +1114,140 @@ tables:
 # Chunks de tabelas para ingestão
 chunks:
   - name: ALL
-    # lista: [aluno_teste_resposta, aluno_teste_resposta_historico, aluno_teste, report_question, report_descriptor, report_race, turma_aluno, aluno, report_subject, report_not_evaluated, infrequencia, report_edition, transferencia, turma, avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito, turma_professor, job, escola, professor, matriz_referencia_topico_items, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, avaliacao_online]
-    lista: [genero]
+    lista:
+      - aluno_teste_resposta
+      - aluno_teste_resposta_historico
+      - aluno_teste
+      - report_question
+      - report_descriptor
+      - report_race
+      - turma_aluno
+      - aluno
+      - report_subject
+      - report_not_evaluated
+      - infrequencia
+      - report_edition
+      - transferencia
+      - turma
+      - avaliacao_municipio
+      - forget_password
+      - aluno_alu_deficiencias_pcd
+      - usuario
+      - messages_schools_escola
+      - teste_gabarito
+      - turma_professor
+      - job
+      - escola
+      - professor
+      - matriz_referencia_topico_items
+      - teste
+      - messages_municipios_municipio
+      - avaliacao_teste
+      - matriz_referencia_topico
+      - sub_perfil_area
+      - regionais
+      - municipio
+      - matriz_referencia_serie
+      - avaliacao
+      - messages
+      - matriz_referencia
+      - avaliacao_online_question_alternative
+      - series
+      - migrations
+      - area
+      - pcd
+      - ano_letivo
+      - estados
+      - avaliacao_online_question
+      - avaliacao_online_page
+      - sub_perfil
+      - formacao
+      - raca
+      - disciplina
+      - perfil_base
+      - genero
+      - avaliacao_online
   - name: TABELAS_PEQUENAS
-    lista: [turma_professor, job, escola, professor, matriz_referencia_topico_items, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, avaliacao_online]
+    lista:
+      - turma_professor
+      - job
+      - escola
+      - professor
+      - matriz_referencia_topico_items
+      - teste
+      - messages_municipios_municipio
+      - avaliacao_teste
+      - matriz_referencia_topico
+      - sub_perfil_area
+      - regionais
+      - municipio
+      - matriz_referencia_serie
+      - avaliacao
+      - messages
+      - matriz_referencia
+      - avaliacao_online_question_alternative
+      - series
+      - migrations
+      - area
+      - pcd
+      - ano_letivo
+      - estados
+      - avaliacao_online_question
+      - avaliacao_online_page
+      - sub_perfil
+      - formacao
+      - raca
+      - disciplina
+      - perfil_base
+      - genero
+      - avaliacao_online
   - name: TABELAS_MEDIAS
-    lista: [avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito]
-  - name: turma
-    lista: [turma]
-  - name: transferencia
-    lista: [transferencia]
-  - name: report_edition
-    lista: [report_edition]
-  - name: infrequencia
-    lista: [infrequencia]
-  - name: report_not_evaluated
-    lista: [report_not_evaluated]
-  - name: report_subject
-    lista: [report_subject]
-  - name: aluno
-    lista: [aluno]
-  - name: turma_aluno
-    lista: [turma_aluno]
-  - name: report_race
-    lista: [report_race]
-  - name: report_descriptor
-    lista: [report_descriptor]
-  - name: report_question
-    lista: [report_question]
-  - name: aluno_teste
-    lista: [aluno_teste]
-  - name: aluno_teste_resposta_historico
-    lista: [aluno_teste_resposta_historico]
+    lista:
+      - avaliacao_municipio
+      - forget_password
+      - aluno_alu_deficiencias_pcd
+      - usuario
+      - messages_schools_escola
+      - teste_gabarito
   - name: aluno_teste_resposta
-    lista: [aluno_teste_resposta]
+    lista:
+      - aluno_teste_resposta
+  - name: aluno_teste_resposta_historico
+    lista:
+      - aluno_teste_resposta_historico
+  - name: aluno_teste
+    lista:
+      - aluno_teste
+  - name: report_question
+    lista:
+      - report_question
+  - name: report_descriptor
+    lista:
+      - report_descriptor
+  - name: report_race
+    lista:
+      - report_race
+  - name: turma_aluno
+    lista:
+      - turma_aluno
+  - name: aluno
+    lista:
+      - aluno
+  - name: report_subject
+    lista:
+      - report_subject
+  - name: report_not_evaluated
+    lista:
+      - report_not_evaluated
+  - name: infrequencia
+    lista:
+      - infrequencia
+  - name: report_edition
+    lista:
+      - report_edition
+  - name: transferencia
+    lista:
+      - transferencia
+  - name: turma
+    lista:
+      - turma
