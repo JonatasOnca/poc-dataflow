@@ -31,6 +31,35 @@ CONFIG_GCS_PATH := $(GCS_BASE_PATH)/config/config.yaml
 QUERIES_GCS_PATH := $(GCS_BASE_PATH)/queries/
 SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 
+
+# ---------Lista de Chunks---------
+# ALL
+# TABELAS_PEQUENAS_L1
+# TABELAS_PEQUENAS_L2
+# TABELAS_PEQUENAS_L3
+# TABELAS_MEDIAS
+# aluno_teste_resposta
+# aluno_teste_resposta_historico
+# aluno_teste
+# report_question
+# report_descriptor
+# report_race
+# turma_aluno
+# aluno
+# report_subject
+# report_not_evaluated
+# infrequencia
+# report_edition
+# transferencia
+# turma
+CHUNK_NAME := "turma"
+
+# ------Tipos de carga------
+# backfill
+# delta
+# merge
+LOAD_TYPE := "backfill"
+
 # Comandos do Makefile
 .PHONY: teste sa all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
 
@@ -147,15 +176,11 @@ update-config:
 
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
-	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-`date +%Y%m%d-%H%M%S`" \
+	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-$(CHUNK_NAME)-$(LOAD_TYPE)`date +%Y%m%d-%H%M%S`" \
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
-		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name='ALL',load_type='backfill'
-		
-# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='backfill'
-# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='delta'
-# 		--parameters=config_file=$(CONFIG_GCS_PATH),load_type='merge'
+		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
 
 # Executa o job do Dataflow a partir do template Localmente
 docker-test-local:
@@ -172,10 +197,7 @@ docker-test-local:
 	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
 	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
 	  mysql-to-bq-local-test \
-	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type backfill
-# 	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type backfill
-# 	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type delta
-# 	  python main.py --config_file /app/config.local.yaml --chunk_name=ALL --load_type merge
+	  python main.py --config_file /app/config.local.yaml --chunk_name $(CHUNK_NAME) --load_type $(LOAD_TYPE)
 
 # Executa o job do Dataflow localmente
 test-local:
@@ -189,10 +211,7 @@ test-local:
 	python3 utils/config_modifier.py config.yaml config.local.yaml
 	
 	# Executa o pipeline localmente
-	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type backfill
-# 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type backfill
-# 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type merge
-# 	python3 main.py --config_file config.local.yaml --chunk_name ALL --load_type delta
+	python3 main.py --config_file config.local.yaml --chunk_name $(CHUNK_NAME) --load_type $(LOAD_TYPE)
 	
 # 	@echo "--- Teste Local Concluído. Limpando arquivo de configuração temporário. ---"
 # 	@rm config.local.yaml
