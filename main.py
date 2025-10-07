@@ -133,13 +133,22 @@ def run():
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
         for table_name in TABLE_LIST:
+            
             table_config = next((t for t in app_config['tables'] if t.get('name')==table_name), None)
             if not table_config:
                 logging.error(f"Configuração para '{table_name}' não encontrada. Pulando.")
                 continue
 
+            schema = load_schema(f"{schemas_location}/{table_config['schema_file']}")
+            if not schema:
+                logging.error(f"Schema para tabela: '{table_name}' não encontrada. Pulando.")
+                continue
+
             base_query = load_query(f"{queries_location}/{table_config['query_file']}")
-            _schema = load_schema(f"{schemas_location}/{table_config['schema_file']}")
+            if not base_query:
+                logging.error(f"Query para tabela: '{table_name}' não encontrada. Pulando.")
+                continue
+
             final_query = base_query
             target_table_id = f"{project_id}.{bq_dataset}.{table_name}"
             write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
@@ -169,7 +178,7 @@ def run():
                             'target_table_id': target_table_id,
                             'staging_table_id': destination_table_for_query,
                             'merge_keys': table_config['merge_config']['keys'],
-                            'schema_fields': [f['name'] for f in _schema['fields']]
+                            'schema_fields': [f['name'] for f in schema['fields']]
                         })
 
             additional_bq_params = {}
