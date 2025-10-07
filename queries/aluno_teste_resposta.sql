@@ -8,4 +8,4 @@ SELECT
     CAST(ATR_MTI_ID AS CHAR) AS ATR_MTI_ID,
     CAST(ATR_RESPOSTA AS CHAR) AS ATR_RESPOSTA,
     CAST(questionTemplateTEGID AS CHAR) AS questionTemplateTEGID
-FROM Saev_Final.aluno_teste_resposta limit 1
+FROM Saev.aluno_teste_resposta limit 1

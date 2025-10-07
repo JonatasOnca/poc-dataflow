@@ -3,4 +3,4 @@
 SELECT 
     CAST(messagesMENID AS CHAR) AS messagesMENID,
     CAST(municipioMUNID AS CHAR) AS municipioMUNID
-FROM Saev_Final.messages_municipios_municipio limit 1
+FROM Saev.messages_municipios_municipio limit 1

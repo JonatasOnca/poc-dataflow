@@ -8,4 +8,4 @@ SELECT
     CAST(startDate AS CHAR) AS startDate,
     CAST(studentALUID AS CHAR) AS studentALUID,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev_Final.turma_aluno limit 1
+FROM Saev.turma_aluno limit 1

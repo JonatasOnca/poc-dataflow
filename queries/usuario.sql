@@ -16,4 +16,4 @@ SELECT
     CAST(USU_SPE_ID AS CHAR) AS USU_SPE_ID,
     CAST(isChangePasswordWelcome AS CHAR) AS isChangePasswordWelcome,
     CAST(stateId AS CHAR) AS stateId
-FROM Saev_Final.usuario limit 1
+FROM Saev.usuario limit 1

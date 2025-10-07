@@ -6,4 +6,4 @@ SELECT
     CAST(FOR_DT_CRIACAO AS CHAR) AS FOR_DT_CRIACAO,
     CAST(FOR_ID AS CHAR) AS FOR_ID,
     CAST(FOR_NOME AS CHAR) AS FOR_NOME
-FROM Saev_Final.formacao limit 1
+FROM Saev.formacao limit 1

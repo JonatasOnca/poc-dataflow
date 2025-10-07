@@ -5,7 +5,7 @@ SELECT
     CAST(description AS CHAR) AS description,
     CAST(id AS CHAR) AS id,
     CAST(image AS CHAR) AS image,
-    CAST(`option` AS CHAR) AS `option`,
+    CAST(`option` AS  CHAR) AS `option`,
     CAST(questionId AS CHAR) AS questionId,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev_Final.avaliacao_online_question_alternative limit 1
+FROM Saev.avaliacao_online_question_alternative limit 1

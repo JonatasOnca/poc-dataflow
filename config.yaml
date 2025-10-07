@@ -44,6 +44,7 @@ silver_dataset: silver
 gold_dataset: gold
 region: US
 
+
 # Lista de tabelas para ingestão
 tables:
 - name: aluno
@@ -55,18 +56,18 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - ALU_ID
     - ALU_COD
     - ALU_OLD_ID
+    - ALU_ID
     
   partitioning_config:
     type: DAY
     column: ALU_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ALU_ID
     - ALU_COD
     - ALU_OLD_ID
+    - ALU_ID
     
   
 - name: aluno_alu_deficiencias_pcd
@@ -160,16 +161,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - ANO_OLD_ID
     - ANO_ID
+    - ANO_OLD_ID
     
   partitioning_config:
     type: DAY
     column: ANO_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - ANO_OLD_ID
     - ANO_ID
+    - ANO_OLD_ID
     
   
 - name: area
@@ -200,16 +201,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - AVA_ID
     - AVA_OLD_ID
+    - AVA_ID
     
   partitioning_config:
     type: DAY
     column: AVA_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - AVA_ID
     - AVA_OLD_ID
+    - AVA_ID
     
   
 - name: avaliacao_municipio
@@ -221,22 +222,22 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - AVM_TIPO
-    - AVM_ID
-    - AVM_MUN_ID
-    - AVM_OLD_ID
     - AVM_AVA_ID
+    - AVM_OLD_ID
+    - AVM_TIPO
+    - AVM_MUN_ID
+    - AVM_ID
     
   partitioning_config:
     type: DAY
     column: AVM_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - AVM_TIPO
-    - AVM_ID
-    - AVM_MUN_ID
-    - AVM_OLD_ID
     - AVM_AVA_ID
+    - AVM_OLD_ID
+    - AVM_TIPO
+    - AVM_MUN_ID
+    - AVM_ID
     
   
 - name: avaliacao_online
@@ -326,16 +327,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - AVA_ID
     - TES_ID
+    - AVA_ID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - AVA_ID
     - TES_ID
+    - AVA_ID
     
   
 - name: disciplina
@@ -412,16 +413,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - userUSUID
     - id
+    - userUSUID
     
   partitioning_config:
     type: DAY
     column: updatedAt
   clustering_config:
     columns: 
-    - userUSUID
     - id
+    - userUSUID
     
   
 - name: formacao
@@ -471,16 +472,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - IFR_ID
     - IFR_OLD_ID
+    - IFR_ID
     
   partitioning_config:
     type: DAY
     column: IFR_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - IFR_ID
     - IFR_OLD_ID
+    - IFR_ID
     
   
 - name: job
@@ -553,16 +554,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - MTO_ID
     - MTO_OLD_ID
+    - MTO_ID
     
   partitioning_config:
     type: DAY
     column: MTO_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MTO_ID
     - MTO_OLD_ID
+    - MTO_ID
     
   
 - name: matriz_referencia_topico_items
@@ -614,16 +615,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - municipioMUNID
     - messagesMENID
+    - municipioMUNID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - municipioMUNID
     - messagesMENID
+    - municipioMUNID
     
   
 - name: messages_schools_escola
@@ -675,16 +676,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - MUN_OLD_ID
     - MUN_ID
+    - MUN_OLD_ID
     
   partitioning_config:
     type: DAY
     column: MUN_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - MUN_OLD_ID
     - MUN_ID
+    - MUN_OLD_ID
     
   
 - name: pcd
@@ -911,16 +912,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - SER_ID
     - SER_OLD_ID
+    - SER_ID
     
   partitioning_config:
     type: DAY
     column: SER_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - SER_ID
     - SER_OLD_ID
+    - SER_ID
     
   
 - name: sub_perfil
@@ -951,16 +952,16 @@ tables:
     type: 
   merge_config:
     keys:
-    - SPE_ID
     - ARE_ID
+    - SPE_ID
     
   partitioning_config:
     type: DAY
     column: 
   clustering_config:
     columns: 
-    - SPE_ID
     - ARE_ID
+    - SPE_ID
     
   
 - name: teste
@@ -1016,16 +1017,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - TRF_OLD_ID
     - TRF_ID
+    - TRF_OLD_ID
     
   partitioning_config:
     type: DAY
     column: TRF_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - TRF_OLD_ID
     - TRF_ID
+    - TRF_OLD_ID
     
   
 - name: turma
@@ -1037,16 +1038,16 @@ tables:
     type: timestamp
   merge_config:
     keys:
-    - TUR_OLD_ID
     - TUR_ID
+    - TUR_OLD_ID
     
   partitioning_config:
     type: DAY
     column: TUR_DT_ATUALIZACAO
   clustering_config:
     columns: 
-    - TUR_OLD_ID
     - TUR_ID
+    - TUR_OLD_ID
     
   
 - name: turma_aluno
@@ -1113,8 +1114,8 @@ tables:
 # Chunks de tabelas para ingestão
 chunks:
   - name: ALL
-    lista: [aluno_teste_resposta, aluno_teste_resposta_historico, aluno_teste, report_question, report_descriptor, report_race, turma_aluno, aluno, report_subject, report_not_evaluated, infrequencia, report_edition, transferencia, turma, avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito, turma_professor, job, escola, professor, matriz_referencia_topico_items, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, avaliacao_online]
-    # lista: [genero]
+    # lista: [aluno_teste_resposta, aluno_teste_resposta_historico, aluno_teste, report_question, report_descriptor, report_race, turma_aluno, aluno, report_subject, report_not_evaluated, infrequencia, report_edition, transferencia, turma, avaliacao_municipio, forget_password, aluno_alu_deficiencias_pcd, usuario, messages_schools_escola, teste_gabarito, turma_professor, job, escola, professor, matriz_referencia_topico_items, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, avaliacao_online]
+    lista: [genero]
   - name: TABELAS_PEQUENAS
     lista: [turma_professor, job, escola, professor, matriz_referencia_topico_items, teste, messages_municipios_municipio, avaliacao_teste, matriz_referencia_topico, sub_perfil_area, regionais, municipio, matriz_referencia_serie, avaliacao, messages, matriz_referencia, avaliacao_online_question_alternative, series, migrations, area, pcd, ano_letivo, estados, avaliacao_online_question, avaliacao_online_page, sub_perfil, formacao, raca, disciplina, perfil_base, genero, avaliacao_online]
   - name: TABELAS_MEDIAS

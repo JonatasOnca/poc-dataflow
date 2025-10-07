@@ -26,4 +26,4 @@ SELECT
     CAST(MUN_UF AS CHAR) AS MUN_UF,
     CAST(stateId AS CHAR) AS stateId,
     CAST(stateRegionalId AS CHAR) AS stateRegionalId
-FROM Saev_Final.municipio limit 1
+FROM Saev.municipio limit 1

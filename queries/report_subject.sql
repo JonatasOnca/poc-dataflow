@@ -21,4 +21,4 @@ SELECT
     CAST(totalGradesStudents AS CHAR) AS totalGradesStudents,
     CAST(type AS CHAR) AS type,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev_Final.report_subject limit 1
+FROM Saev.report_subject limit 1

@@ -9,4 +9,4 @@ SELECT
     CAST(DIS_NOME AS CHAR) AS DIS_NOME,
     CAST(DIS_OLD_ID AS CHAR) AS DIS_OLD_ID,
     CAST(DIS_TIPO AS CHAR) AS DIS_TIPO
-FROM Saev_Final.disciplina limit 1
+FROM Saev.disciplina limit 1

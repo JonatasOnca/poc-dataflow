@@ -9,4 +9,4 @@ SELECT
     CAST(stateId AS CHAR) AS stateId,
     CAST(type AS CHAR) AS type,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev_Final.regionais limit 1
+FROM Saev.regionais limit 1

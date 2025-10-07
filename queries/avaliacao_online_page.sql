@@ -5,7 +5,7 @@ SELECT
     CAST(createdAt AS CHAR) AS createdAt,
     CAST(id AS CHAR) AS id,
     CAST(image AS CHAR) AS image,
-    CAST(`order` AS SIGNED) AS `order`,
+    CAST(`order` AS CHAR) AS `order`,
     CAST(title AS CHAR) AS title,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev_Final.avaliacao_online_page limit 1
+FROM Saev.avaliacao_online_page limit 1

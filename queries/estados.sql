@@ -7,4 +7,4 @@ SELECT
     CAST(id AS CHAR) AS id,
     CAST(name AS CHAR) AS name,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev_Final.estados limit 1
+FROM Saev.estados limit 1

@@ -8,4 +8,4 @@ SELECT
     CAST(AVA_ID AS CHAR) AS AVA_ID,
     CAST(AVA_NOME AS CHAR) AS AVA_NOME,
     CAST(AVA_OLD_ID AS CHAR) AS AVA_OLD_ID
-FROM Saev_Final.avaliacao limit 1
+FROM Saev.avaliacao limit 1

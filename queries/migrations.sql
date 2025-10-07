@@ -4,4 +4,4 @@ SELECT
     CAST(id AS CHAR) AS id,
     CAST(name AS CHAR) AS name,
     CAST(timestamp AS CHAR) AS timestamp
-FROM Saev_Final.migrations limit 1
+FROM Saev.migrations limit 1

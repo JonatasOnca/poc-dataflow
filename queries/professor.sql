@@ -23,4 +23,4 @@ SELECT
     CAST(PRO_OLD_ID AS CHAR) AS PRO_OLD_ID,
     CAST(PRO_PEL_ID AS CHAR) AS PRO_PEL_ID,
     CAST(PRO_UF AS CHAR) AS PRO_UF
-FROM Saev_Final.professor limit 1
+FROM Saev.professor limit 1
