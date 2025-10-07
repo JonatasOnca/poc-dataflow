@@ -52,13 +52,13 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # report_edition
 # transferencia
 # turma
-CHUNK_NAME := "turma"
-
+CHUNK_NAME := aluno_teste_resposta
+CHUNK_NAME_HYPHEN := $(subst _,-,$(CHUNK_NAME))
 # ------Tipos de carga------
 # backfill
 # delta
 # merge
-LOAD_TYPE := "backfill"
+LOAD_TYPE := backfill
 
 # Comandos do Makefile
 .PHONY: teste sa all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
@@ -176,7 +176,7 @@ update-config:
 
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
-	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-$(CHUNK_NAME)-$(LOAD_TYPE)`date +%Y%m%d-%H%M%S`" \
+	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-$(CHUNK_NAME_HYPHEN)-$(LOAD_TYPE)-`date +%Y%m%d-%H%M%S`" \
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
