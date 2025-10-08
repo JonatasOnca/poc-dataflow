@@ -6,7 +6,7 @@ import logging
 from decimal import Decimal
 from datetime import datetime, timedelta
 
-def converter_data(valor_data, formato):
+def converter_data(valor_data, formato_entrada, formato_saida):
     """
     Converte uma string de data (ou número OLE) para um objeto datetime.
     """
@@ -55,25 +55,25 @@ def converter_data(valor_data, formato):
         # Este é um exemplo simplificado, na prática você precisaria de mais tratativas.
         
         # Removendo %Z e %f do formato se o valor_data não tiver milissegundos/TZ
-        formato_limpo = formato.replace(' %Z', '').replace('T', ' ').replace('.%f', '')
+        formato_limpo = formato_entrada.replace(' %Z', '').replace('T', ' ').replace('.%f', '')
         if '.' in str(valor_data):
             # Se tiver milissegundos, use o formato original (ou com T trocado por espaço)
-            if 'T' in formato:
-                formato = formato.replace('T', ' ')
+            if 'T' in formato_entrada:
+                formato_entrada = formato_entrada.replace('T', ' ')
             
             # Se o valor não tiver o %Z (ex: a turma_aluno['updatedAt']), precisa limpar o formato
-            if formato.endswith(' %Z') and ' ' not in str(valor_data).split(' ')[-1]:
-                formato = formato.replace(' %Z', '')
+            if formato_entrada.endswith(' %Z') and ' ' not in str(valor_data).split(' ')[-1]:
+                formato_entrada = formato_entrada.replace(' %Z', '')
 
         elif valor_data.count(':') < 2: # Se não tem segundos/horas, tenta formatos mais simples
             return datetime.strptime(str(valor_data), '%Y-%m-%d')
             
         # Tenta a conversão com o formato completo
-        return datetime.strptime(str(valor_data), formato)
+        return datetime.strptime(str(valor_data), formato_entrada)
         
     except ValueError as e:
-        logging.warning(f"ERRO ao analisar: {e} | Valor original: '{valor_data}' com formato '{formato}'")
-        return f"ERRO ao analisar: {e} | Valor original: '{valor_data}' com formato '{formato}'"
+        logging.warning(f"ERRO ao analisar: {e} | Valor original: '{valor_data}' com formato '{formato_entrada}'")
+        return None
 
 
 def generic_transform(row_dict):
