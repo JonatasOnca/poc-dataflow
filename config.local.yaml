@@ -996,7 +996,7 @@ chunks:
   - perfil_base
   - genero
   - avaliacao_online
-- name: TABELAS_PEQUENAS
+- name: TABELAS_PEQUENAS_L1
   lista:
   - turma_professor
   - job
@@ -1008,7 +1008,8 @@ chunks:
   - avaliacao_teste
   - matriz_referencia_topico
   - sub_perfil_area
-  - regionais
+- name: TABELAS_PEQUENAS_L2
+  lista:
   - municipio
   - matriz_referencia_serie
   - avaliacao
@@ -1018,6 +1019,9 @@ chunks:
   - series
   - migrations
   - area
+  - regionais
+- name: TABELAS_PEQUENAS_L3
+  lista:
   - pcd
   - ano_letivo
   - estados
