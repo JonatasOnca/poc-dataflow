@@ -57,7 +57,7 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # transferencia
 # turma
 
-CHUNK_NAME := report_descriptor
+CHUNK_NAME := turma
 CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')
 # ------Tipos de carga------
 # backfill
@@ -65,7 +65,7 @@ CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper
 # merge
 LOAD_TYPE := backfill
 
-TABLE_NAME := XXXXXXX
+TABLE_NAME := turma
 
 # Comandos do Makefile
 .PHONY: teste sa all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
@@ -188,9 +188,8 @@ run-job: upload-config
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
 		--additional-experiments=enable_prime \
-		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
-# 		--parameters=config_file=$(CONFIG_GCS_PATH),table_name=$(TABLE_NAME),load_type=$(LOAD_TYPE)
-
+		--parameters=config_file=$(CONFIG_GCS_PATH),table_name=$(TABLE_NAME),load_type=$(LOAD_TYPE)
+# 		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
 		
 
 # Executa o job do Dataflow a partir do template Localmente

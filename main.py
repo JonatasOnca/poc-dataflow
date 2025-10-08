@@ -1,6 +1,8 @@
 import logging
 import argparse
 import uuid
+import math
+import mysql.connector
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
@@ -23,6 +25,64 @@ class TransformWithSideInputDoFn(beam.DoFn):
         yield self._transform_fn(element)
 
 
+def get_min_max_id(db_creds, table_name, column):
+    """Obtém o menor e o maior valor da coluna de partição direto no banco."""
+    conn = mysql.connector.connect(
+        host=db_creds["host"],
+        port=db_creds["port"],
+        user=db_creds["user"],
+        password=db_creds["password"],
+        database=db_creds["database"],
+    )
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT MIN({column}), MAX({column}) FROM {table_name}")
+    min_id, max_id = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return min_id, max_id
+
+
+def read_from_jdbc_partitioned(pipeline, app_config, db_creds, table_name, base_query, partition_column="id", num_partitions=20):
+    """
+    Lê uma tabela grande do MySQL em paralelo simulando particionamento,
+    dividindo o range [min, max] da coluna de partição.
+    """
+    JDBC_URL = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+    min_id, max_id = get_min_max_id(db_creds, table_name, partition_column)
+
+    if min_id is None or max_id is None:
+        raise ValueError(f"Não foi possível determinar min/max da coluna {partition_column} para {table_name}")
+
+    step = math.ceil((max_id - min_id + 1) / num_partitions)
+    partitions = []
+
+    for i in range(num_partitions):
+        start = min_id + i * step
+        end = min(start + step - 1, max_id)
+        query = f"{base_query.strip()} WHERE {partition_column} BETWEEN {start} AND {end}"
+
+        logging.info(f"[{table_name}] Partição {i+1}/{num_partitions}: {partition_column} BETWEEN {start} AND {end}")
+
+        p = (
+            pipeline
+            | f"Read {table_name} chunk {i}" >> ReadFromJdbc(
+                driver_class_name=app_config["database"]["driver_class_name"],
+                table_name=table_name,
+                jdbc_url=JDBC_URL,
+                username=db_creds["user"],
+                password=db_creds["password"],
+                query=query,
+                driver_jars=app_config["database"]["driver_jars"],
+            )
+            | f"To Dict {table_name} chunk {i}" >> beam.Map(lambda r: r._asdict())
+        )
+
+        partitions.append(p)
+
+    # Junta as partições lidas em um único PCollection
+    return partitions | f"Merge partitions {table_name}" >> beam.Flatten()
+
+
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', required=True, help='Caminho GCS para config.yaml')
@@ -39,10 +99,11 @@ def run():
     load_type = known_args.load_type
 
     db_creds = get_secret(
-        project_id=app_config['gcp']['project_id'], 
-        secret_id=app_config['source_db']['secret_id'], 
+        project_id=app_config['gcp']['project_id'],
+        secret_id=app_config['source_db']['secret_id'],
         version_id=app_config['source_db']['secret_version']
     )
+
     JDBC_URL = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
 
     pipeline_options = PipelineOptions(
@@ -64,26 +125,22 @@ def run():
     if table_name:
         TABLE_LIST = [table_name]
     else:
-        TABLE_LIST = next((c['lista'] for c in app_config['chunks'] if c.get('name','ALL')==chunk_name), [])
+        TABLE_LIST = next((c['lista'] for c in app_config['chunks'] if c.get('name', 'ALL') == chunk_name), [])
 
     merge_tasks = []
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
         for table_name in TABLE_LIST:
-            
-            table_config = next((t for t in app_config['tables'] if t.get('name')==table_name), None)
+            table_config = next((t for t in app_config['tables'] if t.get('name') == table_name), None)
             if not table_config:
                 logging.error(f"Configuração para '{table_name}' não encontrada. Pulando.")
                 continue
 
             schema = load_schema(f"{schemas_location}/{table_config['schema_file']}")
-            if not schema:
-                logging.error(f"Schema para tabela: '{table_name}' não encontrada. Pulando.")
-                continue
-
             base_query = load_query(f"{queries_location}/{table_config['query_file']}")
-            if not base_query:
-                logging.error(f"Query para tabela: '{table_name}' não encontrada. Pulando.")
+
+            if not schema or not base_query:
+                logging.error(f"Schema ou query não encontrados para {table_name}. Pulando.")
                 continue
 
             final_query = base_query
@@ -99,7 +156,7 @@ def run():
                     hwm_column = delta_config['column']
                     hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
                     high_water_mark = get_high_water_mark(project_id, bq_dataset, table_name, hwm_column, hwm_type)
-                    condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER','BIGINT','INT','NUMERIC'] else str(high_water_mark)
+                    condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else str(high_water_mark)
                     where_clause = f"WHERE {hwm_column} > {condition_value}" if 'WHERE' not in base_query.upper() else f"AND {hwm_column} > {condition_value}"
                     final_query = f"{base_query.strip()} {where_clause}"
 
@@ -110,7 +167,6 @@ def run():
                         write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
                         destination_table_for_write = f"{project_id}.{bq_dataset}.{staging_table_name}"
                         destination_table_for_query = destination_table_for_write
-                        logging.info(f"Dados serão carregados na staging: {destination_table_for_write}")
                         merge_tasks.append({
                             'target_table_id': target_table_id,
                             'staging_table_id': destination_table_for_query,
@@ -121,7 +177,7 @@ def run():
             additional_bq_params = {}
             if table_config.get('partitioning_config') and table_config['partitioning_config'].get('column'):
                 additional_bq_params['timePartitioning'] = {
-                    'type': table_config['partitioning_config'].get('type','DAY').upper(),
+                    'type': table_config['partitioning_config'].get('type', 'DAY').upper(),
                     'field': table_config['partitioning_config']['column']
                 }
             if table_config.get('clustering_config') and table_config['clustering_config'].get('columns'):
@@ -130,23 +186,20 @@ def run():
 
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
-            # Read MySQL
-            rows = (pipeline
-                    | f"Read {table_name} from MySQL" >> ReadFromJdbc(
-                        driver_class_name=app_config['database']['driver_class_name'],
-                        table_name=table_name,
-                        jdbc_url=JDBC_URL,
-                        username=db_creds['user'],
-                        password=db_creds['password'],
-                        query=final_query,
-                        driver_jars=app_config['database']['driver_jars'],
-                    )
-                    | f"Convert {table_name} to Dict" >> beam.Map(lambda row: row._asdict())
+            # ✅ Leitura paralela com particionamento manual
+            rows = read_from_jdbc_partitioned(
+                pipeline=pipeline,
+                app_config=app_config,
+                db_creds=db_creds,
+                table_name=table_name,
+                base_query=final_query,
+                partition_column=table_config['read_partitioning_config'].get('column'),
+                num_partitions=table_config['read_partitioning_config'].get('num_partitions', 10)
             )
 
             transformed_data = rows | f"Transform {table_name}" >> beam.ParDo(TransformWithSideInputDoFn(transform_function))
 
-            # WriteToBigQuery
+            # Write to BigQuery
             _ = transformed_data | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
                 table=destination_table_for_write,
                 schema=schema,
@@ -157,17 +210,13 @@ def run():
                 custom_gcs_temp_location=app_config['dataflow']['parameters']['temp_location']
             )
 
+    # Executa MERGE pós-pipeline
     client = bigquery.Client(project=project_id)
 
     for task in merge_tasks:
         staging_table_id = task['staging_table_id']
-        logging.info(f"Verificando a existência da tabela de staging: {staging_table_id}")
-
         try:
-            # Tenta obter os metadados da tabela. Se não existir, lança NotFound.
             client.get_table(staging_table_id)
-            
-            logging.info(f"Tabela de staging encontrada. Executando MERGE para {task['target_table_id']}.")
             execute_merge(
                 project_id=project_id,
                 gcp_region=app_config['region'],
@@ -177,9 +226,7 @@ def run():
                 schema_fields=task['schema_fields']
             )
         except NotFound:
-            logging.warning(
-                f"Tabela de staging '{staging_table_id}' não foi criada (nenhum dado novo para processar). "
-            )
+            logging.warning(f"Tabela de staging '{staging_table_id}' não foi criada. Nenhum dado novo para processar.")
 
 
 if __name__ == "__main__":

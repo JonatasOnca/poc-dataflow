@@ -882,6 +882,9 @@ tables:
     keys:
     - TUR_ID
     - TUR_OLD_ID
+  read_partitioning_config:
+    column: TUR_ID
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: TUR_DT_ATUALIZACAO
