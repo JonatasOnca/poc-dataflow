@@ -8,4 +8,4 @@ SELECT
     CAST(pageId AS CHAR) AS pageId,
     CAST(questionTemplateId AS CHAR) AS questionTemplateId,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.avaliacao_online_question limit 100
+FROM Saev.avaliacao_online_question 

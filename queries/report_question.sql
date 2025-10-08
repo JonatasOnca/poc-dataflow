@@ -18,4 +18,4 @@ SELECT
     CAST(total_c AS CHAR) AS total_c,
     CAST(total_d AS CHAR) AS total_d,
     CAST(total_null AS CHAR) AS total_null
-FROM Saev.report_question limit 100
+FROM Saev.report_question 

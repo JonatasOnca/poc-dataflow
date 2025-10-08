@@ -9,4 +9,4 @@ SELECT
     CAST(total AS CHAR) AS total,
     CAST(totalCorrect AS CHAR) AS totalCorrect,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.report_descriptor limit 100
+FROM Saev.report_descriptor 

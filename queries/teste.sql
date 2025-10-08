@@ -14,4 +14,4 @@ SELECT
     CAST(TES_OLD_ID AS CHAR) AS TES_OLD_ID,
     CAST(TES_SER_ID AS CHAR) AS TES_SER_ID,
     CAST(assessmentOnlineId AS CHAR) AS assessmentOnlineId
-FROM Saev.teste limit 100
+FROM Saev.teste 
