@@ -69,7 +69,6 @@ tables:
     - ALU_ID
     - ALU_OLD_ID
     
-  
 - name: aluno_alu_deficiencias_pcd
   query_file: aluno_alu_deficiencias_pcd.sql
   schema_file: aluno_alu_deficiencias_pcd.json
@@ -90,7 +89,6 @@ tables:
     - alunoALUID
     - pcdPCDID
     
-  
 - name: aluno_teste
   query_file: aluno_teste.sql
   schema_file: aluno_teste.json
@@ -113,7 +111,6 @@ tables:
     - ALT_ID
     - ALT_TES_ID
     
-  
 - name: aluno_teste_resposta
   query_file: aluno_teste_resposta.sql
   schema_file: aluno_teste_resposta.json
@@ -132,7 +129,6 @@ tables:
     columns: 
     - ATR_ID
     
-  
 - name: aluno_teste_resposta_historico
   query_file: aluno_teste_resposta_historico.sql
   schema_file: aluno_teste_resposta_historico.json
@@ -151,7 +147,6 @@ tables:
     columns: 
     - ATH_ID
     
-  
 - name: ano_letivo
   query_file: ano_letivo.sql
   schema_file: ano_letivo.json
@@ -172,7 +167,6 @@ tables:
     - ANO_ID
     - ANO_OLD_ID
     
-  
 - name: area
   query_file: area.sql
   schema_file: area.json
@@ -191,7 +185,6 @@ tables:
     columns: 
     - ARE_ID
     
-  
 - name: avaliacao
   query_file: avaliacao.sql
   schema_file: avaliacao.json
@@ -212,7 +205,6 @@ tables:
     - AVA_ID
     - AVA_OLD_ID
     
-  
 - name: avaliacao_municipio
   query_file: avaliacao_municipio.sql
   schema_file: avaliacao_municipio.json
@@ -239,7 +231,6 @@ tables:
     - AVM_OLD_ID
     - AVM_TIPO
     
-  
 - name: avaliacao_online
   query_file: avaliacao_online.sql
   schema_file: avaliacao_online.json
@@ -258,7 +249,6 @@ tables:
     columns: 
     - id
     
-  
 - name: avaliacao_online_page
   query_file: avaliacao_online_page.sql
   schema_file: avaliacao_online_page.json
@@ -277,7 +267,6 @@ tables:
     columns: 
     - id
     
-  
 - name: avaliacao_online_question
   query_file: avaliacao_online_question.sql
   schema_file: avaliacao_online_question.json
@@ -298,7 +287,6 @@ tables:
     - id
     - questionTemplateId
     
-  
 - name: avaliacao_online_question_alternative
   query_file: avaliacao_online_question_alternative.sql
   schema_file: avaliacao_online_question_alternative.json
@@ -317,7 +305,6 @@ tables:
     columns: 
     - id
     
-  
 - name: avaliacao_teste
   query_file: avaliacao_teste.sql
   schema_file: avaliacao_teste.json
@@ -338,7 +325,6 @@ tables:
     - AVA_ID
     - TES_ID
     
-  
 - name: disciplina
   query_file: disciplina.sql
   schema_file: disciplina.json
@@ -359,7 +345,6 @@ tables:
     - DIS_ID
     - DIS_OLD_ID
     
-  
 - name: escola
   query_file: escola.sql
   schema_file: escola.json
@@ -380,7 +365,6 @@ tables:
     - ESC_ID
     - ESC_OLD_ID
     
-  
 - name: estados
   query_file: estados.sql
   schema_file: estados.json
@@ -403,7 +387,6 @@ tables:
     - id
     - name
     
-  
 - name: forget_password
   query_file: forget_password.sql
   schema_file: forget_password.json
@@ -424,7 +407,6 @@ tables:
     - id
     - userUSUID
     
-  
 - name: formacao
   query_file: formacao.sql
   schema_file: formacao.json
@@ -443,7 +425,6 @@ tables:
     columns: 
     - FOR_ID
     
-  
 - name: genero
   query_file: genero.sql
   schema_file: genero.json
@@ -462,7 +443,6 @@ tables:
     columns: 
     - GEN_ID
     
-  
 - name: infrequencia
   query_file: infrequencia.sql
   schema_file: infrequencia.json
@@ -483,7 +463,6 @@ tables:
     - IFR_ID
     - IFR_OLD_ID
     
-  
 - name: job
   query_file: job.sql
   schema_file: job.json
@@ -502,7 +481,6 @@ tables:
     columns: 
     - id
     
-  
 - name: matriz_referencia
   query_file: matriz_referencia.sql
   schema_file: matriz_referencia.json
@@ -523,7 +501,6 @@ tables:
     - MAR_ID
     - MAR_OLD_ID
     
-  
 - name: matriz_referencia_serie
   query_file: matriz_referencia_serie.sql
   schema_file: matriz_referencia_serie.json
@@ -544,7 +521,6 @@ tables:
     - MAR_ID
     - SER_ID
     
-  
 - name: matriz_referencia_topico
   query_file: matriz_referencia_topico.sql
   schema_file: matriz_referencia_topico.json
@@ -565,7 +541,6 @@ tables:
     - MTO_ID
     - MTO_OLD_ID
     
-  
 - name: matriz_referencia_topico_items
   query_file: matriz_referencia_topico_items.sql
   schema_file: matriz_referencia_topico_items.json
@@ -586,7 +561,6 @@ tables:
     - MTI_ID
     - MTI_OLD_ID
     
-  
 - name: messages
   query_file: messages.sql
   schema_file: messages.json
@@ -605,7 +579,6 @@ tables:
     columns: 
     - MEN_ID
     
-  
 - name: messages_municipios_municipio
   query_file: messages_municipios_municipio.sql
   schema_file: messages_municipios_municipio.json
@@ -626,7 +599,6 @@ tables:
     - messagesMENID
     - municipioMUNID
     
-  
 - name: messages_schools_escola
   query_file: messages_schools_escola.sql
   schema_file: messages_schools_escola.json
@@ -647,7 +619,6 @@ tables:
     - escolaESCID
     - messagesMENID
     
-  
 - name: migrations
   query_file: migrations.sql
   schema_file: migrations.json
@@ -666,7 +637,6 @@ tables:
     columns: 
     - id
     
-  
 - name: municipio
   query_file: municipio.sql
   schema_file: municipio.json
@@ -687,7 +657,6 @@ tables:
     - MUN_ID
     - MUN_OLD_ID
     
-  
 - name: pcd
   query_file: pcd.sql
   schema_file: pcd.json
@@ -708,7 +677,6 @@ tables:
     - PCD_ID
     - PCD_OLD_ID
     
-  
 - name: perfil_base
   query_file: perfil_base.sql
   schema_file: perfil_base.json
@@ -727,7 +695,6 @@ tables:
     columns: 
     - PER_ID
     
-  
 - name: professor
   query_file: professor.sql
   schema_file: professor.json
@@ -748,7 +715,6 @@ tables:
     - PRO_ID
     - PRO_OLD_ID
     
-  
 - name: raca
   query_file: raca.sql
   schema_file: raca.json
@@ -769,7 +735,6 @@ tables:
     - PEL_ID
     - PEL_OLD_ID
     
-  
 - name: regionais
   query_file: regionais.sql
   schema_file: regionais.json
@@ -788,7 +753,6 @@ tables:
     columns: 
     - id
     
-  
 - name: report_descriptor
   query_file: report_descriptor.sql
   schema_file: report_descriptor.json
@@ -807,7 +771,6 @@ tables:
     columns: 
     - id
     
-  
 - name: report_edition
   query_file: report_edition.sql
   schema_file: report_edition.json
@@ -826,7 +789,6 @@ tables:
     columns: 
     - id
     
-  
 - name: report_not_evaluated
   query_file: report_not_evaluated.sql
   schema_file: report_not_evaluated.json
@@ -845,7 +807,6 @@ tables:
     columns: 
     - id
     
-  
 - name: report_question
   query_file: report_question.sql
   schema_file: report_question.json
@@ -864,7 +825,6 @@ tables:
     columns: 
     - id
     
-  
 - name: report_race
   query_file: report_race.sql
   schema_file: report_race.json
@@ -883,7 +843,6 @@ tables:
     columns: 
     - id
     
-  
 - name: report_subject
   query_file: report_subject.sql
   schema_file: report_subject.json
@@ -902,7 +861,6 @@ tables:
     columns: 
     - id
     
-  
 - name: series
   query_file: series.sql
   schema_file: series.json
@@ -923,7 +881,6 @@ tables:
     - SER_ID
     - SER_OLD_ID
     
-  
 - name: sub_perfil
   query_file: sub_perfil.sql
   schema_file: sub_perfil.json
@@ -942,7 +899,6 @@ tables:
     columns: 
     - SPE_ID
     
-  
 - name: sub_perfil_area
   query_file: sub_perfil_area.sql
   schema_file: sub_perfil_area.json
@@ -963,7 +919,6 @@ tables:
     - ARE_ID
     - SPE_ID
     
-  
 - name: teste
   query_file: teste.sql
   schema_file: teste.json
@@ -986,7 +941,6 @@ tables:
     - TES_OLD_ID
     - assessmentOnlineId
     
-  
 - name: teste_gabarito
   query_file: teste_gabarito.sql
   schema_file: teste_gabarito.json
@@ -1007,7 +961,6 @@ tables:
     - TEG_ID
     - TEG_OLD_ID
     
-  
 - name: transferencia
   query_file: transferencia.sql
   schema_file: transferencia.json
@@ -1028,7 +981,6 @@ tables:
     - TRF_ID
     - TRF_OLD_ID
     
-  
 - name: turma
   query_file: turma.sql
   schema_file: turma.json
@@ -1049,7 +1001,6 @@ tables:
     - TUR_ID
     - TUR_OLD_ID
     
-  
 - name: turma_aluno
   query_file: turma_aluno.sql
   schema_file: turma_aluno.json
@@ -1068,7 +1019,6 @@ tables:
     columns: 
     - id
     
-  
 - name: turma_professor
   query_file: turma_professor.sql
   schema_file: turma_professor.json
@@ -1089,7 +1039,6 @@ tables:
     - PRO_ID
     - TUR_ID
     
-  
 - name: usuario
   query_file: usuario.sql
   schema_file: usuario.json
