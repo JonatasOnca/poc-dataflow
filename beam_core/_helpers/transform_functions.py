@@ -6,74 +6,84 @@ import logging
 from decimal import Decimal
 from datetime import datetime, timedelta
 
-def converter_data(valor_data, formato_entrada, formato_saida):
-    """
-    Converte uma string de data (ou número OLE) para um objeto datetime.
-    """
-    
-    # 1. Tentar converter números OLE (Excel Serial Date)
+def converter_data(valor_data, formato_entrada, formato_saida='%Y-%m-%d %H:%M:%S.%f'):
+    # Formato de destino: Ano-Mês-Dia Hora:Minuto:Segundo.Microssegundo
     try:
-        # Tenta substituir vírgula por ponto para garantir o formato flutuante
-        valor_str = str(valor_data).replace(',', '.')
-        valor_flutuante = float(valor_str)
+        # Tenta a conversão para string de data/tempo
+        data_convertida = None
         
-        # O número de dias é a parte inteira. 
-        # A parte decimal é a fração do dia.
-        
-        # Data de referência do Excel: 30 de dezembro de 1899
-        # (O Excel conta 1900-02-29, que não existe, por isso o offset é 2)
-        base_date = datetime(1899, 12, 30)
-        
-        # O offset de 2 dias é para compensar o erro de bissexto do Excel.
-        # Se for um inteiro, não precisamos do timedelta (só se for data pura)
-        # Se for decimal, o timedelta lida com a parte fracionária
-        if valor_flutuante < 60: # Assume que se for menor que 60 é uma data no século 20, 
-                                 # compensando a contagem errada do Excel para 1900.
-            dias = valor_flutuante - 2
-        else:
-            dias = valor_flutuante
+        # 1. Tenta converter de número serial do Excel (OLE Automation Date)
+        # O número serial é uma string que pode conter vírgula para separar a parte fracionária
+        if isinstance(valor_data, str):
+            # Substitui a vírgula por ponto para garantir a correta conversão para float
+            valor_data_formatado = valor_data.replace(',', '.')
+            if valor_data_formatado.replace('.', '', 1).isdigit(): # Verifica se é um número (float ou int)
+                data_serial = float(valor_data_formatado)
+                
+                # OLE Automation Date começa em 30 de dezembro de 1899
+                # 25569 é o número serial para 1 de janeiro de 1970 (para referência)
+                
+                # Base de data do Excel (30 de dezembro de 1899)
+                data_base_excel = datetime(1899, 12, 30)
+                
+                # Converte a parte serial em um objeto timedelta
+                # A parte inteira é o número de dias, a parte fracionária é a fração de um dia
+                dias = int(data_serial)
+                fracao_tempo_dias = data_serial - dias
+                
+                # O número de segundos é a fração do dia * (24 * 60 * 60)
+                segundos_do_dia = fracao_tempo_dias * 86400  # 86400 segundos em um dia
+                
+                # Cria o timedelta
+                delta = timedelta(days=dias, seconds=segundos_do_dia)
+                
+                data_convertida = data_base_excel + delta
+                
+        # 2. Tenta converter a partir de string de data usando diversos formatos
+        if data_convertida is None:
+            # Lista de formatos possíveis baseada na lista fornecida
+            formatos_string = [
+                '%Y-%m-%d %H:%M:%S.%f %Z',  # Ex: 2025-10-07 20:04:19.596331
+                '%Y-%m-%d %H:%M:%S %Z',    # Ex: 2024-12-28 13:46:29
+                '%Y-%m-%dT%H:%M:%S.%f',    # Ex: 2025-10-08 00:52:14.112527 (ISO-like sem fuso)
+                '%Y-%m-%d %H:%M:%S',       # Ex: 47068 (aqui seria um serial, mas para ser exaustivo)
+                '%Y-%m-%d',                # Ex: 45938
+                # Nota: Os formatos com %Z (timezone) podem falhar se a string não tiver o fuso horário.
+                # Nesses casos, a conversão é tentada sem o %Z para obter um objeto datetime naive.
+            ]
             
-        data_convertida = base_date + timedelta(days=dias)
-        
-        # O formato de saída para números OLE geralmente será mais simples, 
-        # já que o formato na lista para eles não é o 'verdadeiro' formato strptime
-        # e é só o formato esperado APÓS a conversão OLE.
-        return data_convertida.strftime('%Y-%m-%d %H:%M:%S.%f')
-        
-    except ValueError:
-        # Se falhar a conversão para float, tenta a conversão normal strptime
-        pass
+            # Tenta converter a string com e sem %Z
+            for fmt in list(set(formatos_string)): # Usamos set para evitar duplicações
+                try:
+                    # Tenta a conversão
+                    data_convertida = datetime.strptime(valor_data, fmt)
+                    break
+                except ValueError:
+                    # Se falhar, tenta remover %Z, se presente
+                    if '%Z' in fmt:
+                        try:
+                            fmt_sem_tz = fmt.replace(' %Z', '')
+                            data_convertida = datetime.strptime(valor_data, fmt_sem_tz)
+                            break
+                        except ValueError:
+                            continue # Passa para o próximo formato
 
-    # 2. Tentar conversão strptime padrão
-    try:
-        # O formato '%f %Z' pode causar problemas se a string não tem o TZ no final.
-        # Muitas vezes, o '%Z' no formato só funciona se a string tem a zona explícita, 
-        # ou se o valor for um "placeholder" para datas sem TZ.
-        
-        # Simplificando a lógica, vamos tentar o formato com %f (milissegundos)
-        # e ignorar o %Z se não estiver na string.
-        # Este é um exemplo simplificado, na prática você precisaria de mais tratativas.
-        
-        # Removendo %Z e %f do formato se o valor_data não tiver milissegundos/TZ
-        formato_limpo = formato_entrada.replace(' %Z', '').replace('T', ' ').replace('.%f', '')
-        if '.' in str(valor_data):
-            # Se tiver milissegundos, use o formato original (ou com T trocado por espaço)
-            if 'T' in formato_entrada:
-                formato_entrada = formato_entrada.replace('T', ' ')
             
-            # Se o valor não tiver o %Z (ex: a turma_aluno['updatedAt']), precisa limpar o formato
-            if formato_entrada.endswith(' %Z') and ' ' not in str(valor_data).split(' ')[-1]:
-                formato_entrada = formato_entrada.replace(' %Z', '')
+        # 3. Formata a data convertida para a string de formato padrão
+        if data_convertida:
+            # Retorna a nova tupla com a data formatada
+            return data_convertida.strftime(formato_saida)
 
-        elif valor_data.count(':') < 2: # Se não tem segundos/horas, tenta formatos mais simples
-            return datetime.strptime(str(valor_data), '%Y-%m-%d')
-            
-        # Tenta a conversão com o formato completo
-        return datetime.strptime(str(valor_data), formato_entrada)
+        # Se a conversão for um número inteiro que não é um serial Excel, pode ser um dia.
+        # Mas sem informação mais precisa, manteremos a lógica acima como prioritária.
         
-    except ValueError as e:
+        # Se nenhuma conversão funcionar, retorna o valor original.
+        return valor_data
+
+    except Exception as e:
+        # Em caso de qualquer erro inesperado, retorna a tupla original
         logging.warning(f"ERRO ao analisar: {e} | Valor original: '{valor_data}' com formato '{formato_entrada}'")
-        return None
+        return valor_data
 
 
 def generic_transform(row_dict):
