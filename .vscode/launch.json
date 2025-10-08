@@ -12,7 +12,7 @@
         "--chunk_name",
         "ALL",
         // "--table_name",
-        // "genero"
+        // "municipio",
         "--load_type",
         "backfill",
         // "--load_type",

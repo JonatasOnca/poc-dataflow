@@ -91,7 +91,7 @@ def run():
     parser.add_argument('--config_file', required=True, help='Caminho GCS para config.yaml')
     parser.add_argument('--chunk_name', default="ALL", type=str)
     parser.add_argument('--table_name', default=None, type=str)
-    parser.add_argument('--load_type', choices=['backfill', 'delta', 'merge'], default='backfill')
+    parser.add_argument('--load_type', choices=['backfill', 'delta', 'merge'], default='delta')
     known_args, pipeline_args = parser.parse_known_args()
 
     app_config = load_yaml(known_args.config_file)

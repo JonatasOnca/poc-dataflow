@@ -11,6 +11,11 @@ def converter_data(valor_data, formato_entrada, formato_saida='%Y-%m-%d %H:%M:%S
     try:
         # Tenta a conversão para string de data/tempo
         data_convertida = None
+
+        invalid_data = ['0000-00-00 00:00:00']
+
+        if valor_data in invalid_data:
+            valor_data = '' 
         
         # 1. Tenta converter de número serial do Excel (OLE Automation Date)
         # O número serial é uma string que pode conter vírgula para separar a parte fracionária
