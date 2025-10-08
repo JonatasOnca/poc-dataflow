@@ -54,7 +54,7 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # turma
 
 CHUNK_NAME := ALL
-CHUNK_NAME_HYPHEN := $(subst _,-,$(CHUNK_NAME))
+CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')
 # ------Tipos de carga------
 # backfill
 # delta
@@ -177,7 +177,7 @@ update-config:
 
 run-job: upload-config
 	@echo "Executando o job Dataflow '$(TEMPLATE_NAME)' a partir do template..."
-	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-$(CHUNK_NAME_HYPHEN)-$(LOAD_TYPE)-`date +%Y%m%d-%H%M%S`" \
+	gcloud dataflow flex-template run "$(TEMPLATE_NAME)-$(CHUNK_NAME_HYPHEN_LOWER)-$(LOAD_TYPE)-`date +%Y%m%d-%H%M%S`" \
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
