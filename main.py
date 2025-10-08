@@ -186,16 +186,36 @@ def run():
 
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
-            # ✅ Leitura paralela com particionamento manual
-            rows = read_from_jdbc_partitioned(
-                pipeline=pipeline,
-                app_config=app_config,
-                db_creds=db_creds,
-                table_name=table_name,
-                base_query=final_query,
-                partition_column=table_config['read_partitioning_config'].get('column'),
-                num_partitions=table_config['read_partitioning_config'].get('num_partitions', 10)
-            )
+            read_partitioning_config = table_config.get('read_partitioning_config')
+            
+            if read_partitioning_config and read_partitioning_config.get('column'):
+                logging.info(f"Usando leitura particionada para a tabela '{table_name}'.")
+                rows = read_from_jdbc_partitioned(
+                    pipeline=pipeline,
+                    app_config=app_config,
+                    db_creds=db_creds,
+                    table_name=table_name,
+                    base_query=final_query,
+                    partition_column=read_partitioning_config.get('column'),
+                    num_partitions=read_partitioning_config.get('num_partitions', 10) # Default de 10 partições
+                )
+            else:
+                # Caso 2: Tabela pequena ou que não necessita de particionamento
+                logging.info(f"Usando leitura padrão (não particionada) para a tabela '{table_name}'.")
+                rows = (
+                    pipeline
+                    | f"Read {table_name}" >> ReadFromJdbc(
+                        driver_class_name=app_config["database"]["driver_class_name"],
+                        table_name=table_name,
+                        jdbc_url=JDBC_URL,
+                        username=db_creds["user"],
+                        password=db_creds["password"],
+                        query=final_query,
+                        driver_jars=app_config["database"]["driver_jars"],
+                    )
+                    | f"To Dict {table_name}" >> beam.Map(lambda r: r._asdict())
+                )
+            # --- FIM DA ALTERAÇÃO ---
 
             transformed_data = rows | f"Transform {table_name}" >> beam.ParDo(TransformWithSideInputDoFn(transform_function))
 
