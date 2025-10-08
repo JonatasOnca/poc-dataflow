@@ -1,6 +1,5 @@
 import logging
 import argparse
-from datetime import datetime, timezone
 import uuid
 
 import apache_beam as beam
@@ -10,39 +9,10 @@ from google.cloud import bigquery
 from google.api_core.exceptions import NotFound
 
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
+from beam_core._helpers.merge import execute_merge
 from beam_core._helpers.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
-
-
-def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):
-    try:
-        client = bigquery.Client(project=project_id)
-        query = f"SELECT MAX({column_name}) as hwm FROM `{project_id}.{dataset_id}.{table_id}`"
-        logging.info(f"Executando query para HWM: {query}")
-        query_job = client.query(query)
-        results = query_job.result()
-        row = next(iter(results))
-        hwm = row.hwm
-
-        if hwm is None:
-            logging.warning(f"Tabela '{table_id}' vazia ou HWM nulo. Iniciando carga completa.")
-            if column_type.upper() in ['TIMESTAMP', 'DATETIME']:
-                return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
-            else:
-                return 0
-
-        if column_type.upper() in ['TIMESTAMP', 'DATETIME'] and isinstance(hwm, datetime):
-            hwm = hwm.strftime('%Y-%m-%d %H:%M:%S.%f')
-
-        logging.info(f"High-water mark encontrado: {hwm}")
-        return hwm
-
-    except Exception as e:
-        logging.warning(f"Falha ao obter HWM para '{table_id}', assumindo carga inicial: {e}")
-        if column_type.upper() in ['TIMESTAMP', 'DATETIME']:
-            return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
-        else:
-            return 0
+from beam_core._helpers.water_mark import get_high_water_mark
 
 
 class TransformWithSideInputDoFn(beam.DoFn):
@@ -51,39 +21,6 @@ class TransformWithSideInputDoFn(beam.DoFn):
 
     def process(self, element):
         yield self._transform_fn(element)
-
-
-def execute_merge(project_id, gcp_region, target_table_id, staging_table_id, merge_keys, schema_fields):
-    """Função separada para MERGE pós-pipeline"""
-    if not staging_table_id:
-        logging.info(f"Nenhuma tabela de staging para {target_table_id}. Pulando MERGE.")
-        return
-
-    on_clause = " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
-    update_cols = [c for c in schema_fields if c not in merge_keys]
-    update_set_clause = ", ".join([f"T.{c} = S.{c}" for c in update_cols])
-    columns_list = ", ".join(schema_fields)
-    values_list = ", ".join([f"S.{c}" for c in schema_fields])
-
-    merge_query = f"""
-        MERGE `{target_table_id}` AS T
-        USING `{staging_table_id}` AS S
-        ON {on_clause}
-        WHEN MATCHED THEN
-            UPDATE SET {update_set_clause}
-        WHEN NOT MATCHED THEN
-            INSERT ({columns_list})
-            VALUES ({values_list})
-    """
-
-    client = bigquery.Client(project=project_id, location=gcp_region)
-    logging.info(f"Executando MERGE: {merge_query}")
-    client.query(merge_query).result()
-    logging.info("MERGE concluído com sucesso.")
-
-    # Remove tabela de staging
-    logging.info(f"Removendo tabela de staging: {staging_table_id}")
-    client.delete_table(staging_table_id, not_found_ok=True)
 
 
 def run():
@@ -242,7 +179,6 @@ def run():
         except NotFound:
             logging.warning(
                 f"Tabela de staging '{staging_table_id}' não foi criada (nenhum dado novo para processar). "
-                f"Pulando a etapa de MERGE para {task['target_table_id']}."
             )
 
 
