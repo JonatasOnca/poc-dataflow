@@ -18,4 +18,4 @@ SELECT
     CAST(transferencia AS CHAR) AS transferencia,
     CAST(type AS CHAR) AS type,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.report_not_evaluated
+FROM Saev.report_not_evaluated limit 100

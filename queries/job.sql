@@ -10,4 +10,4 @@ SELECT
     CAST(jobType AS CHAR) AS jobType,
     CAST(startDate AS CHAR) AS startDate,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.job
+FROM Saev.job limit 100

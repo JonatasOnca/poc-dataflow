@@ -5,4 +5,4 @@ SELECT
     CAST(createdAt AS CHAR) AS createdAt,
     CAST(id AS CHAR) AS id,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.avaliacao_online
+FROM Saev.avaliacao_online limit 100

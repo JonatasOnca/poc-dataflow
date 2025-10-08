@@ -52,7 +52,8 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # report_edition
 # transferencia
 # turma
-CHUNK_NAME := aluno_teste_resposta
+
+CHUNK_NAME := ALL
 CHUNK_NAME_HYPHEN := $(subst _,-,$(CHUNK_NAME))
 # ------Tipos de carga------
 # backfill
@@ -180,6 +181,7 @@ run-job: upload-config
 		--template-file-gcs-location "$(TEMPLATE_PATH)" \
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
+		--additional-experiments=enable_prime \
 		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
 
 # Executa o job do Dataflow a partir do template Localmente

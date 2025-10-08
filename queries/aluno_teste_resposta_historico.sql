@@ -9,4 +9,4 @@ SELECT
     CAST(ATH_ID AS CHAR) AS ATH_ID,
     CAST(ATH_OPERACAO AS CHAR) AS ATH_OPERACAO,
     CAST(ATH_TEG_ID AS CHAR) AS ATH_TEG_ID
-FROM Saev.aluno_teste_resposta_historico
+FROM Saev.aluno_teste_resposta_historico limit 100

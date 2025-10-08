@@ -8,4 +8,4 @@ SELECT
     CAST(SPE_NOME AS CHAR) AS SPE_NOME,
     CAST(SPE_PER_ID AS CHAR) AS SPE_PER_ID,
     CAST(role AS CHAR) AS role
-FROM Saev.sub_perfil
+FROM Saev.sub_perfil limit 100
