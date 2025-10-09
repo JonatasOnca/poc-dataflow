@@ -57,7 +57,7 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # transferencia
 # turma
 
-CHUNK_NAME := ALL
+CHUNK_NAME := TABELAS_PEQUENAS_L3
 CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')
 # ------Tipos de carga------
 # backfill
@@ -188,7 +188,8 @@ run-job: upload-config
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
 		--additional-experiments=enable_prime \
-		--parameters=config_file=$(CONFIG_GCS_PATH),table_name=$(TABLE_NAME),load_type=$(LOAD_TYPE)
+		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
+# 		--parameters=config_file=$(CONFIG_GCS_PATH),table_name=$(TABLE_NAME),load_type=$(LOAD_TYPE)
 # 		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
 		
 
