@@ -46,9 +46,6 @@ tables:
     - ALU_COD
     - ALU_ID
     - ALU_OLD_ID
-  read_partitioning_config:
-    column: ALU_ID
-    num_partitions: 100
   partitioning_config:
     type: DAY
     column: ALU_DT_ATUALIZACAO
@@ -413,9 +410,6 @@ tables:
     keys:
     - IFR_ID
     - IFR_OLD_ID
-  read_partitioning_config:
-    column: IFR_ID
-    num_partitions: 100
   partitioning_config:
     type: DAY
     column: IFR_DT_ATUALIZACAO
@@ -712,9 +706,6 @@ tables:
   merge_config:
     keys:
     - id
-  read_partitioning_config:
-    column: id
-    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -731,9 +722,6 @@ tables:
   merge_config:
     keys:
     - id
-  read_partitioning_config:
-    column: id
-    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -788,9 +776,6 @@ tables:
   merge_config:
     keys:
     - id
-  read_partitioning_config:
-    column: id
-    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -898,9 +883,6 @@ tables:
     keys:
     - TRF_ID
     - TRF_OLD_ID
-  read_partitioning_config:
-    column: TRF_ID
-    num_partitions: 100
   partitioning_config:
     type: DAY
     column: TRF_DT_ATUALIZACAO
@@ -919,9 +901,6 @@ tables:
     keys:
     - TUR_ID
     - TUR_OLD_ID
-  read_partitioning_config:
-    column: TUR_ID
-    num_partitions: 10
   partitioning_config:
     type: DAY
     column: TUR_DT_ATUALIZACAO
@@ -939,9 +918,6 @@ tables:
   merge_config:
     keys:
     - id
-  read_partitioning_config:
-    column: id
-    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
