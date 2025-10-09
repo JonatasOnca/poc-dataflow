@@ -1,8 +1,6 @@
 import logging
 import argparse
 import uuid
-import math
-import mysql.connector
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
@@ -11,10 +9,9 @@ from google.cloud import bigquery
 from google.api_core.exceptions import NotFound
 
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
-from beam_core._helpers.merge import execute_merge
-from beam_core._helpers.secret_manager import get_secret
+from beam_core.connectors.mysql_connector import execute_merge, get_high_water_mark, read_from_jdbc_partitioned
+from beam_core.connectors.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
-from beam_core._helpers.water_mark import get_high_water_mark
 
 
 class TransformWithSideInputDoFn(beam.DoFn):
@@ -23,69 +20,6 @@ class TransformWithSideInputDoFn(beam.DoFn):
 
     def process(self, element):
         yield self._transform_fn(element)
-
-
-def get_min_max_id(db_creds, table_name, column):
-    """Obtém o menor e o maior valor da coluna de partição direto no banco."""
-    conn = mysql.connector.connect(
-        host=db_creds["host"],
-        port=db_creds["port"],
-        user=db_creds["user"],
-        password=db_creds["password"],
-        database=db_creds["database"],
-    )
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT MIN({column}), MAX({column}) FROM {table_name}")
-    min_id, max_id = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return min_id, max_id
-
-
-def read_from_jdbc_partitioned(pipeline, app_config, db_creds, table_name, base_query, partition_column="id", num_partitions=20):
-    """
-    Lê uma tabela grande do MySQL em paralelo simulando particionamento,
-    dividindo o range [min, max] da coluna de partição.
-    """
-    FETCH_SIZE = app_config['dataflow']['parameters']['felch_size']
-    JDBC_URL = (
-        f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
-        f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}"
-    )
-    min_id, max_id = get_min_max_id(db_creds, table_name, partition_column)
-
-    if min_id is None or max_id is None:
-        raise ValueError(f"Não foi possível determinar min/max da coluna {partition_column} para {table_name}")
-
-    step = math.ceil((max_id - min_id + 1) / num_partitions)
-    partitions = []
-
-    for i in range(num_partitions):
-        start = min_id + i * step
-        end = min(start + step - 1, max_id)
-        query = f"{base_query.strip()} WHERE {partition_column} BETWEEN {start} AND {end}"
-
-        logging.info(f"[{table_name}] Partição {i+1}/{num_partitions}: {partition_column} BETWEEN {start} AND {end}")
-
-        p = (
-            pipeline
-            | f"Read {table_name} chunk {i}" >> ReadFromJdbc(
-                driver_class_name=app_config["database"]["driver_class_name"],
-                table_name=table_name,
-                jdbc_url=JDBC_URL,
-                username=db_creds["user"],
-                password=db_creds["password"],
-                query=query,
-                driver_jars=app_config["database"]["driver_jars"],
-            )
-            | f"To Dict {table_name} chunk {i}" >> beam.Map(lambda r: r._asdict())
-        )
-
-        partitions.append(p)
-
-    # Junta as partições lidas em um único PCollection
-    return partitions | f"Merge partitions {table_name}" >> beam.Flatten()
-
 
 def run():
     parser = argparse.ArgumentParser()
@@ -108,7 +42,15 @@ def run():
         version_id=app_config['source_db']['secret_version']
     )
 
-    JDBC_URL = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+    FETCH_SIZE = app_config['dataflow']['parameters']['felch_size']
+
+    if FETCH_SIZE:
+        JDBC_URL = (
+            f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+            f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}"
+        )
+    else:
+        JDBC_URL = (f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}")
 
     pipeline_options = PipelineOptions(
         pipeline_args,
@@ -196,15 +138,15 @@ def run():
                 logging.info(f"Usando leitura particionada para a tabela '{table_name}'.")
                 rows = read_from_jdbc_partitioned(
                     pipeline=pipeline,
+                    jdcb_url=JDBC_URL,
                     app_config=app_config,
                     db_creds=db_creds,
                     table_name=table_name,
                     base_query=final_query,
                     partition_column=read_partitioning_config.get('column'),
-                    num_partitions=read_partitioning_config.get('num_partitions', 10) # Default de 10 partições
+                    num_partitions=read_partitioning_config.get('num_partitions', 10),
                 )
             else:
-                # Caso 2: Tabela pequena ou que não necessita de particionamento
                 logging.info(f"Usando leitura padrão (não particionada) para a tabela '{table_name}'.")
                 rows = (
                     pipeline
@@ -219,11 +161,9 @@ def run():
                     )
                     | f"To Dict {table_name}" >> beam.Map(lambda r: r._asdict())
                 )
-            # --- FIM DA ALTERAÇÃO ---
 
             transformed_data = rows | f"Transform {table_name}" >> beam.ParDo(TransformWithSideInputDoFn(transform_function))
 
-            # Write to BigQuery
             _ = transformed_data | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
                 table=destination_table_for_write,
                 schema=schema,
@@ -234,7 +174,6 @@ def run():
                 custom_gcs_temp_location=app_config['dataflow']['parameters']['temp_location']
             )
 
-    # Executa MERGE pós-pipeline
     client = bigquery.Client(project=project_id)
 
     for task in merge_tasks:

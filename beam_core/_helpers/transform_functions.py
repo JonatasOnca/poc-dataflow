@@ -2,8 +2,6 @@
 
 
 import logging
-
-from decimal import Decimal
 from datetime import datetime, timedelta
 
 def converter_data(valor_data, formato_entrada, formato_saida='%Y-%m-%d %H:%M:%S.%f'):
