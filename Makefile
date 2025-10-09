@@ -57,7 +57,7 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # transferencia
 # turma
 
-CHUNK_NAME := TABELAS_MEDIAS
+CHUNK_NAME := TABELAS_PEQUENAS_L3
 CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')
 # ------Tipos de carga------
 # backfill

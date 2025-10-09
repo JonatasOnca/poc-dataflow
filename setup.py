@@ -10,6 +10,7 @@ setuptools.setup(
         'google-cloud-secret-manager==2.24.0',
         'PyYAML==6.0.3',
         'Jinja2==3.1.6',
+        'mysql-connector-python==9.4.0',
     ],
     packages=setuptools.find_packages(),
     description='Pipeline Dataflow para ingestão incremental do MySQL para o GCS.',
