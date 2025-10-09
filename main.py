@@ -47,7 +47,11 @@ def read_from_jdbc_partitioned(pipeline, app_config, db_creds, table_name, base_
     Lê uma tabela grande do MySQL em paralelo simulando particionamento,
     dividindo o range [min, max] da coluna de partição.
     """
-    JDBC_URL = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+    FETCH_SIZE = app_config['dataflow']['parameters']['felch_size']
+    JDBC_URL = (
+        f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+        f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}"
+    )
     min_id, max_id = get_min_max_id(db_creds, table_name, partition_column)
 
     if min_id is None or max_id is None:

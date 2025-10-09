@@ -25,6 +25,7 @@ dataflow:
     queries_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/queries'
     schemas_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/schemas'
     landing_zone_gcs_path_table: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/landing_zone'
+    felch_size: 25000
     runner: DataflowRunner    
     # Parâmetros adicionais para otimização
     machine_type: n1-standard-1
@@ -59,7 +60,9 @@ tables:
     - ALU_COD
     - ALU_ID
     - ALU_OLD_ID
-    
+  read_partitioning_config:
+    column: ALU_ID
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: ALU_DT_ATUALIZACAO
@@ -101,7 +104,9 @@ tables:
     - ALT_ALU_ID
     - ALT_ID
     - ALT_TES_ID
-    
+  read_partitioning_config:
+    column: ALT_ID
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: ALT_DT_ATUALIZACAO
@@ -121,7 +126,9 @@ tables:
   merge_config:
     keys:
     - ATR_ID
-    
+  read_partitioning_config:
+    column: ATR_ID
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: ATR_DT_CRIACAO
@@ -139,7 +146,9 @@ tables:
   merge_config:
     keys:
     - ATH_ID
-    
+  read_partitioning_config:
+    column: ATH_ID
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: ATH_DT_CRIACAO
@@ -454,7 +463,9 @@ tables:
     keys:
     - IFR_ID
     - IFR_OLD_ID
-    
+  read_partitioning_config:
+    column: IFR_ID
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: IFR_DT_ATUALIZACAO
@@ -763,7 +774,9 @@ tables:
   merge_config:
     keys:
     - id
-    
+  read_partitioning_config:
+    column: id
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -781,7 +794,9 @@ tables:
   merge_config:
     keys:
     - id
-    
+  read_partitioning_config:
+    column: id
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -799,7 +814,9 @@ tables:
   merge_config:
     keys:
     - id
-    
+  read_partitioning_config:
+    column: id
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -817,7 +834,9 @@ tables:
   merge_config:
     keys:
     - id
-    
+  read_partitioning_config:
+    column: id
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: 
@@ -835,7 +854,9 @@ tables:
   merge_config:
     keys:
     - id
-    
+  read_partitioning_config:
+    column: id
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -853,7 +874,9 @@ tables:
   merge_config:
     keys:
     - id
-    
+  read_partitioning_config:
+    column: id
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
@@ -972,7 +995,9 @@ tables:
     keys:
     - TRF_ID
     - TRF_OLD_ID
-    
+  read_partitioning_config:
+    column: TRF_ID
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: TRF_DT_ATUALIZACAO
@@ -993,8 +1018,8 @@ tables:
     - TUR_ID
     - TUR_OLD_ID
   read_partitioning_config:
-      column: TUR_ID
-      num_partitions: 100
+    column: TUR_ID
+    num_partitions: 10
   partitioning_config:
     type: DAY
     column: TUR_DT_ATUALIZACAO
@@ -1013,7 +1038,9 @@ tables:
   merge_config:
     keys:
     - id
-    
+  read_partitioning_config:
+    column: id
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: updatedAt
