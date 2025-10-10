@@ -99,12 +99,15 @@ def run():
             if load_type in ['delta', 'merge']:
                 delta_config = table_config.get('delta_config')
                 if delta_config and 'column' in delta_config:
-                    hwm_column = delta_config['column']
-                    hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
-                    high_water_mark = get_high_water_mark(project_id, bq_dataset, table_name, hwm_column, hwm_type)
-                    condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else str(high_water_mark)
-                    where_clause = f"WHERE {hwm_column} > {condition_value}" if 'WHERE' not in base_query.upper() else f"AND {hwm_column} > {condition_value}"
-                    final_query = f"{base_query.strip()} {where_clause}"
+                    if delta_config['column']:
+                        hwm_column = delta_config['column']
+                        hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
+                        high_water_mark = get_high_water_mark(project_id, bq_dataset, table_name, hwm_column, hwm_type)
+                        condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else str(high_water_mark)
+                        where_clause = f"WHERE {hwm_column} > {condition_value}" if 'WHERE' not in base_query.upper() else f"AND {hwm_column} > {condition_value}"
+                        final_query = f"{base_query.strip()} {where_clause}"
+                    else: 
+                        final_query = f"{base_query.strip()}"
 
                     if current_load_type == 'delta':
                         write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
