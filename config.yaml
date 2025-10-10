@@ -145,7 +145,7 @@ tables:
     - ATH_ID
   read_partitioning_config:
     column: ATH_ID
-    num_partitions: 200
+    num_partitions: 100
   partitioning_config:
     type: DAY
     column: ATH_DT_CRIACAO
