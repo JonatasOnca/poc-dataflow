@@ -38,11 +38,8 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # TABELAS_PEQUENAS_L2
 # TABELAS_PEQUENAS_L3
 # TABELAS_MEDIAS
-
-
 # aluno_teste_resposta
 # aluno_teste_resposta_historico
-
 # report_question
 # aluno_teste
 # report_descriptor
@@ -56,13 +53,13 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # transferencia
 # turma
 
-CHUNK_NAME := aluno_teste_resposta_historico
+CHUNK_NAME := ALL
 CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')
 # ------Tipos de carga------
 # backfill
 # delta
 # merge
-LOAD_TYPE := backfill
+LOAD_TYPE := delta
 
 TABLE_NAME := XXXX
 
