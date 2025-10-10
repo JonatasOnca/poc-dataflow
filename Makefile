@@ -53,7 +53,7 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # transferencia
 # turma
 
-CHUNK_NAME := ALL
+CHUNK_NAME := genero
 CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')
 # ------Tipos de carga------
 # backfill
@@ -61,7 +61,7 @@ CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper
 # merge
 LOAD_TYPE := delta
 
-TABLE_NAME := XXXX
+# TABLE_NAME := XXXX
 
 # Comandos do Makefile
 .PHONY: teste sa all setup-gcp build-image build-template upload-config upload-assets run-job docker-test-local clean-env clean cria-venv ativa-venv test-local
@@ -184,7 +184,8 @@ run-job: upload-config
 		--project=$(PROJECT_ID) \
 		--region=$(REGION) \
 		--additional-experiments=enable_prime \
-		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
+		--parameters=config_file=$(CONFIG_GCS_PATH),table_name=$(TABLE_NAME),load_type=$(LOAD_TYPE)
+# 		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
 # 		--parameters=config_file=$(CONFIG_GCS_PATH),table_name=$(TABLE_NAME),load_type=$(LOAD_TYPE)
 # 		--parameters=config_file=$(CONFIG_GCS_PATH),chunk_name=$(CHUNK_NAME),load_type=$(LOAD_TYPE)
 		
@@ -204,7 +205,9 @@ docker-test-local:
 	  -e "GOOGLE_APPLICATION_CREDENTIALS=/gcp/creds.json" \
 	  -e "GOOGLE_CLOUD_PROJECT=$(PROJECT_ID)" \
 	  mysql-to-bq-local-test \
-	  python main.py --config_file /app/config.local.yaml --chunk_name $(CHUNK_NAME) --load_type $(LOAD_TYPE)
+	  python main.py --config_file /app/config.local.yaml --table_name=$(TABLE_NAME) --load_type $(LOAD_TYPE)
+# 	  python main.py --config_file /app/config.local.yaml --chunk_name $(CHUNK_NAME) --load_type $(LOAD_TYPE)
+# 	  python main.py --config_file /app/config.local.yaml --table_name=$(TABLE_NAME) --load_type $(LOAD_TYPE)
 
 # Executa o job do Dataflow localmente
 test-local:
