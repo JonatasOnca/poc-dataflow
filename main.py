@@ -134,7 +134,7 @@ def run():
 
             read_partitioning_config = table_config.get('read_partitioning_config')
             
-            if read_partitioning_config and read_partitioning_config.get('column'):
+            if load_type == 'backfill' and read_partitioning_config and read_partitioning_config.get('column'):
                 logging.info(f"Usando leitura particionada para a tabela '{table_name}'.")
                 rows = read_from_jdbc_partitioned(
                     pipeline=pipeline,
