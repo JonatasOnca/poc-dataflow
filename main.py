@@ -1,6 +1,7 @@
 import logging
 import argparse
 import uuid
+from datetime import datetime
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
@@ -24,13 +25,15 @@ def run():
 
     app_config = load_yaml(known_args.config_file)
     logging.info(f"Iniciando pipeline com config: {app_config}")
-
-    # Gera um ID único para esta execução da pipeline
-    job_execution_id = f"{app_config['dataflow']['job_name']}-{uuid.uuid4()}"
     
     chunk_name = known_args.chunk_name
     table_name = known_args.table_name
     load_type = known_args.load_type
+    job_name = app_config['dataflow']['job_name']
+
+    chunk_name_hyphen_lower = chunk_name.replace("_", "-").lower()
+    timestamp_formatado = datetime.now().strftime("%Y%m%d-%H%M%S")
+    job_execution_id = f"{job_name}-{chunk_name_hyphen_lower}-{load_type}-date-{timestamp_formatado}-uuid-{uuid.uuid4()}"
 
     db_creds = get_secret(
         project_id=app_config['gcp']['project_id'],

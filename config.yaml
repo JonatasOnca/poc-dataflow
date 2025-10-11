@@ -45,6 +45,28 @@ silver_dataset: silver
 gold_dataset: gold
 region: US
 
+load_type:
+  backfill:
+    - HEAVIEST_1
+    - HEAVIEST_2
+    - HEAVIEST_3
+    - MEDIUM
+    - LIGHT
+    - REPLACE_ALWAYS_UNIQUE
+    - REPLACE_ALWAYS
+  delta:
+    - HEAVIEST_1
+    - HEAVIEST_2
+    - HEAVIEST_3
+    - MEDIUM
+    - LIGHT
+  merge:
+    - HEAVIEST_1
+    - HEAVIEST_2
+    - HEAVIEST_3
+    - MEDIUM
+    - LIGHT
+
 # Copyright 2025 TecOnca Data Solutions.
 
 
