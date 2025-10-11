@@ -33,25 +33,14 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 
 
 # ---------Lista de Chunks---------
-# ALL
-# TABELAS_PEQUENAS_L1
-# TABELAS_PEQUENAS_L2
-# TABELAS_PEQUENAS_L3
-# TABELAS_MEDIAS
-# aluno_teste_resposta
-# aluno_teste_resposta_historico
-# report_question
-# aluno_teste
-# report_descriptor
-# report_race
-# turma_aluno
-# aluno
-# report_subject
-# report_not_evaluated
-# infrequencia
-# report_edition
-# transferencia
-# turma
+# HEAVIEST_1
+# HEAVIEST_2
+# HEAVIEST_3
+# MEDIUM
+# LIGHT
+
+# REPLACE_ALWAYS_UNIQUE
+# REPLACE_ALWAYS
 
 CHUNK_NAME := ALL
 CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')

@@ -8,6 +8,7 @@ from apache_beam.io.jdbc import ReadFromJdbc
 from google.cloud import bigquery
 from google.api_core.exceptions import NotFound
 
+from beam_core._helpers.add_metadata import AddMetadataDoFn
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
 from beam_core.connectors.mysql_connector import execute_merge, get_high_water_mark, read_from_jdbc_partitioned
 from beam_core.connectors.secret_manager import get_secret
@@ -24,6 +25,9 @@ def run():
     app_config = load_yaml(known_args.config_file)
     logging.info(f"Iniciando pipeline com config: {app_config}")
 
+    # Gera um ID único para esta execução da pipeline
+    job_execution_id = f"{app_config['dataflow']['job_name']}-{uuid.uuid4()}"
+    
     chunk_name = known_args.chunk_name
     table_name = known_args.table_name
     load_type = known_args.load_type
@@ -47,7 +51,7 @@ def run():
         region=app_config['gcp']['region'],
         staging_location=app_config['dataflow']['parameters']['staging_location'],
         temp_location=app_config['dataflow']['parameters']['temp_location'],
-        job_name=app_config['dataflow']['job_name'],
+        job_name=job_execution_id,
         setup_file='./setup.py'
     )
 
@@ -158,8 +162,10 @@ def run():
                 )
 
             transformed_data = rows | f"Transform {table_name}" >> beam.Map(transform_function)
+            
+            processed_rows = transformed_data | f'Add Metadata {table_name}' >> beam.ParDo(AddMetadataDoFn(table_name, job_execution_id))
 
-            _ = transformed_data | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
+            _ = processed_rows | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
                 table=destination_table_for_write,
                 schema=schema,
                 create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
@@ -168,44 +174,44 @@ def run():
                 insert_retry_strategy='RETRY_NEVER',
                 custom_gcs_temp_location=app_config['dataflow']['parameters']['temp_location']
             )
-    
-    if not merge_tasks:
-        logging.info("Nenhuma tarefa de MERGE para executar.")
-        return
+    if load_type == 'merge':
+        if not merge_tasks:
+            logging.info("Nenhuma tarefa de MERGE para executar.")
+            return
 
-    client = bigquery.Client(project=project_id)
-    
-    for task in merge_tasks:
-        staging_table_id = task['staging_table_id']
-        target_table_id = task['target_table_id']
-        logging.info(f"Iniciando processo de MERGE para a tabela de destino '{target_table_id}'")
+        client = bigquery.Client(project=project_id)
         
-        try:
-            staging_table = client.get_table(staging_table_id)
-            if staging_table.num_rows == 0:
-                logging.warning(f"Tabela de staging '{staging_table_id}' está vazia. Nenhum dado para mesclar. Pulando MERGE.")
-                continue
-
-            execute_merge(
-                project_id=project_id,
-                gcp_region=app_config['region'],
-                target_table_id=target_table_id,
-                staging_table_id=staging_table_id,
-                merge_keys=task['merge_keys'],
-                schema_fields=task['schema_fields']
-            )
-            logging.info(f"MERGE concluído com sucesso para '{target_table_id}'.")
-        except NotFound:
-            logging.warning(f"Tabela de staging '{staging_table_id}' não foi encontrada. O job pode não ter produzido dados.")
-        except Exception as e:
-            logging.error(f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}")
-        finally:
+        for task in merge_tasks:
+            staging_table_id = task['staging_table_id']
+            target_table_id = task['target_table_id']
+            logging.info(f"Iniciando processo de MERGE para a tabela de destino '{target_table_id}'")
+            
             try:
-                logging.info(f"Tentando deletar a tabela de staging '{staging_table_id}'...")
-                client.delete_table(staging_table_id, not_found_ok=True)
-                logging.info(f"Tabela de staging '{staging_table_id}' deletada com sucesso.")
+                staging_table = client.get_table(staging_table_id)
+                if staging_table.num_rows == 0:
+                    logging.warning(f"Tabela de staging '{staging_table_id}' está vazia. Nenhum dado para mesclar. Pulando MERGE.")
+                    continue
+
+                execute_merge(
+                    project_id=project_id,
+                    gcp_region=app_config['region'],
+                    target_table_id=target_table_id,
+                    staging_table_id=staging_table_id,
+                    merge_keys=task['merge_keys'],
+                    schema_fields=task['schema_fields']
+                )
+                logging.info(f"MERGE concluído com sucesso para '{target_table_id}'.")
+            except NotFound:
+                logging.warning(f"Tabela de staging '{staging_table_id}' não foi encontrada. O job pode não ter produzido dados.")
             except Exception as e:
-                logging.critical(f"FALHA CRÍTICA AO LIMPAR: Não foi possível deletar a tabela de staging '{staging_table_id}'. Ação manual pode ser necessária. Erro: {e}")
+                logging.error(f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}")
+            finally:
+                try:
+                    logging.info(f"Tentando deletar a tabela de staging '{staging_table_id}'...")
+                    client.delete_table(staging_table_id, not_found_ok=True)
+                    logging.info(f"Tabela de staging '{staging_table_id}' deletada com sucesso.")
+                except Exception as e:
+                    logging.critical(f"FALHA CRÍTICA AO LIMPAR: Não foi possível deletar a tabela de staging '{staging_table_id}'. Ação manual pode ser necessária. Erro: {e}")
 
 
 if __name__ == "__main__":
