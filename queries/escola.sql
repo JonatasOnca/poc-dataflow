@@ -21,4 +21,4 @@ SELECT
     CAST(ESC_TIPO AS CHAR) AS ESC_TIPO,
     CAST(ESC_UF AS CHAR) AS ESC_UF,
     CAST(regionalId AS CHAR) AS regionalId
-FROM Saev.escola 
+FROM Saev.escola

@@ -7,4 +7,4 @@ SELECT
     CAST(token AS CHAR) AS token,
     CAST(updatedAt AS CHAR) AS updatedAt,
     CAST(userUSUID AS CHAR) AS userUSUID
-FROM Saev.forget_password 
+FROM Saev.forget_password

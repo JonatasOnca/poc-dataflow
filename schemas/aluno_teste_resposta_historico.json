@@ -55,6 +55,26 @@
             "type": "INTEGER",
             "description": "",
             "fields": []
+        },
+        {
+            "name": "_ingestion_timestamp",
+            "type": "TIMESTAMP",
+            "description": "Timestamp da ingestão do dado na camada de destino."
+        },
+        {
+            "name": "_source_name",
+            "type": "STRING",
+            "description": "Nome da fonte de dados de origem."
+        },
+        {
+            "name": "_job_id",
+            "type": "STRING",
+            "description": "Identificador único do job que processou o registro."
+        },
+        {
+            "name": "_row_hash",
+            "type": "STRING",
+            "description": "Hash das colunas de negócio para detecção de mudanças."
         }
     ]
 }

@@ -10,4 +10,4 @@ SELECT
     CAST(schoolESCID AS CHAR) AS schoolESCID,
     CAST(type AS CHAR) AS type,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.report_edition 
+FROM Saev.report_edition

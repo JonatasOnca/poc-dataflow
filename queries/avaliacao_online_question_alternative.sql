@@ -8,4 +8,4 @@ SELECT
     CAST(`option` AS  CHAR) AS `option`,
     CAST(questionId AS CHAR) AS questionId,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.avaliacao_online_question_alternative 
+FROM Saev.avaliacao_online_question_alternative

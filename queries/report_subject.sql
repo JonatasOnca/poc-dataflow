@@ -21,4 +21,4 @@ SELECT
     CAST(totalGradesStudents AS CHAR) AS totalGradesStudents,
     CAST(type AS CHAR) AS type,
     CAST(updatedAt AS CHAR) AS updatedAt
-FROM Saev.report_subject 
+FROM Saev.report_subject

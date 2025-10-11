@@ -8,4 +8,4 @@ SELECT
     CAST(MAR_ID AS CHAR) AS MAR_ID,
     CAST(MAR_NOME AS CHAR) AS MAR_NOME,
     CAST(MAR_OLD_ID AS CHAR) AS MAR_OLD_ID
-FROM Saev.matriz_referencia 
+FROM Saev.matriz_referencia

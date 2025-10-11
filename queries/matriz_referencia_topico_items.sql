@@ -9,4 +9,4 @@ SELECT
     CAST(MTI_ID AS CHAR) AS MTI_ID,
     CAST(MTI_MTO_ID AS CHAR) AS MTI_MTO_ID,
     CAST(MTI_OLD_ID AS CHAR) AS MTI_OLD_ID
-FROM Saev.matriz_referencia_topico_items 
+FROM Saev.matriz_referencia_topico_items
