@@ -81,7 +81,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: ALU_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -120,7 +120,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: ALT_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -143,7 +143,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: ATR_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -164,7 +164,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: ATH_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -185,7 +185,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: ANO_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -207,7 +207,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: ARE_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -228,7 +228,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: AVA_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -250,7 +250,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: AVM_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -274,7 +274,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -295,7 +295,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -316,7 +316,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -338,7 +338,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -375,7 +375,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: DIS_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -397,7 +397,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: ESC_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -419,7 +419,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -442,7 +442,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -464,7 +464,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: FOR_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -485,7 +485,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: GEN_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -506,7 +506,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: IFR_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -528,7 +528,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -549,7 +549,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: MAR_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -587,7 +587,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: MTO_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -609,7 +609,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: MTI_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -631,7 +631,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: MEN_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -680,7 +680,7 @@ tables:
   schema_file: migrations.json
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -701,7 +701,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: MUN_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -723,7 +723,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: PCD_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -745,7 +745,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: PER_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -766,7 +766,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: PRO_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -788,7 +788,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: PEL_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -810,7 +810,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -831,7 +831,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -852,7 +852,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -873,7 +873,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -890,7 +890,7 @@ tables:
   schema_file: report_question.json
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -911,7 +911,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -932,7 +932,7 @@ tables:
     type: datetime
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -953,7 +953,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: SER_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -975,7 +975,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: SPE_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -1012,7 +1012,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: TES_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -1035,7 +1035,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: TEG_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -1057,7 +1057,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: TRF_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -1079,7 +1079,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: TUR_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -1101,7 +1101,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: id
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:
@@ -1138,7 +1138,7 @@ tables:
     type: timestamp
   read_partitioning_config:
     column: USU_ID
-    num_partitions: 10
+    num_partitions: 1
   merge_config:
     strategy: 'upsert' #'upsert' or 'scd2'
     keys:

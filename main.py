@@ -146,7 +146,7 @@ def run():
                     table_name=table_name,
                     base_query=final_query,
                     partition_column=read_partitioning_config.get('column'),
-                    num_partitions=read_partitioning_config.get('num_partitions', 10),
+                    num_partitions=read_partitioning_config.get('num_partitions', 1),
                 )
             else:
                 logging.info(f"Usando leitura padrão (não particionada) para a tabela '{table_name}'.")
