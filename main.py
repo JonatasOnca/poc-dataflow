@@ -13,14 +13,6 @@ from beam_core.connectors.mysql_connector import execute_merge, get_high_water_m
 from beam_core.connectors.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
 
-
-class TransformWithSideInputDoFn(beam.DoFn):
-    def __init__(self, transform_fn):
-        self._transform_fn = transform_fn
-
-    def process(self, element):
-        yield self._transform_fn(element)
-
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', required=True, help='Caminho GCS para config.yaml')
@@ -42,7 +34,7 @@ def run():
         version_id=app_config['source_db']['secret_version']
     )
 
-    FETCH_SIZE = app_config.get('dataflow', {}).get('parameters', {}).get('felch_size')
+    FETCH_SIZE = app_config.get('dataflow', {}).get('parameters', {}).get('fetch_size')
 
     base_jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
     fetch_params = f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}" if FETCH_SIZE else ""

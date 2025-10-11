@@ -22,7 +22,7 @@ dataflow:
     schemas_location: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name }}/schemas'
     landing_zone_gcs_path_table: '{{ gcp.bucket_name }}/{{ artefact_registry.image_name
       }}/landing_zone'
-    felch_size: 25000
+    fetch_size: 25000
     runner: DirectRunner
     machine_type: n1-standard-1
 source_db:
