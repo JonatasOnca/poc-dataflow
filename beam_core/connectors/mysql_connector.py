@@ -10,9 +10,15 @@ from apache_beam.io.jdbc import ReadFromJdbc
 
 
 def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):
+    """
+    """
+    is_timestamp_type = column_type.upper() in ['TIMESTAMP', 'DATETIME']
+    default_hwm = datetime(1970, 1, 1, tzinfo=timezone.utc) if is_timestamp_type else 0
+
     try:
         client = bigquery.Client(project=project_id)
-        query = f"SELECT MAX({column_name}) as hwm FROM `{project_id}.{dataset_id}.{table_id}`"
+        table_ref = f"`{project_id}.{dataset_id}.{table_id}`"
+        query = f"SELECT MAX(`{column_name}`) as hwm FROM {table_ref}"
         logging.info(f"Executando query para HWM: {query}")
         query_job = client.query(query)
         results = query_job.result()
@@ -20,57 +26,64 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
         hwm = row.hwm
 
         if hwm is None:
-            logging.warning(f"Tabela '{table_id}' vazia ou HWM nulo. Iniciando carga completa.")
-            if column_type.upper() in ['TIMESTAMP', 'DATETIME']:
-                return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
-            else:
-                return 0
+            logging.warning(f"Tabela '{table_id}' vazia ou HWM nulo. Usando valor padrão.")
+            final_hwm = default_hwm
+        else:
+            final_hwm = hwm
+        logging.info(f"High-water mark encontrado: {final_hwm}")
 
-        if column_type.upper() in ['TIMESTAMP', 'DATETIME'] and isinstance(hwm, datetime):
-            hwm = hwm.strftime('%Y-%m-%d %H:%M:%S.%f')
+        if is_timestamp_type and isinstance(final_hwm, datetime):
+            return final_hwm.isoformat()
 
-        logging.info(f"High-water mark encontrado: {hwm}")
-        return hwm
+        return final_hwm
 
     except Exception as e:
-        logging.warning(f"Falha ao obter HWM para '{table_id}', assumindo carga inicial: {e}")
-        if column_type.upper() in ['TIMESTAMP', 'DATETIME']:
-            return datetime(1970, 1, 1, tzinfo=timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
-        else:
-            return 0
+        logging.warning(f"Falha ao obter HWM para '{table_id}' (tabela pode não existir). Usando valor padrão. Erro: {e}")
+        if is_timestamp_type:
+            return default_hwm.isoformat()
+        return default_hwm
 
 
 def execute_merge(project_id, gcp_region, target_table_id, staging_table_id, merge_keys, schema_fields):
-    """Função separada para MERGE pós-pipeline"""
+    """Função separada para MERGE pós-pipeline, com tratamento para o caso de não haver colunas de update."""
     if not staging_table_id:
         logging.info(f"Nenhuma tabela de staging para {target_table_id}. Pulando MERGE.")
         return
 
-    on_clause = " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
-    update_cols = [c for c in schema_fields if c not in merge_keys]
-    update_set_clause = ", ".join([f"T.{c} = S.{c}" for c in update_cols])
-    columns_list = ", ".join(schema_fields)
-    values_list = ", ".join([f"S.{c}" for c in schema_fields])
-
-    merge_query = f"""
-        MERGE `{target_table_id}` AS T
-        USING `{staging_table_id}` AS S
-        ON {on_clause}
-        WHEN MATCHED THEN
-            UPDATE SET {update_set_clause}
-        WHEN NOT MATCHED THEN
-            INSERT ({columns_list})
-            VALUES ({values_list})
-    """
-
     client = bigquery.Client(project=project_id, location=gcp_region)
-    logging.info(f"Executando MERGE: {merge_query}")
-    client.query(merge_query).result()
-    logging.info("MERGE concluído com sucesso.")
 
-    # Remove tabela de staging
-    logging.info(f"Removendo tabela de staging: {staging_table_id}")
-    client.delete_table(staging_table_id, not_found_ok=True)
+    try:
+        on_clause = " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
+        update_cols = [c for c in schema_fields if c not in merge_keys]
+        update_clause = ""
+        if update_cols:
+            update_set_clause = ", ".join([f"T.{c} = S.{c}" for c in update_cols])
+            update_clause = f"WHEN MATCHED THEN UPDATE SET {update_set_clause}"
+        columns_list = ", ".join(schema_fields)
+        values_list = ", ".join([f"S.{c}" for c in schema_fields])
+
+        merge_query = f"""
+            MERGE `{target_table_id}` AS T
+            USING `{staging_table_id}` AS S
+            ON {on_clause}
+            {update_clause}
+            WHEN NOT MATCHED THEN
+                INSERT ({columns_list})
+                VALUES ({values_list})
+        """
+
+        logging.info(f"Executando MERGE para a tabela '{target_table_id}'")
+        client.query(merge_query).result()
+        logging.info(f"MERGE para '{target_table_id}' concluído com sucesso.")
+
+    except Exception as e:
+        logging.error(f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}")
+        raise
+    finally:
+        logging.info(f"Removendo tabela de staging: {staging_table_id}")
+        client.delete_table(staging_table_id, not_found_ok=True)
+        logging.info(f"Limpeza da tabela de staging '{staging_table_id}' concluída.")
+
 
 
 def read_from_jdbc_partitioned(pipeline, jdcb_url, app_config, db_creds, table_name, base_query, partition_column="id", num_partitions=20):

@@ -42,15 +42,11 @@ def run():
         version_id=app_config['source_db']['secret_version']
     )
 
-    FETCH_SIZE = app_config['dataflow']['parameters']['felch_size']
+    FETCH_SIZE = app_config.get('dataflow', {}).get('parameters', {}).get('felch_size')
 
-    if FETCH_SIZE:
-        JDBC_URL = (
-            f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
-            f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}"
-        )
-    else:
-        JDBC_URL = (f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}")
+    base_jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
+    fetch_params = f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}" if FETCH_SIZE else ""
+    JDBC_URL = f"{base_jdbc_url}{fetch_params}"
 
     pipeline_options = PipelineOptions(
         pipeline_args,
@@ -79,7 +75,7 @@ def run():
         for table_name in TABLE_LIST:
             table_config = next((t for t in app_config['tables'] if t.get('name') == table_name), None)
             if not table_config:
-                logging.error(f"Configuração para '{table_name}' não encontrada. Pulando.")
+                logging.error(f"Configuração para '{table_name}' não encontrada. Pulando a ingestão desta tabela.")
                 continue
 
             schema = load_schema(f"{schemas_location}/{table_config['schema_file']}")
@@ -104,7 +100,11 @@ def run():
                         hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
                         high_water_mark = get_high_water_mark(project_id, bq_dataset, table_name, hwm_column, hwm_type)
                         condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else str(high_water_mark)
-                        where_clause = f"WHERE {hwm_column} > {condition_value}" if 'WHERE' not in base_query.upper() else f"AND {hwm_column} > {condition_value}"
+                        base_query_upper = base_query.strip().upper()
+                        where_clause = f"WHERE {hwm_column} > {condition_value}"
+                        if 'WHERE' in base_query_upper:
+                            where_clause = f"AND {hwm_column} > {condition_value}"
+
                         final_query = f"{base_query.strip()} {where_clause}"
                     else: 
                         final_query = f"{base_query.strip()}"
@@ -130,7 +130,7 @@ def run():
                     'field': table_config['partitioning_config']['column']
                 }
             if table_config.get('clustering_config') and table_config['clustering_config'].get('columns'):
-                clustering_fields = sorted(table_config['clustering_config']['columns'][:4])
+                clustering_fields = table_config['clustering_config']['columns'][:4]
                 additional_bq_params['clustering'] = {'fields': clustering_fields}
 
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
@@ -165,7 +165,7 @@ def run():
                     | f"To Dict {table_name}" >> beam.Map(lambda r: r._asdict())
                 )
 
-            transformed_data = rows | f"Transform {table_name}" >> beam.ParDo(TransformWithSideInputDoFn(transform_function))
+            transformed_data = rows | f"Transform {table_name}" >> beam.Map(transform_function)
 
             _ = transformed_data | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
                 table=destination_table_for_write,
@@ -176,23 +176,44 @@ def run():
                 insert_retry_strategy='RETRY_NEVER',
                 custom_gcs_temp_location=app_config['dataflow']['parameters']['temp_location']
             )
+    
+    if not merge_tasks:
+        logging.info("Nenhuma tarefa de MERGE para executar.")
+        return
 
     client = bigquery.Client(project=project_id)
-
+    
     for task in merge_tasks:
         staging_table_id = task['staging_table_id']
+        target_table_id = task['target_table_id']
+        logging.info(f"Iniciando processo de MERGE para a tabela de destino '{target_table_id}'")
+        
         try:
-            client.get_table(staging_table_id)
+            staging_table = client.get_table(staging_table_id)
+            if staging_table.num_rows == 0:
+                logging.warning(f"Tabela de staging '{staging_table_id}' está vazia. Nenhum dado para mesclar. Pulando MERGE.")
+                continue
+
             execute_merge(
                 project_id=project_id,
                 gcp_region=app_config['region'],
-                target_table_id=task['target_table_id'],
+                target_table_id=target_table_id,
                 staging_table_id=staging_table_id,
                 merge_keys=task['merge_keys'],
                 schema_fields=task['schema_fields']
             )
+            logging.info(f"MERGE concluído com sucesso para '{target_table_id}'.")
         except NotFound:
-            logging.warning(f"Tabela de staging '{staging_table_id}' não foi criada. Nenhum dado novo para processar.")
+            logging.warning(f"Tabela de staging '{staging_table_id}' não foi encontrada. O job pode não ter produzido dados.")
+        except Exception as e:
+            logging.error(f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}")
+        finally:
+            try:
+                logging.info(f"Tentando deletar a tabela de staging '{staging_table_id}'...")
+                client.delete_table(staging_table_id, not_found_ok=True)
+                logging.info(f"Tabela de staging '{staging_table_id}' deletada com sucesso.")
+            except Exception as e:
+                logging.critical(f"FALHA CRÍTICA AO LIMPAR: Não foi possível deletar a tabela de staging '{staging_table_id}'. Ação manual pode ser necessária. Erro: {e}")
 
 
 if __name__ == "__main__":
