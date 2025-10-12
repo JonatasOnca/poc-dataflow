@@ -42,7 +42,7 @@ SCHEMAS_GCS_PATH := $(GCS_BASE_PATH)/schemas/
 # REPLACE_ALWAYS_UNIQUE
 # REPLACE_ALWAYS
 
-CHUNK_NAME := LIGHT
+CHUNK_NAME := REPLACE_ALWAYS
 CHUNK_NAME_HYPHEN_LOWER := $(shell echo $(subst _,-,$(CHUNK_NAME)) | tr '[:upper:]' '[:lower:]')
 # ------Tipos de carga------
 # backfill

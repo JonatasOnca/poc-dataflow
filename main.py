@@ -123,11 +123,22 @@ def run():
                         })
 
             additional_bq_params = {}
-            if table_config.get('partitioning_config') and table_config['partitioning_config'].get('column'):
-                additional_bq_params['timePartitioning'] = {
-                    'type': table_config['partitioning_config'].get('type', 'DAY').upper(),
-                    'field': table_config['partitioning_config']['column']
-                }
+            partitioning_config = table_config.get('partitioning_config')
+            if partitioning_config:
+                partitioning_type = partitioning_config.get('type', 'DAY').upper()
+                partitioning_column = partitioning_config.get('column') 
+
+                if partitioning_column:
+                    logging.info(f"Configurando particionamento por COLUNA no campo: {partitioning_column}")
+                    additional_bq_params['timePartitioning'] = {
+                        'type': partitioning_type,
+                        'field': partitioning_column
+                    }
+                else:
+                    logging.info("Configurando particionamento por TEMPO DE INGESTÃO (_PARTITIONTIME).")
+                    additional_bq_params['timePartitioning'] = {
+                        'type': partitioning_type
+                    }
             if table_config.get('clustering_config') and table_config['clustering_config'].get('columns'):
                 clustering_fields = table_config['clustering_config']['columns'][:4]
                 additional_bq_params['clustering'] = {'fields': clustering_fields}

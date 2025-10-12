@@ -87,7 +87,6 @@ tables:
     - pcdPCDID
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - alunoALUID
@@ -330,7 +329,6 @@ tables:
     - TES_ID
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - AVA_ID
@@ -532,7 +530,6 @@ tables:
     - SER_ID
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - MAR_ID
@@ -609,7 +606,6 @@ tables:
     - municipioMUNID
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - messagesMENID
@@ -624,7 +620,6 @@ tables:
     - messagesMENID
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - escolaESCID
@@ -641,7 +636,6 @@ tables:
     - id
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - id
@@ -841,7 +835,6 @@ tables:
     - id
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - id
@@ -936,7 +929,6 @@ tables:
     - SPE_ID
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - ARE_ID
@@ -1056,7 +1048,6 @@ tables:
     - TUR_ID
   partitioning_config:
     type: DAY
-    column: _PARTITIONTIME
   clustering_config:
     columns:
     - PRO_ID
