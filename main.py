@@ -37,9 +37,11 @@ def run():
     load_type = known_args.load_type
     job_name = app_config["dataflow"]["job_name"]
 
-    chunk_name_hyphen_lower = chunk_name.replace("_", "-").lower()
-    timestamp_formatado = datetime.now().strftime("%Y%m%d-%H%M%S")
-    job_execution_id = f"{job_name}-{chunk_name_hyphen_lower}-{load_type}-date-{timestamp_formatado}-uuid-{uuid.uuid4()}"
+    # chunk_name_hyphen_lower
+    chunk_name_h_l = chunk_name.replace("_", "-").lower()
+    # timestamp_formatado
+    formato = datetime.now().strftime("%Y%m%d-%H%M%S")
+    job_execution_id = f"{job_name}-{chunk_name_h_l}-{load_type}-date-{formato}-uuid-{uuid.uuid4()}"
 
     db_creds = get_secret(
         project_id=app_config["gcp"]["project_id"],
@@ -98,7 +100,7 @@ def run():
             )
             if not table_config:
                 logging.error(
-                    f"Configuração para '{table_name}' não encontrada. Pulando a ingestão desta tabela."
+                    f"Configuração para '{table_name}' não encontrada. Pulando esta tabela."
                 )
                 continue
 
@@ -223,13 +225,13 @@ def run():
 
             transformed_data = rows | f"Transform {table_name}" >> beam.Map(transform_function)
 
-            # Filtra somente colunas presentes no schema (evita erros de escrita no BQ)
-            schema_fields_set = set([f["name"] for f in schema.get("fields", [])])
-            transformed_data = transformed_data | f"FilterFields {table_name}" >> beam.Map(
-                lambda r: {
-                    k: v for k, v in r.items() if k in schema_fields_set or k.startswith("_")
-                }
-            )
+            # # Filtra somente colunas presentes no schema (evita erros de escrita no BQ)
+            # schema_fields_set = set([f["name"] for f in schema.get("fields", [])])
+            # transformed_data = transformed_data | f"FilterFields {table_name}" >> beam.Map(
+            #     lambda r: {
+            #         k: v for k, v in r.items() if k in schema_fields_set or k.startswith("_")
+            #     }
+            # )
 
             processed_rows = transformed_data | f"Add Metadata {table_name}" >> beam.ParDo(
                 AddMetadataDoFn(table_name, job_execution_id)
@@ -262,7 +264,7 @@ def run():
                 staging_table = client.get_table(staging_table_id)
                 if staging_table.num_rows == 0:
                     logging.warning(
-                        f"Tabela de staging '{staging_table_id}' está vazia. Nenhum dado para mesclar. Pulando MERGE."
+                        f"Tabela de staging '{staging_table_id}' está vazia. Pulando MERGE."
                     )
                     continue
 
@@ -277,11 +279,11 @@ def run():
                 logging.info(f"MERGE concluído com sucesso para '{target_table_id}'.")
             except NotFound:
                 logging.warning(
-                    f"Tabela de staging '{staging_table_id}' não foi encontrada. O job pode não ter produzido dados."
+                    f"Tabela de staging '{staging_table_id}' não foi encontrada."
                 )
             except Exception as e:
                 logging.error(
-                    f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}"
+                    f"Erro no MERGE de '{staging_table_id}' para '{target_table_id}': {e}"
                 )
             finally:
                 try:
@@ -290,7 +292,10 @@ def run():
                     logging.info(f"Tabela de staging '{staging_table_id}' deletada com sucesso.")
                 except Exception as e:
                     logging.critical(
-                        f"FALHA CRÍTICA AO LIMPAR: Não foi possível deletar a tabela de staging '{staging_table_id}'. Ação manual pode ser necessária. Erro: {e}"
+                        f"""
+                        FALHA CRÍTICA AO LIMPAR: Não foi possível deletar a tabela de staging
+                        '{staging_table_id}'. Ação manual pode ser necessária. Erro: {e}
+                        """
                     )
 
 

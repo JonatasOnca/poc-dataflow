@@ -37,7 +37,7 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
 
     except Exception as e:
         logging.warning(
-            f"Falha ao obter HWM para '{table_id}' (tabela pode não existir). Usando valor padrão. Erro: {e}"
+            f"Falha ao obter HWM para '{table_id}' (tabela pode não existir). Erro: {e}"
         )
         if is_timestamp_type:
             return default_hwm.isoformat()
@@ -87,7 +87,7 @@ def execute_merge(
 
     except Exception as e:
         logging.error(
-            f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}"
+            f"Erro durante a execução do MERGE: '{staging_table_id}' para '{target_table_id}': {e}"
         )
         raise
 
@@ -122,7 +122,10 @@ def read_from_jdbc_partitioned(
         query = f"{base_query.strip()} WHERE {partition_column} BETWEEN {start} AND {end}"
 
         logging.info(
-            f"[{table_name}] Partição {i+1}/{num_partitions}: {partition_column} BETWEEN {start} AND {end}"
+            f"""
+            [{table_name}] Partição {i+1}/{num_partitions}: {partition_column}
+            BETWEEN {start} AND {end}
+            """
         )
 
         p = (

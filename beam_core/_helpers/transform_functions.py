@@ -60,7 +60,7 @@ def converter_data(valor_data, formato_entrada, formato_saida="%Y-%m-%d %H:%M:%S
         return valor_data
     except Exception as e:
         logging.warning(
-            f"ERRO ao analisar: {e} | Valor original: '{valor_data}' com formato '{formato_entrada}'"
+            f"ERRO ao analisar: {e} | Valor original: '{valor_data}' formato '{formato_entrada}'"
         )
         return valor_data
 
