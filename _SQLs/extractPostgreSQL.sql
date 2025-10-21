@@ -1,8 +1,6 @@
 --  Copyright 2025 TecOnca Data Solutions.
 --  Extract from PostgreSQL.
 
-use {{ database_name }};
-
 SELECT
     info.TABLE_NAME
     , info.COLUMN_NAME
@@ -20,6 +18,7 @@ LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE use_name
 LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS const
     ON use_name.CONSTRAINT_NAME = const.CONSTRAINT_NAME
     AND use_name.TABLE_SCHEMA = const.TABLE_SCHEMA
-where info.TABLE_NAME in (
-    ${tables}
-);
+WHERE
+    info.TABLE_NAME NOT IN ('')
+    AND info.TABLE_SCHEMA NOT LIKE 'pg_%'
+    AND info.TABLE_SCHEMA <> 'information_schema';
