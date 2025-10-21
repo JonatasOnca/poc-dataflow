@@ -1,0 +1,18 @@
+apache-beam[gcp]==2.68.0
+pyarrow==18.1.0
+google-cloud-bigquery==3.38.0
+google-cloud-secret-manager==2.24.0
+PyYAML==6.0.3
+Jinja2==3.1.6
+mysql-connector-python==9.4.0
+
+# Ferramentas de Linting, Formatação e Hooks de Pré-Commit (Development)
+
+# Formatação de código
+black==25.9.0
+
+# Linting e correção de código
+ruff==0.14.1
+
+# Gerenciador de hooks de Git (Ferramenta que executa black/ruff automaticamente no commit)
+pre-commit==4.3.0
