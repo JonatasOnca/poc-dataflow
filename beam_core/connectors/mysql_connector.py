@@ -8,11 +8,9 @@ import apache_beam as beam
 from apache_beam.io.jdbc import ReadFromJdbc
 
 
-
 def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):
-    """
-    """
-    is_timestamp_type = column_type.upper() in ['TIMESTAMP', 'DATETIME']
+    """ """
+    is_timestamp_type = column_type.upper() in ["TIMESTAMP", "DATETIME"]
     default_hwm = datetime(1970, 1, 1, tzinfo=timezone.utc) if is_timestamp_type else 0
 
     try:
@@ -38,26 +36,30 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
         return final_hwm
 
     except Exception as e:
-        logging.warning(f"Falha ao obter HWM para '{table_id}' (tabela pode não existir). Usando valor padrão. Erro: {e}")
+        logging.warning(
+            f"Falha ao obter HWM para '{table_id}' (tabela pode não existir). Usando valor padrão. Erro: {e}"
+        )
         if is_timestamp_type:
             return default_hwm.isoformat()
         return default_hwm
 
 
-def execute_merge(project_id, bq_location, target_table_id, staging_table_id, merge_keys, schema_fields):
-        """Executa MERGE no BigQuery entre uma tabela de staging e a tabela alvo.
+def execute_merge(
+    project_id, bq_location, target_table_id, staging_table_id, merge_keys, schema_fields
+):
+    """Executa MERGE no BigQuery entre uma tabela de staging e a tabela alvo.
 
-        Observações:
-        - Usa bq_location (ex.: 'US') para garantir que o job execute na mesma
-            localização do dataset.
-        - A limpeza da tabela de staging NÃO é feita aqui; deve ser orquestrada
-            pelo chamador, evitando deleção duplicada e facilitando observabilidade.
-        """
+    Observações:
+    - Usa bq_location (ex.: 'US') para garantir que o job execute na mesma
+        localização do dataset.
+    - A limpeza da tabela de staging NÃO é feita aqui; deve ser orquestrada
+        pelo chamador, evitando deleção duplicada e facilitando observabilidade.
+    """
     if not staging_table_id:
         logging.info(f"Nenhuma tabela de staging para {target_table_id}. Pulando MERGE.")
         return
 
-        client = bigquery.Client(project=project_id, location=bq_location)
+    client = bigquery.Client(project=project_id, location=bq_location)
 
     try:
         on_clause = " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
@@ -84,12 +86,22 @@ def execute_merge(project_id, bq_location, target_table_id, staging_table_id, me
         logging.info(f"MERGE para '{target_table_id}' concluído com sucesso.")
 
     except Exception as e:
-        logging.error(f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}")
+        logging.error(
+            f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}"
+        )
         raise
 
 
-
-def read_from_jdbc_partitioned(pipeline, jdcb_url, app_config, db_creds, table_name, base_query, partition_column="id", num_partitions=20):
+def read_from_jdbc_partitioned(
+    pipeline,
+    jdcb_url,
+    app_config,
+    db_creds,
+    table_name,
+    base_query,
+    partition_column="id",
+    num_partitions=20,
+):
     """
     Lê uma tabela grande do MySQL em paralelo simulando particionamento,
     dividindo o range [min, max] da coluna de partição.
@@ -97,7 +109,9 @@ def read_from_jdbc_partitioned(pipeline, jdcb_url, app_config, db_creds, table_n
     min_id, max_id = get_min_max_id(db_creds, table_name, partition_column)
 
     if min_id is None or max_id is None:
-        raise ValueError(f"Não foi possível determinar min/max da coluna {partition_column} para {table_name}")
+        raise ValueError(
+            f"Não foi possível determinar min/max da coluna {partition_column} para {table_name}"
+        )
 
     step = math.ceil((max_id - min_id + 1) / num_partitions)
     partitions = []
@@ -107,11 +121,14 @@ def read_from_jdbc_partitioned(pipeline, jdcb_url, app_config, db_creds, table_n
         end = min(start + step - 1, max_id)
         query = f"{base_query.strip()} WHERE {partition_column} BETWEEN {start} AND {end}"
 
-        logging.info(f"[{table_name}] Partição {i+1}/{num_partitions}: {partition_column} BETWEEN {start} AND {end}")
+        logging.info(
+            f"[{table_name}] Partição {i+1}/{num_partitions}: {partition_column} BETWEEN {start} AND {end}"
+        )
 
         p = (
             pipeline
-            | f"Read {table_name} chunk {i}" >> ReadFromJdbc(
+            | f"Read {table_name} chunk {i}"
+            >> ReadFromJdbc(
                 driver_class_name=app_config["database"]["driver_class_name"],
                 table_name=table_name,
                 jdbc_url=jdcb_url,
