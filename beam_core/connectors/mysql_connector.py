@@ -1,11 +1,11 @@
 import logging
 import math
-import mysql.connector
 from datetime import datetime, timezone
-from google.cloud import bigquery
 
 import apache_beam as beam
+import mysql.connector
 from apache_beam.io.jdbc import ReadFromJdbc
+from google.cloud import bigquery
 
 
 def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_type):

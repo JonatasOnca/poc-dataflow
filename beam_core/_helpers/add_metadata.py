@@ -1,9 +1,9 @@
-import logging
 import hashlib
 import json
+import logging
+from datetime import datetime, timezone
 
 import apache_beam as beam
-from datetime import datetime, timezone
 
 
 class AddMetadataDoFn(beam.DoFn):

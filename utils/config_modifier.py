@@ -1,5 +1,6 @@
-import yaml
 import sys
+
+import yaml
 
 
 def main():
@@ -15,7 +16,7 @@ def main():
     output_file = sys.argv[2]
 
     try:
-        with open(input_file, "r") as f:
+        with open(input_file) as f:
             config = yaml.safe_load(f)
 
         # Navega na estrutura do YAML e altera o valor desejado

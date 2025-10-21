@@ -1,6 +1,6 @@
 import json
-from google.cloud import secretmanager
 
+from google.cloud import secretmanager
 
 """
     Template do retorno esperado!

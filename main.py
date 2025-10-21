@@ -1,23 +1,23 @@
-import logging
 import argparse
+import logging
 import uuid
 from datetime import datetime
 
 import apache_beam as beam
-from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.io.jdbc import ReadFromJdbc
-from google.cloud import bigquery
+from apache_beam.options.pipeline_options import PipelineOptions
 from google.api_core.exceptions import NotFound
+from google.cloud import bigquery
 
 from beam_core._helpers.add_metadata import AddMetadataDoFn
-from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
+from beam_core._helpers.file_handler import load_query, load_schema, load_yaml
+from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
 from beam_core.connectors.mysql_connector import (
     execute_merge,
     get_high_water_mark,
     read_from_jdbc_partitioned,
 )
 from beam_core.connectors.secret_manager import get_secret
-from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
 
 
 def run():
