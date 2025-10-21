@@ -1,6 +1,7 @@
 import yaml
 import sys
 
+
 def main():
     """
     Lê um arquivo de configuração YAML, altera o runner para DirectRunner
@@ -14,22 +15,32 @@ def main():
     output_file = sys.argv[2]
 
     try:
-        with open(input_file, 'r') as f:
+        with open(input_file, "r") as f:
             config = yaml.safe_load(f)
 
         # Navega na estrutura do YAML e altera o valor desejado
-        if 'dataflow' in config and 'parameters' in config['dataflow'] and 'runner' in config['dataflow']['parameters']:
-            config['dataflow']['parameters']['runner'] = 'DirectRunner'
-            config['dataflow']['job_name'] = 'test-mysql-to-bq-multiple-ingestion-local-job' # Altera o nome do job para clareza
+        if (
+            "dataflow" in config
+            and "parameters" in config["dataflow"]
+            and "runner" in config["dataflow"]["parameters"]
+        ):
+            config["dataflow"]["parameters"]["runner"] = "DirectRunner"
+            config["dataflow"][
+                "job_name"
+            ] = "test-mysql-to-bq-multiple-ingestion-local-job"  # Altera o nome do job para clareza
             print(f"Runner alterado para 'DirectRunner' no arquivo '{output_file}'.")
         else:
             print("A chave 'runner' não foi encontrada na estrutura esperada do config.yaml.")
             sys.exit(1)
-        
-        if 'source_db' in config and 'secret_version' in config['source_db'] and 'latest' in config['source_db']['secret_version']:
-             config['source_db']['secret_version'] = 1
 
-        with open(output_file, 'w') as f:
+        if (
+            "source_db" in config
+            and "secret_version" in config["source_db"]
+            and "latest" in config["source_db"]["secret_version"]
+        ):
+            config["source_db"]["secret_version"] = 1
+
+        with open(output_file, "w") as f:
             yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 
     except FileNotFoundError:
@@ -39,5 +50,6 @@ def main():
         print(f"Ocorreu um erro: {e}")
         sys.exit(1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

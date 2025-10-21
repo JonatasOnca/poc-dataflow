@@ -11,38 +11,43 @@ from google.api_core.exceptions import NotFound
 
 from beam_core._helpers.add_metadata import AddMetadataDoFn
 from beam_core._helpers.file_handler import load_yaml, load_schema, load_query
-from beam_core.connectors.mysql_connector import execute_merge, get_high_water_mark, read_from_jdbc_partitioned
+from beam_core.connectors.mysql_connector import (
+    execute_merge,
+    get_high_water_mark,
+    read_from_jdbc_partitioned,
+)
 from beam_core.connectors.secret_manager import get_secret
 from beam_core._helpers.transform_functions import TRANSFORM_MAPPING, generic_transform
 
+
 def run():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config_file', required=True, help='Caminho GCS para config.yaml')
-    parser.add_argument('--chunk_name', default="ALL", type=str)
-    parser.add_argument('--table_name', default=None, type=str)
-    parser.add_argument('--load_type', choices=['backfill', 'delta', 'merge'], default='delta')
+    parser.add_argument("--config_file", required=True, help="Caminho GCS para config.yaml")
+    parser.add_argument("--chunk_name", default="ALL", type=str)
+    parser.add_argument("--table_name", default=None, type=str)
+    parser.add_argument("--load_type", choices=["backfill", "delta", "merge"], default="delta")
     known_args, pipeline_args = parser.parse_known_args()
 
     app_config = load_yaml(known_args.config_file)
     # Evite logar config completa para não expor informações sensíveis
     logging.info("Iniciando pipeline. Config básica carregada com sucesso.")
-    
+
     chunk_name = known_args.chunk_name
     table_name = known_args.table_name
     load_type = known_args.load_type
-    job_name = app_config['dataflow']['job_name']
+    job_name = app_config["dataflow"]["job_name"]
 
     chunk_name_hyphen_lower = chunk_name.replace("_", "-").lower()
     timestamp_formatado = datetime.now().strftime("%Y%m%d-%H%M%S")
     job_execution_id = f"{job_name}-{chunk_name_hyphen_lower}-{load_type}-date-{timestamp_formatado}-uuid-{uuid.uuid4()}"
 
     db_creds = get_secret(
-        project_id=app_config['gcp']['project_id'],
-        secret_id=app_config['source_db']['secret_id'],
-        version_id=app_config['source_db']['secret_version']
+        project_id=app_config["gcp"]["project_id"],
+        secret_id=app_config["source_db"]["secret_id"],
+        version_id=app_config["source_db"]["secret_version"],
     )
 
-    FETCH_SIZE = app_config.get('dataflow', {}).get('parameters', {}).get('fetch_size')
+    FETCH_SIZE = app_config.get("dataflow", {}).get("parameters", {}).get("fetch_size")
 
     base_jdbc_url = f"jdbc:mysql://{db_creds['host']}:{db_creds['port']}/{db_creds['database']}"
     fetch_params = f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}" if FETCH_SIZE else ""
@@ -50,39 +55,51 @@ def run():
 
     # Monta opções da pipeline dinamicamente para suportar parâmetros opcionais
     options_kwargs = dict(
-        runner=app_config['dataflow']['parameters']['runner'],
-        project=app_config['gcp']['project_id'],
-        region=app_config['gcp']['region'],
-        staging_location=app_config['dataflow']['parameters']['staging_location'],
-        temp_location=app_config['dataflow']['parameters']['temp_location'],
+        runner=app_config["dataflow"]["parameters"]["runner"],
+        project=app_config["gcp"]["project_id"],
+        region=app_config["gcp"]["region"],
+        staging_location=app_config["dataflow"]["parameters"]["staging_location"],
+        temp_location=app_config["dataflow"]["parameters"]["temp_location"],
         job_name=job_execution_id,
-        setup_file='./setup.py',
+        setup_file="./setup.py",
     )
     # Propaga opções adicionais, se existirem (ex.: machine_type, num_workers)
-    extra_opts = app_config['dataflow'].get('parameters', {})
-    for k in ('machine_type', 'num_workers', 'max_num_workers', 'experiments', 'sdk_container_image'):
+    extra_opts = app_config["dataflow"].get("parameters", {})
+    for k in (
+        "machine_type",
+        "num_workers",
+        "max_num_workers",
+        "experiments",
+        "sdk_container_image",
+    ):
         if k in extra_opts and extra_opts[k]:
             options_kwargs[k] = extra_opts[k]
 
     pipeline_options = PipelineOptions(pipeline_args, **options_kwargs)
 
-    project_id = app_config['gcp']['project_id']
-    bq_dataset = app_config['bronze_dataset']
-    queries_location = app_config['dataflow']['parameters']['queries_location']
-    schemas_location = app_config['dataflow']['parameters']['schemas_location']
+    project_id = app_config["gcp"]["project_id"]
+    bq_dataset = app_config["bronze_dataset"]
+    queries_location = app_config["dataflow"]["parameters"]["queries_location"]
+    schemas_location = app_config["dataflow"]["parameters"]["schemas_location"]
 
     if table_name:
         TABLE_LIST = [table_name]
     else:
-        TABLE_LIST = next((c['lista'] for c in app_config['chunks'] if c.get('name', 'ALL') == chunk_name), [])
+        TABLE_LIST = next(
+            (c["lista"] for c in app_config["chunks"] if c.get("name", "ALL") == chunk_name), []
+        )
 
     merge_tasks = []
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
         for table_name in TABLE_LIST:
-            table_config = next((t for t in app_config['tables'] if t.get('name') == table_name), None)
+            table_config = next(
+                (t for t in app_config["tables"] if t.get("name") == table_name), None
+            )
             if not table_config:
-                logging.error(f"Configuração para '{table_name}' não encontrada. Pulando a ingestão desta tabela.")
+                logging.error(
+                    f"Configuração para '{table_name}' não encontrada. Pulando a ingestão desta tabela."
+                )
                 continue
 
             schema = load_schema(f"{schemas_location}/{table_config['schema_file']}")
@@ -99,63 +116,81 @@ def run():
             destination_table_for_query = None
             current_load_type = load_type
 
-            if load_type in ['delta', 'merge']:
-                delta_config = table_config.get('delta_config')
-                if delta_config and 'column' in delta_config:
-                    if delta_config['column']:
-                        hwm_column = delta_config['column']
-                        hwm_type = delta_config.get('type', 'TIMESTAMP').upper()
-                        high_water_mark = get_high_water_mark(project_id, bq_dataset, table_name, hwm_column, hwm_type)
-                        condition_value = f"'{high_water_mark}'" if hwm_type not in ['INTEGER', 'BIGINT', 'INT', 'NUMERIC'] else str(high_water_mark)
+            if load_type in ["delta", "merge"]:
+                delta_config = table_config.get("delta_config")
+                if delta_config and "column" in delta_config:
+                    if delta_config["column"]:
+                        hwm_column = delta_config["column"]
+                        hwm_type = delta_config.get("type", "TIMESTAMP").upper()
+                        high_water_mark = get_high_water_mark(
+                            project_id, bq_dataset, table_name, hwm_column, hwm_type
+                        )
+                        condition_value = (
+                            f"'{high_water_mark}'"
+                            if hwm_type not in ["INTEGER", "BIGINT", "INT", "NUMERIC"]
+                            else str(high_water_mark)
+                        )
                         base_query_upper = base_query.strip().upper()
                         where_clause = f"WHERE {hwm_column} > {condition_value}"
-                        if 'WHERE' in base_query_upper:
+                        if "WHERE" in base_query_upper:
                             where_clause = f"AND {hwm_column} > {condition_value}"
 
                         final_query = f"{base_query.strip()} {where_clause}"
-                    else: 
+                    else:
                         final_query = f"{base_query.strip()}"
 
-                    if current_load_type == 'delta':
+                    if current_load_type == "delta":
                         write_disposition = beam.io.BigQueryDisposition.WRITE_APPEND
-                    elif current_load_type == 'merge':
+                    elif current_load_type == "merge":
                         staging_table_name = f"{table_name}_staging_{uuid.uuid4().hex}"
                         write_disposition = beam.io.BigQueryDisposition.WRITE_TRUNCATE
-                        destination_table_for_write = f"{project_id}.{bq_dataset}.{staging_table_name}"
+                        destination_table_for_write = (
+                            f"{project_id}.{bq_dataset}.{staging_table_name}"
+                        )
                         destination_table_for_query = destination_table_for_write
-                        merge_tasks.append({
-                            'target_table_id': target_table_id,
-                            'staging_table_id': destination_table_for_query,
-                            'merge_keys': table_config['merge_config']['keys'],
-                            'schema_fields': [f['name'] for f in schema['fields']]
-                        })
+                        merge_tasks.append(
+                            {
+                                "target_table_id": target_table_id,
+                                "staging_table_id": destination_table_for_query,
+                                "merge_keys": table_config["merge_config"]["keys"],
+                                "schema_fields": [f["name"] for f in schema["fields"]],
+                            }
+                        )
 
             additional_bq_params = {}
-            partitioning_config = table_config.get('partitioning_config')
+            partitioning_config = table_config.get("partitioning_config")
             if partitioning_config:
-                partitioning_type = partitioning_config.get('type', 'DAY').upper()
-                partitioning_column = partitioning_config.get('column') 
+                partitioning_type = partitioning_config.get("type", "DAY").upper()
+                partitioning_column = partitioning_config.get("column")
 
                 if partitioning_column:
-                    logging.info(f"Configurando particionamento por COLUNA no campo: {partitioning_column}")
-                    additional_bq_params['timePartitioning'] = {
-                        'type': partitioning_type,
-                        'field': partitioning_column
+                    logging.info(
+                        f"Configurando particionamento por COLUNA no campo: {partitioning_column}"
+                    )
+                    additional_bq_params["timePartitioning"] = {
+                        "type": partitioning_type,
+                        "field": partitioning_column,
                     }
                 else:
-                    logging.info("Configurando particionamento por TEMPO DE INGESTÃO (_PARTITIONTIME).")
-                    additional_bq_params['timePartitioning'] = {
-                        'type': partitioning_type
-                    }
-            if table_config.get('clustering_config') and table_config['clustering_config'].get('columns'):
-                clustering_fields = table_config['clustering_config']['columns'][:4]
-                additional_bq_params['clustering'] = {'fields': clustering_fields}
+                    logging.info(
+                        "Configurando particionamento por TEMPO DE INGESTÃO (_PARTITIONTIME)."
+                    )
+                    additional_bq_params["timePartitioning"] = {"type": partitioning_type}
+            if table_config.get("clustering_config") and table_config["clustering_config"].get(
+                "columns"
+            ):
+                clustering_fields = table_config["clustering_config"]["columns"][:4]
+                additional_bq_params["clustering"] = {"fields": clustering_fields}
 
             transform_function = TRANSFORM_MAPPING.get(table_name, generic_transform)
 
-            read_partitioning_config = table_config.get('read_partitioning_config')
-            
-            if load_type == 'backfill' and read_partitioning_config and read_partitioning_config.get('column'):
+            read_partitioning_config = table_config.get("read_partitioning_config")
+
+            if (
+                load_type == "backfill"
+                and read_partitioning_config
+                and read_partitioning_config.get("column")
+            ):
                 logging.info(f"Usando leitura particionada para a tabela '{table_name}'.")
                 rows = read_from_jdbc_partitioned(
                     pipeline=pipeline,
@@ -164,14 +199,17 @@ def run():
                     db_creds=db_creds,
                     table_name=table_name,
                     base_query=final_query,
-                    partition_column=read_partitioning_config.get('column'),
-                    num_partitions=read_partitioning_config.get('num_partitions', 1),
+                    partition_column=read_partitioning_config.get("column"),
+                    num_partitions=read_partitioning_config.get("num_partitions", 1),
                 )
             else:
-                logging.info(f"Usando leitura padrão (não particionada) para a tabela '{table_name}'.")
+                logging.info(
+                    f"Usando leitura padrão (não particionada) para a tabela '{table_name}'."
+                )
                 rows = (
                     pipeline
-                    | f"Read {table_name}" >> ReadFromJdbc(
+                    | f"Read {table_name}"
+                    >> ReadFromJdbc(
                         driver_class_name=app_config["database"]["driver_class_name"],
                         table_name=table_name,
                         jdbc_url=JDBC_URL,
@@ -184,15 +222,18 @@ def run():
                 )
 
             transformed_data = rows | f"Transform {table_name}" >> beam.Map(transform_function)
-            
+
             # Filtra somente colunas presentes no schema (evita erros de escrita no BQ)
-            schema_fields_set = set([f['name'] for f in schema.get('fields', [])])
-            transformed_data = (
-                transformed_data
-                | f"FilterFields {table_name}" >> beam.Map(lambda r: {k: v for k, v in r.items() if k in schema_fields_set or k.startswith('_')})
+            schema_fields_set = set([f["name"] for f in schema.get("fields", [])])
+            transformed_data = transformed_data | f"FilterFields {table_name}" >> beam.Map(
+                lambda r: {
+                    k: v for k, v in r.items() if k in schema_fields_set or k.startswith("_")
+                }
             )
-            
-            processed_rows = transformed_data | f'Add Metadata {table_name}' >> beam.ParDo(AddMetadataDoFn(table_name, job_execution_id))
+
+            processed_rows = transformed_data | f"Add Metadata {table_name}" >> beam.ParDo(
+                AddMetadataDoFn(table_name, job_execution_id)
+            )
 
             _ = processed_rows | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
                 table=destination_table_for_write,
@@ -200,47 +241,57 @@ def run():
                 create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
                 write_disposition=write_disposition,
                 additional_bq_parameters=additional_bq_params,
-                insert_retry_strategy='RETRY_NEVER',
-                custom_gcs_temp_location=app_config['dataflow']['parameters']['temp_location']
+                insert_retry_strategy="RETRY_NEVER",
+                custom_gcs_temp_location=app_config["dataflow"]["parameters"]["temp_location"],
             )
-    if load_type == 'merge':
+    if load_type == "merge":
         if not merge_tasks:
             logging.info("Nenhuma tarefa de MERGE para executar.")
             return
 
         client = bigquery.Client(project=project_id)
-        
+
         for task in merge_tasks:
-            staging_table_id = task['staging_table_id']
-            target_table_id = task['target_table_id']
-            logging.info(f"Iniciando processo de MERGE para a tabela de destino '{target_table_id}'")
-            
+            staging_table_id = task["staging_table_id"]
+            target_table_id = task["target_table_id"]
+            logging.info(
+                f"Iniciando processo de MERGE para a tabela de destino '{target_table_id}'"
+            )
+
             try:
                 staging_table = client.get_table(staging_table_id)
                 if staging_table.num_rows == 0:
-                    logging.warning(f"Tabela de staging '{staging_table_id}' está vazia. Nenhum dado para mesclar. Pulando MERGE.")
+                    logging.warning(
+                        f"Tabela de staging '{staging_table_id}' está vazia. Nenhum dado para mesclar. Pulando MERGE."
+                    )
                     continue
 
                 execute_merge(
                     project_id=project_id,
-                    bq_location=app_config.get('region', 'US'),
+                    bq_location=app_config.get("region", "US"),
                     target_table_id=target_table_id,
                     staging_table_id=staging_table_id,
-                    merge_keys=task['merge_keys'],
-                    schema_fields=task['schema_fields']
+                    merge_keys=task["merge_keys"],
+                    schema_fields=task["schema_fields"],
                 )
                 logging.info(f"MERGE concluído com sucesso para '{target_table_id}'.")
             except NotFound:
-                logging.warning(f"Tabela de staging '{staging_table_id}' não foi encontrada. O job pode não ter produzido dados.")
+                logging.warning(
+                    f"Tabela de staging '{staging_table_id}' não foi encontrada. O job pode não ter produzido dados."
+                )
             except Exception as e:
-                logging.error(f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}")
+                logging.error(
+                    f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}"
+                )
             finally:
                 try:
                     logging.info(f"Tentando deletar a tabela de staging '{staging_table_id}'...")
                     client.delete_table(staging_table_id, not_found_ok=True)
                     logging.info(f"Tabela de staging '{staging_table_id}' deletada com sucesso.")
                 except Exception as e:
-                    logging.critical(f"FALHA CRÍTICA AO LIMPAR: Não foi possível deletar a tabela de staging '{staging_table_id}'. Ação manual pode ser necessária. Erro: {e}")
+                    logging.critical(
+                        f"FALHA CRÍTICA AO LIMPAR: Não foi possível deletar a tabela de staging '{staging_table_id}'. Ação manual pode ser necessária. Erro: {e}"
+                    )
 
 
 if __name__ == "__main__":

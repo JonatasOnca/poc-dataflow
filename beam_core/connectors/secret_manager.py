@@ -13,6 +13,8 @@ from google.cloud import secretmanager
 }
 
 """
+
+
 def get_secret(project_id: str, secret_id: str, version_id: str = "latest") -> dict:
     """
     Acessa um segredo no Google Cloud Secret Manager e o retorna como um dicionário.
