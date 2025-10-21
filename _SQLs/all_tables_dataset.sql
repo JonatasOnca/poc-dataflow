@@ -1,3 +1,6 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+
 DECLARE PROJETO STRING DEFAULT 'abemcomum-saev-prod';
 DECLARE DATASET STRING DEFAULT 'bronze';
 

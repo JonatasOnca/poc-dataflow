@@ -1,3 +1,6 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+
 -- Calcula o tamanho médio em bytes para a tabela 'orders'
 SELECT AVG(
     COALESCE(LENGTH(order_id), 0) + 

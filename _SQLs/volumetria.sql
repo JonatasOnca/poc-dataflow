@@ -1,3 +1,6 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+
 SELECT 
     TABLE_NAME AS `Tabela`,
     -- (DATA_LENGTH + INDEX_LENGTH) é o tamanho total em bytes

@@ -1,3 +1,6 @@
+--  Copyright 2025 TecOnca Data Solutions.
+
+
 CREATE OR REPLACE TABLE `abemcomum-saev-prod.meta_controle.watermarks`
 (
   -- O nome único que identifica a sua pipeline. Ex: 'mysql_pedidos_to_gcs'
