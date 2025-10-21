@@ -228,7 +228,6 @@ def run():
             # Filtra somente colunas presentes no schema (evita erros de escrita no BQ)
             schema_fields_set = set([f["name"] for f in schema.get("fields", [])])
             transformed_data = transformed_data | f"FilterFields {table_name}" >> beam.Map(
-                # A variável 'schema_fields_set' é agora o VALOR padrão do argumento 'fields_to_keep'
                 lambda r, fields_to_keep=schema_fields_set: {
                     k: v for k, v in r.items() if k in fields_to_keep or k.startswith("_")
                 }
@@ -279,9 +278,7 @@ def run():
                 )
                 logging.info(f"MERGE concluído com sucesso para '{target_table_id}'.")
             except NotFound:
-                logging.warning(
-                    f"Tabela de staging '{staging_table_id}' não foi encontrada."
-                )
+                logging.warning(f"Tabela de staging '{staging_table_id}' não foi encontrada.")
             except Exception as e:
                 logging.error(
                     f"Erro no MERGE de '{staging_table_id}' para '{target_table_id}': {e}"
