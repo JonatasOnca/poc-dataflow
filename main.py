@@ -225,13 +225,14 @@ def run():
 
             transformed_data = rows | f"Transform {table_name}" >> beam.Map(transform_function)
 
-            # # Filtra somente colunas presentes no schema (evita erros de escrita no BQ)
-            # schema_fields_set = set([f["name"] for f in schema.get("fields", [])])
-            # transformed_data = transformed_data | f"FilterFields {table_name}" >> beam.Map(
-            #     lambda r: {
-            #         k: v for k, v in r.items() if k in schema_fields_set or k.startswith("_")
-            #     }
-            # )
+            # Filtra somente colunas presentes no schema (evita erros de escrita no BQ)
+            schema_fields_set = set([f["name"] for f in schema.get("fields", [])])
+            transformed_data = transformed_data | f"FilterFields {table_name}" >> beam.Map(
+                # A variável 'schema_fields_set' é agora o VALOR padrão do argumento 'fields_to_keep'
+                lambda r, fields_to_keep=schema_fields_set: {
+                    k: v for k, v in r.items() if k in fields_to_keep or k.startswith("_")
+                }
+            )
 
             processed_rows = transformed_data | f"Add Metadata {table_name}" >> beam.ParDo(
                 AddMetadataDoFn(table_name, job_execution_id)
