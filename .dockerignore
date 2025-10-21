@@ -18,7 +18,6 @@ local_settings.py
 # Ignorar documentação e testes que não são necessários na imagem final
 docs/
 tests/
-README.md
 
 # Ignorar arquivos específicos do seu editor de código
 .vscode/
