@@ -21,9 +21,9 @@ def load_yaml(bucket_yaml: str) -> str:
             # para que o Jinja2 e o PyYAML possam processá-la.
             yaml_as_text = yaml_as_bytes.decode('utf-8')
 
-    except FileNotFoundError:
-        print(f"Erro: O arquivo '{bucket_yaml}' não foi encontrado.")
-        exit()
+    except FileNotFoundError as e:
+        logging.error(f"Arquivo YAML não encontrado: {bucket_yaml}")
+        raise e
 
     # --- Etapa 2: Carregar o YAML uma vez para obter as variáveis ---
     # Usamos safe_load para segurança
@@ -31,8 +31,8 @@ def load_yaml(bucket_yaml: str) -> str:
         # Este dicionário conterá o bloco 'variables' que precisamos
         initial_data = yaml.safe_load(yaml_as_text)
     except yaml.YAMLError as e:
-        print(f"Erro ao analisar o YAML inicial: {e}")
-        exit()
+        logging.error(f"Erro ao analisar o YAML inicial: {e}")
+        raise
         
     try:
         # --- Etapa 3: Renderizar o texto usando Jinja2 ---
@@ -43,8 +43,8 @@ def load_yaml(bucket_yaml: str) -> str:
         # para que o Jinja saiba o que substituir.
         rendered_yaml_text = template.render(initial_data)
     except yaml.YAMLError as e:
-        print(f"Erro ao Renderizar o texto usando Jinja2: {e}")
-        exit()
+        logging.error(f"Erro ao renderizar YAML via Jinja2: {e}")
+        raise
     # --- Etapa 4: Carregar o YAML final (já processado) ---
     # Agora que os placeholders {{ }} foram substituídos,
     # podemos carregar o YAML como um dicionário Python limpo.

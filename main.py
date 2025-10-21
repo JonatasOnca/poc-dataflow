@@ -24,7 +24,8 @@ def run():
     known_args, pipeline_args = parser.parse_known_args()
 
     app_config = load_yaml(known_args.config_file)
-    logging.info(f"Iniciando pipeline com config: {app_config}")
+    # Evite logar config completa para não expor informações sensíveis
+    logging.info("Iniciando pipeline. Config básica carregada com sucesso.")
     
     chunk_name = known_args.chunk_name
     table_name = known_args.table_name
@@ -47,16 +48,23 @@ def run():
     fetch_params = f"?useCursorFetch=true&defaultFetchSize={FETCH_SIZE}" if FETCH_SIZE else ""
     JDBC_URL = f"{base_jdbc_url}{fetch_params}"
 
-    pipeline_options = PipelineOptions(
-        pipeline_args,
+    # Monta opções da pipeline dinamicamente para suportar parâmetros opcionais
+    options_kwargs = dict(
         runner=app_config['dataflow']['parameters']['runner'],
         project=app_config['gcp']['project_id'],
         region=app_config['gcp']['region'],
         staging_location=app_config['dataflow']['parameters']['staging_location'],
         temp_location=app_config['dataflow']['parameters']['temp_location'],
         job_name=job_execution_id,
-        setup_file='./setup.py'
+        setup_file='./setup.py',
     )
+    # Propaga opções adicionais, se existirem (ex.: machine_type, num_workers)
+    extra_opts = app_config['dataflow'].get('parameters', {})
+    for k in ('machine_type', 'num_workers', 'max_num_workers', 'experiments', 'sdk_container_image'):
+        if k in extra_opts and extra_opts[k]:
+            options_kwargs[k] = extra_opts[k]
+
+    pipeline_options = PipelineOptions(pipeline_args, **options_kwargs)
 
     project_id = app_config['gcp']['project_id']
     bq_dataset = app_config['bronze_dataset']
@@ -177,6 +185,13 @@ def run():
 
             transformed_data = rows | f"Transform {table_name}" >> beam.Map(transform_function)
             
+            # Filtra somente colunas presentes no schema (evita erros de escrita no BQ)
+            schema_fields_set = set([f['name'] for f in schema.get('fields', [])])
+            transformed_data = (
+                transformed_data
+                | f"FilterFields {table_name}" >> beam.Map(lambda r: {k: v for k, v in r.items() if k in schema_fields_set or k.startswith('_')})
+            )
+            
             processed_rows = transformed_data | f'Add Metadata {table_name}' >> beam.ParDo(AddMetadataDoFn(table_name, job_execution_id))
 
             _ = processed_rows | f"Write {table_name} to BigQuery" >> beam.io.WriteToBigQuery(
@@ -208,7 +223,7 @@ def run():
 
                 execute_merge(
                     project_id=project_id,
-                    gcp_region=app_config['region'],
+                    bq_location=app_config.get('region', 'US'),
                     target_table_id=target_table_id,
                     staging_table_id=staging_table_id,
                     merge_keys=task['merge_keys'],

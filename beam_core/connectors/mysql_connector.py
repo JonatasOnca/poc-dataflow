@@ -44,13 +44,20 @@ def get_high_water_mark(project_id, dataset_id, table_id, column_name, column_ty
         return default_hwm
 
 
-def execute_merge(project_id, gcp_region, target_table_id, staging_table_id, merge_keys, schema_fields):
-    """Função separada para MERGE pós-pipeline, com tratamento para o caso de não haver colunas de update."""
+def execute_merge(project_id, bq_location, target_table_id, staging_table_id, merge_keys, schema_fields):
+        """Executa MERGE no BigQuery entre uma tabela de staging e a tabela alvo.
+
+        Observações:
+        - Usa bq_location (ex.: 'US') para garantir que o job execute na mesma
+            localização do dataset.
+        - A limpeza da tabela de staging NÃO é feita aqui; deve ser orquestrada
+            pelo chamador, evitando deleção duplicada e facilitando observabilidade.
+        """
     if not staging_table_id:
         logging.info(f"Nenhuma tabela de staging para {target_table_id}. Pulando MERGE.")
         return
 
-    client = bigquery.Client(project=project_id, location=gcp_region)
+        client = bigquery.Client(project=project_id, location=bq_location)
 
     try:
         on_clause = " AND ".join([f"T.{key} = S.{key}" for key in merge_keys])
@@ -79,10 +86,6 @@ def execute_merge(project_id, gcp_region, target_table_id, staging_table_id, mer
     except Exception as e:
         logging.error(f"Erro durante a execução do MERGE de '{staging_table_id}' para '{target_table_id}': {e}")
         raise
-    finally:
-        logging.info(f"Removendo tabela de staging: {staging_table_id}")
-        client.delete_table(staging_table_id, not_found_ok=True)
-        logging.info(f"Limpeza da tabela de staging '{staging_table_id}' concluída.")
 
 
 
